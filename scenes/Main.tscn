@@ -1,5 +1,6 @@
-[gd_scene load_steps=16 format=3 uid="uid://50jplsqs8xpu"]
+[gd_scene load_steps=17 format=3 uid="uid://50jplsqs8xpu"]
 
+[ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="Script" uid="uid://c1121artwyxcj" path="res://scripts/ui/DayLabel.gd" id="1_day"]
 [ext_resource type="Script" uid="uid://b88wqxj6a2xxo" path="res://scripts/ui/CapacityLabel.gd" id="2_capacity"]
 [ext_resource type="Script" uid="uid://yn6suh6di6cn" path="res://scripts/ui/CashLabel.gd" id="3_cash"]
@@ -29,6 +30,14 @@ bg_color = Color(0.227451, 0.145098, 0.0941176, 1)
 border_width_top = 2
 border_color = Color(0.290196, 0.215686, 0.156863, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_selected"]
+bg_color = Color(0.290196, 0.215686, 0.156863, 1)
+border_width_bottom = 3
+border_color = Color(0.956863, 0.909804, 0.847059, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_unselected"]
+bg_color = Color(0.164706, 0.121569, 0.101961, 1)
+
 [node name="Main" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -36,6 +45,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_main")
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 0
@@ -104,9 +114,26 @@ text = "$100"
 horizontal_alignment = 2
 script = ExtResource("3_cash")
 
-[node name="LeftPanel" type="Panel" parent="."]
+[node name="TabBar" type="TabBar" parent="."]
 layout_mode = 0
 offset_top = 90.0
+offset_right = 1920.0
+offset_bottom = 130.0
+theme_override_colors/font_selected_color = Color(0.956863, 0.909804, 0.847059, 1)
+theme_override_colors/font_unselected_color = Color(0.7, 0.65, 0.6, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/tab_selected = SubResource("StyleBoxFlat_tab_selected")
+theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_tab_unselected")
+tab_count = 5
+tab_0/title = "📋 Work"
+tab_1/title = "📝 Translation"
+tab_2/title = "📖 Examination"
+tab_3/title = "📚 Dictionary"
+tab_4/title = "👥 Queue"
+
+[node name="LeftPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_top = 130.0
 offset_right = 420.0
 offset_bottom = 780.0
 mouse_filter = 2
@@ -138,7 +165,7 @@ theme_override_constants/separation = 10
 [node name="Workspace" type="Control" parent="."]
 anchors_preset = 0
 offset_left = 420.0
-offset_top = 90.0
+offset_top = 130.0
 offset_right = 1500.0
 offset_bottom = 780.0
 
@@ -152,7 +179,7 @@ layout_mode = 0
 [node name="RightPanel" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 1500.0
-offset_top = 90.0
+offset_top = 130.0
 offset_right = 1920.0
 offset_bottom = 780.0
 mouse_filter = 2
