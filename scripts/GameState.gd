@@ -9,6 +9,10 @@ var player_cash: int = 100
 var capacity_used: int = 0
 var max_capacity: int = 5
 
+# Customer tracking (Feature 3.3)
+var accepted_customers: Array = []  # Array of customer data dictionaries
+var refused_customers: Array = []  # Array of customer names (for relationship tracking)
+
 # Constants
 const DAILY_UTILITIES: int = 30
 const WEEKLY_RENT: int = 200
@@ -26,6 +30,8 @@ func reset_game_state():
 	player_cash = STARTING_CASH
 	capacity_used = 0
 	max_capacity = 5
+	accepted_customers = []
+	refused_customers = []
 
 func advance_day():
 	"""Advance to next day, deduct utilities, reset capacity"""
@@ -34,6 +40,7 @@ func advance_day():
 	if current_day <= 7:
 		day_name = DAY_NAMES[current_day - 1]
 	capacity_used = 0
+	accepted_customers = []  # Reset for new day
 
 	# Check if rent is due (Friday = day 5)
 	if current_day == RENT_DUE_DAY:
@@ -67,3 +74,39 @@ func get_cash_color() -> Color:
 		return Color("#CC6600")  # Orange - cautious
 	else:
 		return Color("#8B0000")  # Red - danger
+
+# Feature 3.3: Accept/Refuse Logic
+func accept_customer(customer_data: Dictionary):
+	"""Add customer to accepted list and increment capacity"""
+	accepted_customers.append(customer_data)
+	increment_capacity()
+
+func refuse_customer(customer_data: Dictionary):
+	"""Add customer to refused list and damage relationship if recurring"""
+	var customer_name = customer_data.get("name", "")
+	refused_customers.append(customer_name)
+
+	# If recurring customer, damage relationship
+	if customer_data.get("is_recurring", false):
+		CustomerData.damage_relationship(customer_name)
+
+func get_capacity_color() -> Color:
+	"""Return color based on capacity usage"""
+	if capacity_used >= 5:
+		return Color("#2D5016")  # Green - capacity met
+	elif capacity_used >= 4:
+		return Color("#FF8C00")  # Orange - almost full
+	else:
+		return Color("#888888")  # Gray - can take more
+
+func get_text_id_for_difficulty(difficulty: String) -> int:
+	"""Map customer difficulty to appropriate translation text ID"""
+	match difficulty.to_lower():
+		"easy":
+			return 1  # Text 1: "the old way"
+		"medium":
+			return randi_range(2, 3)  # Text 2 or 3 (randomize)
+		"hard":
+			return randi_range(4, 5)  # Text 4 or 5 (randomize)
+		_:
+			return 1  # Default to easy

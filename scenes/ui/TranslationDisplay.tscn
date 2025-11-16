@@ -59,6 +59,18 @@ offset_right = 1080.0
 offset_bottom = 690.0
 script = ExtResource("1_translation")
 
+[node name="CustomerNameLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 100.0
+offset_right = 1050.0
+offset_bottom = 140.0
+theme_override_colors/font_color = Color(0.227451, 0.145098, 0.0941176, 1)
+theme_override_font_sizes/font_size = 24
+text = "Translating for: Customer Name"
+horizontal_alignment = 1
+visible = false
+
 [node name="SymbolTextDisplay" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 30.0

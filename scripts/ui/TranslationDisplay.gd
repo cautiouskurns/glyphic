@@ -6,6 +6,7 @@ extends Control
 @onready var symbol_text_label = $SymbolTextDisplay/SymbolLabel
 @onready var input_field = $InputField
 @onready var submit_button = $SubmitButton
+@onready var customer_name_label = $CustomerNameLabel
 
 var current_text_id: int = 0  # 0 = no active text, 1-5 = Text ID
 var is_validating: bool = false  # Prevents multiple submit clicks
@@ -39,6 +40,15 @@ func load_text(text_id: int):
 	var tween = create_tween()
 	tween.tween_property(symbol_text_label, "modulate:a", 1.0, 0.3)
 
+func load_text_for_customer(text_id: int, customer_name: String):
+	"""Load text with customer context (Feature 3.3)"""
+	# Show customer name
+	customer_name_label.text = "Translating for: %s" % customer_name
+	customer_name_label.visible = true
+
+	# Load the text
+	load_text(text_id)
+
 func set_default_state():
 	"""Reset to 'no active text' state"""
 	current_text_id = 0
@@ -47,6 +57,7 @@ func set_default_state():
 	input_field.editable = false
 	input_field.text = ""
 	submit_button.disabled = true
+	customer_name_label.visible = false  # Hide customer name (Feature 3.3)
 
 func _on_submit_pressed():
 	"""Handle Submit button click"""

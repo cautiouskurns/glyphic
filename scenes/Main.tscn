@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://50jplsqs8xpu"]
+[gd_scene load_steps=12 format=3 uid="uid://50jplsqs8xpu"]
 
 [ext_resource type="Script" uid="uid://c1121artwyxcj" path="res://scripts/ui/DayLabel.gd" id="1_day"]
 [ext_resource type="Script" uid="uid://b88wqxj6a2xxo" path="res://scripts/ui/CapacityLabel.gd" id="2_capacity"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scripts/ui/DictionaryPanel.gd" id="6_dictionary"]
 [ext_resource type="Script" path="res://scripts/ui/CustomerQueuePanel.gd" id="7_queue"]
 [ext_resource type="PackedScene" path="res://scenes/ui/CustomerPopup.tscn" id="8_popup"]
+[ext_resource type="Script" path="res://scripts/ui/DialogueBox.gd" id="9_dialogue"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar"]
 bg_color = Color(0.164706, 0.121569, 0.101961, 1)
@@ -156,6 +157,7 @@ offset_top = 780.0
 offset_right = 1920.0
 offset_bottom = 1080.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_dialogue")
+script = ExtResource("9_dialogue")
 
 [node name="DialogueLabel" type="Label" parent="DialogueBox"]
 layout_mode = 0

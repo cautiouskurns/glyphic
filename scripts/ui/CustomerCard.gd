@@ -9,9 +9,13 @@ signal card_clicked(customer_data)
 @onready var payment_label = $MarginContainer/VBoxContainer/TopRow/PaymentLabel
 @onready var difficulty_badge = $MarginContainer/VBoxContainer/DifficultyRow/DifficultyBadge
 @onready var description_label = $MarginContainer/VBoxContainer/DescriptionLabel
+@onready var status_label = $MarginContainer/VBoxContainer/StatusLabel
+@onready var status_badge = $StatusBadge
 
 var customer_data: Dictionary = {}
 var is_hovered: bool = false
+var is_accepted: bool = false
+var is_refused: bool = false
 
 # Default cream background
 const COLOR_DEFAULT = Color("#F4E8D8")
@@ -69,6 +73,10 @@ func get_difficulty_stars(difficulty) -> String:
 
 func _on_mouse_entered():
 	"""Show hover effect (gold tint)"""
+	# Skip hover if accepted or refused
+	if is_accepted or is_refused:
+		return
+
 	is_hovered = true
 	var style = get_theme_stylebox("panel").duplicate()
 	style.bg_color = COLOR_HOVER
@@ -76,6 +84,10 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	"""Remove hover effect"""
+	# Skip if accepted or refused
+	if is_accepted or is_refused:
+		return
+
 	is_hovered = false
 	var style = get_theme_stylebox("panel").duplicate()
 	style.bg_color = COLOR_DEFAULT
@@ -83,6 +95,10 @@ func _on_mouse_exited():
 
 func _on_gui_input(event):
 	"""Handle click (gold flash → emit signal)"""
+	# Skip click if accepted or refused
+	if is_accepted or is_refused:
+		return
+
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		# Flash gold
 		var style = get_theme_stylebox("panel").duplicate()
@@ -99,3 +115,50 @@ func _on_gui_input(event):
 		else:
 			style.bg_color = COLOR_DEFAULT
 		add_theme_stylebox_override("panel", style)
+
+# Feature 3.3: Accept/Refuse Visual States
+func set_accepted():
+	"""Update card to show accepted state"""
+	is_accepted = true
+	is_hovered = false
+
+	# Green background tint
+	var style = get_theme_stylebox("panel").duplicate()
+	style.bg_color = Color("#E8F5E0")  # Light green
+	style.border_color = Color("#2D5016")  # Green border
+	style.border_width_left = 3
+	style.border_width_top = 3
+	style.border_width_right = 3
+	style.border_width_bottom = 3
+	add_theme_stylebox_override("panel", style)
+
+	# Show status elements
+	status_badge.text = "✓"
+	status_badge.add_theme_color_override("font_color", Color("#FFFFFF"))
+	status_badge.visible = true
+
+	status_label.text = "ACCEPTED"
+	status_label.add_theme_color_override("font_color", Color("#2D5016"))
+	status_label.visible = true
+
+func set_refused():
+	"""Update card to show refused state"""
+	is_refused = true
+	is_hovered = false
+
+	# Gray background
+	var style = get_theme_stylebox("panel").duplicate()
+	style.bg_color = Color("#CCCCCC")  # Gray
+	add_theme_stylebox_override("panel", style)
+
+	# Fade to 50% opacity
+	modulate.a = 0.5
+
+	# Show status elements
+	status_badge.text = "✗"
+	status_badge.add_theme_color_override("font_color", Color("#FFFFFF"))
+	status_badge.visible = true
+
+	status_label.text = "REFUSED"
+	status_label.add_theme_color_override("font_color", Color("#8B0000"))
+	status_label.visible = true
