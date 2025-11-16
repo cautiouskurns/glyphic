@@ -142,6 +142,14 @@ text = "Feedback: Test Success"
 layout_mode = 2
 text = "Feedback: Test Failure"
 
+[node name="DictionaryViewButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Dictionary: View Current State"
+
+[node name="DictionaryUpdateButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Dictionary: Force Update"
+
 [node name="Separator5" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
 
@@ -183,4 +191,6 @@ wrap_mode = 1
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/ResetTranslationButton" to="." method="_on_reset_translation_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/TestSuccessFeedbackButton" to="." method="_on_test_success_feedback_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/TestFailureFeedbackButton" to="." method="_on_test_failure_feedback_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/DictionaryViewButton" to="." method="_on_dictionary_view_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/DictionaryUpdateButton" to="." method="_on_dictionary_update_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/ClearButton" to="." method="_on_clear_pressed"]

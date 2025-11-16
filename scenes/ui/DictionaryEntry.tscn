@@ -1,0 +1,59 @@
+[gd_scene load_steps=4 format=3 uid="uid://bxqm8yvwknfd"]
+
+[ext_resource type="Script" path="res://scripts/ui/DictionaryEntry.gd" id="1_entry"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_entry"]
+bg_color = Color(0, 0, 0, 0)
+border_width_bottom = 1
+border_color = Color(0.227451, 0.145098, 0.0941176, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_symbol_bg"]
+bg_color = Color(0.956863, 0.909804, 0.847059, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 8.0
+content_margin_top = 5.0
+content_margin_right = 8.0
+content_margin_bottom = 5.0
+
+[node name="DictionaryEntry" type="PanelContainer"]
+custom_minimum_size = Vector2(380, 60)
+theme_override_styles/panel = SubResource("StyleBoxFlat_entry")
+script = ExtResource("1_entry")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="SymbolBackground" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_symbol_bg")
+
+[node name="SymbolLabel" type="Label" parent="HBoxContainer/SymbolBackground"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.164706, 0.121569, 0.101961, 1)
+theme_override_font_sizes/font_size = 32
+text = "∆"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="WordLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 24
+text = "???"
+
+[node name="Checkmark" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.176471, 0.8, 0.313726, 1)
+theme_override_font_sizes/font_size = 24
+text = "✓"
+visible = false
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

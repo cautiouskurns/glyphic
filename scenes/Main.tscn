@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://50jplsqs8xpu"]
+[gd_scene load_steps=10 format=3 uid="uid://50jplsqs8xpu"]
 
 [ext_resource type="Script" uid="uid://c1121artwyxcj" path="res://scripts/ui/DayLabel.gd" id="1_day"]
 [ext_resource type="Script" uid="uid://b88wqxj6a2xxo" path="res://scripts/ui/CapacityLabel.gd" id="2_capacity"]
 [ext_resource type="Script" uid="uid://yn6suh6di6cn" path="res://scripts/ui/CashLabel.gd" id="3_cash"]
 [ext_resource type="PackedScene" path="res://scenes/ui/DebugConsole.tscn" id="4_debug"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TranslationDisplay.tscn" id="5_translation"]
+[ext_resource type="Script" path="res://scripts/ui/DictionaryPanel.gd" id="6_dictionary"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar"]
 bg_color = Color(0.164706, 0.121569, 0.101961, 1)
@@ -111,6 +112,7 @@ offset_top = 90.0
 offset_right = 1920.0
 offset_bottom = 1080.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+script = ExtResource("6_dictionary")
 
 [node name="TitleLabel" type="Label" parent="RightPanel"]
 layout_mode = 0
@@ -121,6 +123,17 @@ offset_bottom = 60.0
 theme_override_colors/font_color = Color(0.956863, 0.909804, 0.847059, 1)
 theme_override_font_sizes/font_size = 30
 text = "Dictionary"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="RightPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 70.0
+offset_right = 400.0
+offset_bottom = 970.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RightPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="DialogueBox" type="Panel" parent="."]
 layout_mode = 0

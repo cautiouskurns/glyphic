@@ -550,3 +550,37 @@ func _on_test_failure_feedback_pressed():
 	_print("  - Color: Red (#E74C3C)")
 	_print("  - Customer dialogue: 'Hmm, that doesn't seem right. Try again?'")
 	_print("\nDialogue will auto-clear after 1.5 seconds (manual clear needed for test)")
+
+# Dictionary tests (Feature 2.4)
+func _on_dictionary_view_pressed():
+	_print_header("Dictionary: Current State")
+
+	_print("Total symbol groups: %d" % SymbolData.dictionary.size())
+	_print("")
+
+	var learned_count = 0
+	var unknown_count = 0
+
+	_print("Symbol entries:")
+	for symbol in SymbolData.dictionary.keys():
+		var entry = SymbolData.get_dictionary_entry(symbol)
+		if entry.word != null:
+			_print("  %s → \"%s\" (✓ learned)" % [symbol, entry.word])
+			learned_count += 1
+		else:
+			_print("  %s → ??? (unknown)" % symbol)
+			unknown_count += 1
+
+	_print("\nSummary:")
+	_print("  Learned: %d symbols" % learned_count)
+	_print("  Unknown: %d symbols" % unknown_count)
+
+func _on_dictionary_update_pressed():
+	_print_header("Dictionary: Force Update")
+
+	var dictionary_panel = get_node("/root/Main/RightPanel")
+	dictionary_panel.update_dictionary()
+
+	_print("Dictionary display refreshed")
+	_print("All 14 entries updated from SymbolData")
+	_print("\nUse 'Dictionary: View Current State' to see current values")
