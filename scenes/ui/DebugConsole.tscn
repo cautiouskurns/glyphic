@@ -95,6 +95,29 @@ text = "GameState: Test Cash Colors"
 [node name="Separator3" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
 
+[node name="TestCustomerDataButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "CustomerData: Recurring Customers"
+
+[node name="TestCustomerDataSchedulesButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "CustomerData: Appearance Schedules"
+
+[node name="TestCustomerDataQueueButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "CustomerData: Queue Generation"
+
+[node name="TestCustomerDataRelationshipsButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "CustomerData: Relationship Damage"
+
+[node name="TestCustomerDataRandomButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "CustomerData: Random Customers"
+
+[node name="Separator4" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+
 [node name="ClearButton" type="Button" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
 text = "Clear Output"
@@ -122,4 +145,9 @@ wrap_mode = 1
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/TestGameStateButton" to="." method="_on_test_gamestate_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/TestGameStateAdvanceButton" to="." method="_on_test_gamestate_advance_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/TestGameStateCashButton" to="." method="_on_test_gamestate_cash_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataButton" to="." method="_on_test_customerdata_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataSchedulesButton" to="." method="_on_test_customerdata_schedules_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataQueueButton" to="." method="_on_test_customerdata_queue_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataRelationshipsButton" to="." method="_on_test_customerdata_relationships_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataRandomButton" to="." method="_on_test_customerdata_random_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/ClearButton" to="." method="_on_clear_pressed"]
