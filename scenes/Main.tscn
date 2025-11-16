@@ -1,3 +1,53 @@
-[gd_scene format=3]
+[gd_scene load_steps=4 format=3 uid="uid://50jplsqs8xpu"]
 
-[node name="Main" type="Node2D"]
+[ext_resource type="Script" path="res://scripts/ui/DayLabel.gd" id="1_day"]
+[ext_resource type="Script" path="res://scripts/ui/CapacityLabel.gd" id="2_capacity"]
+[ext_resource type="Script" path="res://scripts/ui/CashLabel.gd" id="3_cash"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopBar" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 60.0
+
+[node name="DayLabel" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 250.0
+offset_bottom = 45.0
+theme_override_colors/font_color = Color(0.227451, 0.145098, 0.0941176, 1)
+theme_override_font_sizes/font_size = 18
+text = "Day 1 - Monday"
+script = ExtResource("1_day")
+
+[node name="CapacityLabel" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 490.0
+offset_top = 20.0
+offset_right = 690.0
+offset_bottom = 45.0
+theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 16
+text = "0/5 Customers Served"
+horizontal_alignment = 1
+script = ExtResource("2_capacity")
+
+[node name="CashLabel" type="Label" parent="TopBar"]
+layout_mode = 0
+offset_left = 1100.0
+offset_top = 15.0
+offset_right = 1260.0
+offset_bottom = 45.0
+theme_override_colors/font_color = Color(0.176471, 0.313726, 0.0862745, 1)
+theme_override_font_sizes/font_size = 24
+text = "$100"
+horizontal_alignment = 2
+script = ExtResource("3_cash")
