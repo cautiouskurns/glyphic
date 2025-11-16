@@ -123,14 +123,14 @@ func apply_examination_layout():
 		examination_screen.load_book(test_customer, 1)
 
 func apply_dictionary_layout():
-	"""Full-screen dictionary"""
+	"""Full-screen dictionary with wider cards"""
 	# Hide left panel and workspace
 	set_panel_visible_animated(left_panel, false)
 	set_panel_visible_animated(workspace, false)
 
-	# Expand right panel to full width
+	# Expand right panel to full width with padding for nice wide cards
 	set_panel_visible_animated(right_panel, true)
-	tween_panel_rect(right_panel, {"left": 0, "top": 130, "right": 1920, "bottom": 780})
+	tween_panel_rect(right_panel, {"left": 100, "top": 130, "right": 1820, "bottom": 780})
 
 func apply_queue_layout():
 	"""Full-screen customer queue"""

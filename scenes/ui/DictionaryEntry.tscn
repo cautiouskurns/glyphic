@@ -1,59 +1,233 @@
-[gd_scene load_steps=4 format=3 uid="uid://bxqm8yvwknfd"]
+[gd_scene load_steps=7 format=3 uid="uid://bxqm8yvwknfd"]
 
-[ext_resource type="Script" path="res://scripts/ui/DictionaryEntry.gd" id="1_entry"]
+[ext_resource type="Script" uid="uid://dp2eks3tjmr5n" path="res://scripts/ui/DictionaryEntry.gd" id="1_entry"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_entry"]
-bg_color = Color(0, 0, 0, 0)
-border_width_bottom = 1
-border_color = Color(0.227451, 0.145098, 0.0941176, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_symbol_bg"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_main"]
+content_margin_left = 80.0
+content_margin_top = 20.0
+content_margin_right = 24.0
+content_margin_bottom = 20.0
 bg_color = Color(0.956863, 0.909804, 0.847059, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.15)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hole"]
+bg_color = Color(0.227451, 0.145098, 0.0941176, 0.2)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_symbol_border"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.227451, 0.145098, 0.0941176, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_certainty_badge"]
 content_margin_left = 8.0
-content_margin_top = 5.0
+content_margin_top = 4.0
 content_margin_right = 8.0
-content_margin_bottom = 5.0
+content_margin_bottom = 4.0
+bg_color = Color(0.176471, 0.490196, 0.196078, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_category_tag"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.455, 0.353, 0.271, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [node name="DictionaryEntry" type="PanelContainer"]
-custom_minimum_size = Vector2(380, 60)
-theme_override_styles/panel = SubResource("StyleBoxFlat_entry")
+custom_minimum_size = Vector2(0, 160)
+theme_override_styles/panel = SubResource("StyleBoxFlat_main")
 script = ExtResource("1_entry")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="PaperHoles" type="Control" parent="."]
 layout_mode = 2
 
-[node name="SymbolBackground" type="PanelContainer" parent="HBoxContainer"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_symbol_bg")
+[node name="Hole1" type="Panel" parent="PaperHoles"]
+layout_mode = 0
+offset_left = -67.0
+offset_top = -4.0
+offset_right = -55.0
+offset_bottom = 8.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hole")
 
-[node name="SymbolLabel" type="Label" parent="HBoxContainer/SymbolBackground"]
+[node name="Hole2" type="Panel" parent="PaperHoles"]
+layout_mode = 0
+offset_left = -67.0
+offset_top = 54.0
+offset_right = -55.0
+offset_bottom = 66.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hole")
+
+[node name="Hole3" type="Panel" parent="PaperHoles"]
+layout_mode = 0
+offset_left = -68.0
+offset_top = 110.0
+offset_right = -56.0
+offset_bottom = 122.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hole")
+
+[node name="PaperLines" type="Control" parent="."]
+layout_mode = 2
+
+[node name="Line1" type="ColorRect" parent="PaperLines"]
+layout_mode = 0
+offset_left = -33.0
+offset_top = 50.0
+offset_right = 837.0
+offset_bottom = 51.0
+color = Color(0.7, 0.65, 0.6, 0.2)
+
+[node name="Line2" type="ColorRect" parent="PaperLines"]
+layout_mode = 0
+offset_left = -33.0
+offset_top = 90.0
+offset_right = 837.0
+offset_bottom = 91.0
+color = Color(0.7, 0.65, 0.6, 0.2)
+
+[node name="Line3" type="ColorRect" parent="PaperLines"]
+layout_mode = 0
+offset_left = -33.0
+offset_top = 130.0
+offset_right = 837.0
+offset_bottom = 131.0
+color = Color(0.7, 0.65, 0.6, 0.2)
+
+[node name="Line4" type="ColorRect" parent="PaperLines"]
+layout_mode = 0
+offset_left = -33.0
+offset_top = 13.0
+offset_right = 837.0
+offset_bottom = 14.0
+color = Color(0.7, 0.65, 0.6, 0.2)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HeaderRow" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="SymbolIconPanel" type="PanelContainer" parent="VBoxContainer/HeaderRow"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_symbol_border")
+
+[node name="SymbolLabel" type="Label" parent="VBoxContainer/HeaderRow/SymbolIconPanel"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.164706, 0.121569, 0.101961, 1)
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 36
 text = "∆"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Spacer" type="Control" parent="HBoxContainer"]
+[node name="InfoContainer" type="VBoxContainer" parent="VBoxContainer/HeaderRow"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 6
 
-[node name="WordLabel" type="Label" parent="HBoxContainer"]
+[node name="TitleLabel" type="Label" parent="VBoxContainer/HeaderRow/InfoContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_colors/font_color = Color(0.164706, 0.121569, 0.101961, 1)
 theme_override_font_sizes/font_size = 24
-text = "???"
+text = "Portal"
 
-[node name="Checkmark" type="Label" parent="HBoxContainer"]
+[node name="BadgesRow" type="HBoxContainer" parent="VBoxContainer/HeaderRow/InfoContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.176471, 0.8, 0.313726, 1)
+theme_override_constants/separation = 8
+
+[node name="CertaintyBadge" type="PanelContainer" parent="VBoxContainer/HeaderRow/InfoContainer/BadgesRow"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_certainty_badge")
+
+[node name="CertaintyLabel" type="Label" parent="VBoxContainer/HeaderRow/InfoContainer/BadgesRow/CertaintyBadge"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 11
+text = "HIGH CERTAINTY"
+
+[node name="CategoryTag" type="PanelContainer" parent="VBoxContainer/HeaderRow/InfoContainer/BadgesRow"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_category_tag")
+
+[node name="CategoryLabel" type="Label" parent="VBoxContainer/HeaderRow/InfoContainer/BadgesRow/CategoryTag"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.455, 0.353, 0.271, 1)
+theme_override_font_sizes/font_size = 11
+text = "structural"
+
+[node name="ExpandArrow" type="Label" parent="VBoxContainer/HeaderRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
 theme_override_font_sizes/font_size = 24
-text = "✓"
-visible = false
+text = "›"
+vertical_alignment = 1
+
+[node name="MetadataRow" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SourceLabel" type="Label" parent="VBoxContainer/MetadataRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
+theme_override_font_sizes/font_size = 13
+text = "Source: Kowalski Manuscript"
+
+[node name="Separator" type="Label" parent="VBoxContainer/MetadataRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
+theme_override_font_sizes/font_size = 13
+text = " • "
+
+[node name="DateLabel" type="Label" parent="VBoxContainer/MetadataRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
+theme_override_font_sizes/font_size = 13
+text = "Added Day 1"
+
+[node name="AliasesRow" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="AlsoLabel" type="Label" parent="VBoxContainer/AliasesRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "Also:"
+
+[node name="AliasesContainer" type="HBoxContainer" parent="VBoxContainer/AliasesRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

@@ -130,3 +130,10 @@ func get_text_id_for_difficulty(difficulty: String) -> int:
 			return randi_range(4, 5)  # Text 4 or 5 (randomize)
 		_:
 			return 1  # Default to easy
+
+func get_day_name(day: int) -> String:
+	"""Get the name of the day (e.g., Monday, Tuesday)"""
+	if day >= 1 and day <= DAY_NAMES.size():
+		return DAY_NAMES[day - 1]
+	else:
+		return "Day %d" % day  # For days beyond the week

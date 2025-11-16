@@ -91,6 +91,24 @@ var texts: Array = [
 # Dictionary state (symbol → word, confidence level)
 var dictionary: Dictionary = {}
 
+# Symbol metadata (category, aliases, thematic tags)
+var symbol_metadata: Dictionary = {
+	"∆": {"category": "structural", "aliases": ["Gateway", "Passage", "Threshold"]},
+	"◊≈": {"category": "temporal", "aliases": ["Old", "Primordial", "Before"]},
+	"⊕⊗◈": {"category": "structural", "aliases": ["Path", "Road", "Direction"]},
+	"⊕⊗⬡": {"category": "temporal", "aliases": ["Existed", "Occurred"]},
+	"⬡∞◊⊩⊩≈⊩": {"category": "mystical", "aliases": ["Lost", "Erased", "Hidden"]},
+	"⊞⊟≈": {"category": "mystical", "aliases": ["Deity", "Divine", "Sacred"]},
+	"⬡≈≈⊢⬡": {"category": "temporal", "aliases": ["Rests", "Dormant", "Waiting"]},
+	"⊗◈⊞∞◈": {"category": "mystical", "aliases": ["Power", "Arcane", "Sorcery"]},
+	"◊⊩◈≈": {"category": "temporal", "aliases": ["Previously", "Formerly"]},
+	"⊟⊩◊⊕⊩": {"category": "elemental", "aliases": ["Understood", "Familiar"]},
+	"∆≈◊": {"category": "structural", "aliases": ["Those", "Them", "Others"]},
+	"⊗◈≈": {"category": "elemental", "aliases": ["Exist", "Being"]},
+	"◈≈∆◊◈⊩∞⊩⊞": {"category": "temporal", "aliases": ["Coming Back", "Revival"]},
+	"⬡◊◊⊩": {"category": "temporal", "aliases": ["Shortly", "Imminent", "Near"]},
+}
+
 func _ready():
 	initialize_dictionary()
 
@@ -102,10 +120,15 @@ func initialize_dictionary():
 	for text in texts:
 		for symbol_group in text.mappings.keys():
 			if not symbol_group in dictionary:
+				var metadata = symbol_metadata.get(symbol_group, {"category": "elemental", "aliases": []})
 				dictionary[symbol_group] = {
 					"word": null,  # null = unknown, shows "???"
 					"confidence": 0,  # 0 = unknown, 1-2 = tentative, 3+ = confirmed
-					"learned_from": []  # Track which texts taught this symbol
+					"learned_from": [],  # Track which texts taught this symbol
+					"category": metadata.category,  # elemental, structural, temporal, mystical
+					"aliases": metadata.aliases,  # Related words/meanings
+					"source": "",  # Where it was learned from
+					"day_added": 0  # Game day when discovered
 				}
 
 func get_text(text_id: int) -> Dictionary:
@@ -139,6 +162,12 @@ func update_dictionary(text_id: int):
 		# For Phase 1: Immediate confirmation (skip 3-use rule)
 		dictionary[symbol].word = word
 		dictionary[symbol].confidence = 3  # Confirmed
+
+		# Set source and day added (only on first discovery)
+		if dictionary[symbol].learned_from.is_empty():
+			dictionary[symbol].source = text.name
+			dictionary[symbol].day_added = GameState.current_day
+
 		if not dictionary[symbol].learned_from.has(text.name):
 			dictionary[symbol].learned_from.append(text.name)
 
@@ -146,4 +175,52 @@ func get_dictionary_entry(symbol: String) -> Dictionary:
 	"""Get current state of a symbol in the dictionary"""
 	if symbol in dictionary:
 		return dictionary[symbol]
-	return {"word": null, "confidence": 0, "learned_from": []}
+	return {
+		"word": null,
+		"confidence": 0,
+		"learned_from": [],
+		"category": "elemental",
+		"aliases": [],
+		"source": "",
+		"day_added": 0
+	}
+
+func get_certainty_level(confidence: int) -> String:
+	"""Convert confidence score to certainty level text"""
+	if confidence >= 3:
+		return "HIGH CERTAINTY"
+	elif confidence >= 1:
+		return "MEDIUM CERTAINTY"
+	else:
+		return "LOW CERTAINTY"
+
+func get_certainty_color(confidence: int) -> Color:
+	"""Get color for certainty badge"""
+	if confidence >= 3:
+		return Color("#2E7D32")  # Green
+	elif confidence >= 1:
+		return Color("#F57C00")  # Orange
+	else:
+		return Color("#616161")  # Gray
+
+func get_category_color(category: String) -> Color:
+	"""Get color for category tag"""
+	match category:
+		"elemental":
+			return Color("#795548")  # Brown
+		"structural":
+			return Color("#455A64")  # Blue-gray
+		"temporal":
+			return Color("#5E35B1")  # Purple
+		"mystical":
+			return Color("#6A1B9A")  # Deep purple
+		_:
+			return Color("#616161")  # Gray
+
+func get_documented_count() -> int:
+	"""Count how many symbols have been documented"""
+	var count = 0
+	for entry in dictionary.values():
+		if entry.word != null:
+			count += 1
+	return count

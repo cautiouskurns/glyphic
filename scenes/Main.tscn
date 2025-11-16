@@ -186,26 +186,96 @@ mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 script = ExtResource("6_dictionary")
 
-[node name="TitleLabel" type="Label" parent="RightPanel"]
-layout_mode = 0
+[node name="Header" type="VBoxContainer" parent="RightPanel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
 offset_left = 20.0
 offset_top = 20.0
-offset_right = 400.0
-offset_bottom = 60.0
+offset_right = -20.0
+offset_bottom = 160.0
+grow_horizontal = 2
+theme_override_constants/separation = 6
+
+[node name="TitleLabel" type="Label" parent="RightPanel/Header"]
+layout_mode = 2
 theme_override_colors/font_color = Color(0.956863, 0.909804, 0.847059, 1)
-theme_override_font_sizes/font_size = 30
-text = "Dictionary"
+theme_override_font_sizes/font_size = 24
+text = "📖 Glyph Dictionary"
+
+[node name="SubtitleLabel" type="Label" parent="RightPanel/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.55, 0.5, 1)
+theme_override_font_sizes/font_size = 12
+text = "Personal Catalog • Day 1 • 0 Symbols Documented"
+
+[node name="SearchBox" type="LineEdit" parent="RightPanel/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+placeholder_text = "Search symbols or meanings..."
+clear_button_enabled = true
+
+[node name="FilterButtons" type="HBoxContainer" parent="RightPanel/Header"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="AllButton" type="Button" parent="RightPanel/Header/FilterButtons"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "All"
+toggle_mode = true
+button_pressed = true
+
+[node name="ElementalButton" type="Button" parent="RightPanel/Header/FilterButtons"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Elemental"
+toggle_mode = true
+
+[node name="StructuralButton" type="Button" parent="RightPanel/Header/FilterButtons"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Structural"
+toggle_mode = true
+
+[node name="TemporalButton" type="Button" parent="RightPanel/Header/FilterButtons"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Temporal"
+toggle_mode = true
+
+[node name="MysticalButton" type="Button" parent="RightPanel/Header/FilterButtons"]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "Mystical"
+toggle_mode = true
 
 [node name="ScrollContainer" type="ScrollContainer" parent="RightPanel"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = 20.0
-offset_top = 70.0
-offset_right = 400.0
-offset_bottom = 670.0
+offset_top = 170.0
+offset_right = -20.0
+offset_bottom = -150.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="RightPanel/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 16
 
 [node name="DialogueBox" type="Panel" parent="."]
 layout_mode = 0
