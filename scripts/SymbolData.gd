@@ -95,13 +95,18 @@ func _ready():
 	initialize_dictionary()
 
 func initialize_dictionary():
-	"""Initialize all 20 symbols as unknown"""
-	for symbol in SYMBOLS:
-		dictionary[symbol] = {
-			"word": null,  # null = unknown, shows "???"
-			"confidence": 0,  # 0 = unknown, 1-2 = tentative, 3+ = confirmed
-			"learned_from": []  # Track which texts taught this symbol
-		}
+	"""Initialize all symbol groups from texts as unknown"""
+	dictionary.clear()
+
+	# Collect all unique symbol groups across all texts
+	for text in texts:
+		for symbol_group in text.mappings.keys():
+			if not symbol_group in dictionary:
+				dictionary[symbol_group] = {
+					"word": null,  # null = unknown, shows "???"
+					"confidence": 0,  # 0 = unknown, 1-2 = tentative, 3+ = confirmed
+					"learned_from": []  # Track which texts taught this symbol
+				}
 
 func get_text(text_id: int) -> Dictionary:
 	"""Retrieve text data by ID (1-5)"""

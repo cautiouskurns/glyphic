@@ -118,6 +118,25 @@ text = "CustomerData: Random Customers"
 [node name="Separator4" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
 
+[node name="LoadText1Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Translation: Load Text 1"
+
+[node name="LoadText2Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Translation: Load Text 2"
+
+[node name="LoadText5Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Translation: Load Text 5"
+
+[node name="ResetTranslationButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Translation: Reset to Default"
+
+[node name="Separator5" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+
 [node name="ClearButton" type="Button" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
 text = "Clear Output"
@@ -150,4 +169,8 @@ wrap_mode = 1
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataQueueButton" to="." method="_on_test_customerdata_queue_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataRelationshipsButton" to="." method="_on_test_customerdata_relationships_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataRandomButton" to="." method="_on_test_customerdata_random_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText1Button" to="." method="_on_load_text1_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText2Button" to="." method="_on_load_text2_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText5Button" to="." method="_on_load_text5_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/ResetTranslationButton" to="." method="_on_reset_translation_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/ClearButton" to="." method="_on_clear_pressed"]

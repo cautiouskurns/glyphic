@@ -113,9 +113,9 @@ func _on_test_dict_init_pressed():
 	SymbolData.initialize_dictionary()
 
 	_print("Dictionary size: %d" % SymbolData.dictionary.size())
-	_print_result(SymbolData.dictionary.size() == 20, "Dictionary has 20 entries")
+	_print_result(SymbolData.dictionary.size() == 14, "Dictionary has 14 symbol groups (from all 5 texts)")
 
-	# Check first symbol
+	# Check first symbol group
 	var delta_entry = SymbolData.get_dictionary_entry("∆")
 	_print("\nEntry for '∆':")
 	_print("  word: %s" % str(delta_entry.word))
@@ -157,11 +157,11 @@ func _on_test_dict_update_pressed():
 	_print("  word: %s" % str(way.word))
 	_print_result(way.word == "way", "⊕⊗◈ maps to 'way'")
 
-	# Check unlearned symbol
-	var god = SymbolData.dictionary["⊞"]
-	_print("\nSymbol '⊞' (not in Text 1):")
+	# Check unlearned symbol group (from Text 3, not in Text 1)
+	var god = SymbolData.dictionary["⊞⊟≈"]
+	_print("\nSymbol '⊞⊟≈' (not in Text 1):")
 	_print("  word: %s" % str(god.word))
-	_print_result(god.word == null, "⊞ still unknown (not in Text 1)")
+	_print_result(god.word == null, "⊞⊟≈ still unknown (not in Text 1)")
 
 func _on_test_consistency_pressed():
 	_print_header("TEST 6: Symbol Consistency Across Texts")
@@ -433,3 +433,47 @@ func _on_test_customerdata_random_pressed():
 	_print_result(test_random.has("difficulty"), "Has difficulty property")
 	_print_result(test_random.has("is_recurring"), "Has is_recurring property")
 	_print_result(test_random.is_recurring == false, "is_recurring = false for random customers")
+
+# Translation Display tests (Feature 2.1)
+func _on_load_text1_pressed():
+	_print_header("Translation: Loading Text 1")
+
+	var translation_display = get_node("/root/Main/Workspace/TranslationDisplay")
+	translation_display.load_text(1)
+
+	_print("Loaded Text 1: 'the old way'")
+	_print("Symbol text: ∆ ◊≈ ⊕⊗◈")
+	_print("Payment: $50")
+	_print("\nType 'the old way' in the input field and press Enter or Submit")
+
+func _on_load_text2_pressed():
+	_print_header("Translation: Loading Text 2")
+
+	var translation_display = get_node("/root/Main/Workspace/TranslationDisplay")
+	translation_display.load_text(2)
+
+	_print("Loaded Text 2: 'the old way was forgotten'")
+	_print("Symbol text: ∆ ◊≈ ⊕⊗◈ ⊕⊗⬡ ⬡∞◊⊩⊩≈⊩")
+	_print("Payment: $100")
+	_print("\nType 'the old way was forgotten' in the input field and press Enter or Submit")
+
+func _on_load_text5_pressed():
+	_print_header("Translation: Loading Text 5")
+
+	var translation_display = get_node("/root/Main/Workspace/TranslationDisplay")
+	translation_display.load_text(5)
+
+	_print("Loaded Text 5: 'they are returning soon'")
+	_print("Symbol text: ∆≈◊ ⊗◈≈ ◈≈∆◊◈⊩∞⊩⊞ ⬡◊◊⊩")
+	_print("Payment: $200")
+	_print("\nType 'they are returning soon' in the input field and press Enter or Submit")
+
+func _on_reset_translation_pressed():
+	_print_header("Translation: Reset to Default")
+
+	var translation_display = get_node("/root/Main/Workspace/TranslationDisplay")
+	translation_display.set_default_state()
+
+	_print("Translation display reset")
+	_print("Shows: '*Select a customer to begin...*'")
+	_print("Input field and Submit button disabled")

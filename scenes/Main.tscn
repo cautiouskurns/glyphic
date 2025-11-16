@@ -1,9 +1,10 @@
 [gd_scene load_steps=9 format=3 uid="uid://50jplsqs8xpu"]
 
-[ext_resource type="Script" path="res://scripts/ui/DayLabel.gd" id="1_day"]
-[ext_resource type="Script" path="res://scripts/ui/CapacityLabel.gd" id="2_capacity"]
-[ext_resource type="Script" path="res://scripts/ui/CashLabel.gd" id="3_cash"]
-[ext_resource type="PackedScene" uid="uid://c8vqm8yvwknfb" path="res://scenes/ui/DebugConsole.tscn" id="4_debug"]
+[ext_resource type="Script" uid="uid://c1121artwyxcj" path="res://scripts/ui/DayLabel.gd" id="1_day"]
+[ext_resource type="Script" uid="uid://b88wqxj6a2xxo" path="res://scripts/ui/CapacityLabel.gd" id="2_capacity"]
+[ext_resource type="Script" uid="uid://yn6suh6di6cn" path="res://scripts/ui/CashLabel.gd" id="3_cash"]
+[ext_resource type="PackedScene" path="res://scenes/ui/DebugConsole.tscn" id="4_debug"]
+[ext_resource type="PackedScene" path="res://scenes/ui/TranslationDisplay.tscn" id="5_translation"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar"]
 bg_color = Color(0.164706, 0.121569, 0.101961, 1)
@@ -47,7 +48,7 @@ offset_left = 30.0
 offset_top = 30.0
 offset_right = 375.0
 offset_bottom = 68.0
-theme_override_colors/font_color = Color(0.227451, 0.145098, 0.0941176, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 27
 text = "Day 1 - Monday"
 script = ExtResource("1_day")
@@ -70,7 +71,7 @@ offset_left = 1550.0
 offset_top = 22.0
 offset_right = 1890.0
 offset_bottom = 68.0
-theme_override_colors/font_color = Color(0.176471, 0.313726, 0.0862745, 1)
+theme_override_colors/font_color = Color(0.37577152, 0.63815117, 0.20049343, 1)
 theme_override_font_sizes/font_size = 36
 text = "$100"
 horizontal_alignment = 2
@@ -78,7 +79,6 @@ script = ExtResource("3_cash")
 
 [node name="LeftPanel" type="Panel" parent="."]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 90.0
 offset_right = 420.0
 offset_bottom = 1080.0
@@ -95,11 +95,14 @@ theme_override_font_sizes/font_size = 30
 text = "Today's Customers"
 
 [node name="Workspace" type="Control" parent="."]
-layout_mode = 0
+anchors_preset = 0
 offset_left = 420.0
 offset_top = 90.0
 offset_right = 1500.0
 offset_bottom = 780.0
+
+[node name="TranslationDisplay" parent="Workspace" instance=ExtResource("5_translation")]
+layout_mode = 0
 
 [node name="RightPanel" type="Panel" parent="."]
 layout_mode = 0
@@ -121,7 +124,6 @@ text = "Dictionary"
 
 [node name="DialogueBox" type="Panel" parent="."]
 layout_mode = 0
-offset_left = 0.0
 offset_top = 780.0
 offset_right = 1920.0
 offset_bottom = 1080.0
@@ -149,3 +151,5 @@ theme_override_font_sizes/font_size = 18
 text = "Press F1 for Debug Console"
 
 [node name="DebugConsole" parent="." instance=ExtResource("4_debug")]
+layout_mode = 0
+anchors_preset = 0
