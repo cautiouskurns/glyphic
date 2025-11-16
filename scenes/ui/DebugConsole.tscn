@@ -126,6 +126,14 @@ text = "Translation: Load Text 1"
 layout_mode = 2
 text = "Translation: Load Text 2"
 
+[node name="LoadText3Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Translation: Load Text 3"
+
+[node name="LoadText4Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Translation: Load Text 4"
+
 [node name="LoadText5Button" type="Button" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
 text = "Translation: Load Text 5"
@@ -133,6 +141,11 @@ text = "Translation: Load Text 5"
 [node name="ResetTranslationButton" type="Button" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
 text = "Translation: Reset to Default"
+
+[node name="TestFullProgressionButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Translation: Test Full Progression (1→5)"
+theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
 
 [node name="TestSuccessFeedbackButton" type="Button" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
@@ -149,6 +162,18 @@ text = "Dictionary: View Current State"
 [node name="DictionaryUpdateButton" type="Button" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
 text = "Dictionary: Force Update"
+
+[node name="MoneyTest50Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Money: Test +$50 Payment"
+
+[node name="MoneyTest100Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Money: Test +$100 Payment"
+
+[node name="MoneyTestThresholdButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Money: Test Color Thresholds"
 
 [node name="Separator5" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
@@ -187,10 +212,16 @@ wrap_mode = 1
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataRandomButton" to="." method="_on_test_customerdata_random_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText1Button" to="." method="_on_load_text1_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText2Button" to="." method="_on_load_text2_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText3Button" to="." method="_on_load_text3_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText4Button" to="." method="_on_load_text4_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText5Button" to="." method="_on_load_text5_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/ResetTranslationButton" to="." method="_on_reset_translation_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestFullProgressionButton" to="." method="_on_test_full_progression_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/TestSuccessFeedbackButton" to="." method="_on_test_success_feedback_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/TestFailureFeedbackButton" to="." method="_on_test_failure_feedback_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/DictionaryViewButton" to="." method="_on_dictionary_view_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/DictionaryUpdateButton" to="." method="_on_dictionary_update_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/MoneyTest50Button" to="." method="_on_money_test_50_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/MoneyTest100Button" to="." method="_on_money_test_100_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/MoneyTestThresholdButton" to="." method="_on_money_test_threshold_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/ClearButton" to="." method="_on_clear_pressed"]

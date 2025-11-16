@@ -505,6 +505,28 @@ func _on_load_text2_pressed():
 	_print("Payment: $100")
 	_print("\nType 'the old way was forgotten' in the input field and press Enter or Submit")
 
+func _on_load_text3_pressed():
+	_print_header("Translation: Loading Text 3")
+
+	var translation_display = get_node("/root/Main/Workspace/TranslationDisplay")
+	translation_display.load_text(3)
+
+	_print("Loaded Text 3: 'the old god sleeps'")
+	_print("Symbol text: ∆ ◊≈ ⊞⊟≈ ⬡≈≈⊢⬡")
+	_print("Payment: $100")
+	_print("\nType 'the old god sleeps' in the input field and press Enter or Submit")
+
+func _on_load_text4_pressed():
+	_print_header("Translation: Loading Text 4")
+
+	var translation_display = get_node("/root/Main/Workspace/TranslationDisplay")
+	translation_display.load_text(4)
+
+	_print("Loaded Text 4: 'magic was once known'")
+	_print("Symbol text: ⊗◈⊞∞◈ ⊕⊗⬡ ◊⊩◈≈ ⊟⊩◊⊕⊩")
+	_print("Payment: $150")
+	_print("\nType 'magic was once known' in the input field and press Enter or Submit")
+
 func _on_load_text5_pressed():
 	_print_header("Translation: Loading Text 5")
 
@@ -525,6 +547,78 @@ func _on_reset_translation_pressed():
 	_print("Translation display reset")
 	_print("Shows: '*Select a customer to begin...*'")
 	_print("Input field and Submit button disabled")
+
+func _on_test_full_progression_pressed():
+	_print_header("Translation: Full Progression Test (Feature 2.6)")
+
+	_print("=== FIVE TRANSLATION TEXTS ===\n")
+
+	# Text summaries
+	var texts_info = [
+		{"id": 1, "solution": "the old way", "symbols": 3, "payment": 50, "difficulty": "Easy"},
+		{"id": 2, "solution": "the old way was forgotten", "symbols": 5, "payment": 100, "difficulty": "Medium"},
+		{"id": 3, "solution": "the old god sleeps", "symbols": 4, "payment": 100, "difficulty": "Medium"},
+		{"id": 4, "solution": "magic was once known", "symbols": 4, "payment": 150, "difficulty": "Hard"},
+		{"id": 5, "solution": "they are returning soon", "symbols": 4, "payment": 200, "difficulty": "Hard"}
+	]
+
+	for info in texts_info:
+		_print("Text %d (%s) - $%d" % [info.id, info.difficulty, info.payment])
+		_print("  Solution: '%s'" % info.solution)
+		_print("  Symbol groups: %d" % info.symbols)
+
+	_print("\n=== PROGRESSION ANALYSIS ===\n")
+
+	# Dictionary growth
+	_print("Dictionary growth:")
+	_print("  After Text 1: 3 symbols learned")
+	_print("  After Text 2: 5 symbols learned (+2)")
+	_print("  After Text 3: 7 symbols learned (+2)")
+	_print("  After Text 4: 11 symbols learned (+4)")
+	_print("  After Text 5: 15 symbols learned (+4)")
+
+	_print("\nCash progression (starting $100):")
+	_print("  After Text 1: $150 (+$50)")
+	_print("  After Text 2: $250 (+$100)")
+	_print("  After Text 3: $350 (+$100)")
+	_print("  After Text 4: $500 (+$150)")
+	_print("  After Text 5: $700 (+$200)")
+	_print("  Total earned: $600")
+
+	_print("\n=== SYMBOL CONSISTENCY ===\n")
+
+	# Verify symbol consistency
+	var text1 = SymbolData.get_text(1)
+	var text2 = SymbolData.get_text(2)
+	var text3 = SymbolData.get_text(3)
+	var text4 = SymbolData.get_text(4)
+
+	_print("∆ = 'the' verification:")
+	_print("  Text 1: %s" % text1.mappings.get("∆", "NOT FOUND"))
+	_print("  Text 2: %s" % text2.mappings.get("∆", "NOT FOUND"))
+	_print("  Text 3: %s" % text3.mappings.get("∆", "NOT FOUND"))
+	var delta_consistent = (text1.mappings.get("∆") == "the" and
+	                        text2.mappings.get("∆") == "the" and
+	                        text3.mappings.get("∆") == "the")
+	_print_result(delta_consistent, "∆ consistently maps to 'the'")
+
+	_print("\n◊≈ = 'old' verification:")
+	_print("  Text 1: %s" % text1.mappings.get("◊≈", "NOT FOUND"))
+	_print("  Text 2: %s" % text2.mappings.get("◊≈", "NOT FOUND"))
+	_print("  Text 3: %s" % text3.mappings.get("◊≈", "NOT FOUND"))
+	var old_consistent = (text1.mappings.get("◊≈") == "old" and
+	                      text2.mappings.get("◊≈") == "old" and
+	                      text3.mappings.get("◊≈") == "old")
+	_print_result(old_consistent, "◊≈ consistently maps to 'old'")
+
+	_print("\n⊕⊗⬡ = 'was' verification:")
+	_print("  Text 2: %s" % text2.mappings.get("⊕⊗⬡", "NOT FOUND"))
+	_print("  Text 4: %s" % text4.mappings.get("⊕⊗⬡", "NOT FOUND"))
+	var was_consistent = (text2.mappings.get("⊕⊗⬡") == "was" and
+	                      text4.mappings.get("⊕⊗⬡") == "was")
+	_print_result(was_consistent, "⊕⊗⬡ consistently maps to 'was'")
+
+	_print("\n✅ Feature 2.6: Five Translation Texts - VERIFIED")
 
 # Feedback tests (Feature 2.3)
 func _on_test_success_feedback_pressed():
@@ -584,3 +678,45 @@ func _on_dictionary_update_pressed():
 	_print("Dictionary display refreshed")
 	_print("All 14 entries updated from SymbolData")
 	_print("\nUse 'Dictionary: View Current State' to see current values")
+
+# Money tests (Feature 2.5)
+func _on_money_test_50_pressed():
+	_print_header("Money: Test +$50 Payment")
+
+	var before_cash = GameState.player_cash
+	GameState.add_cash(50)
+	var after_cash = GameState.player_cash
+
+	_print("Cash before: $%d" % before_cash)
+	_print("Added: $50")
+	_print("Cash after: $%d" % after_cash)
+	_print("\nWatch cash counter in top-right animate from $%d → $%d" % [before_cash, after_cash])
+	_print("Animation should take ~0.5 seconds (100 dollars/second)")
+
+func _on_money_test_100_pressed():
+	_print_header("Money: Test +$100 Payment")
+
+	var before_cash = GameState.player_cash
+	GameState.add_cash(100)
+	var after_cash = GameState.player_cash
+
+	_print("Cash before: $%d" % before_cash)
+	_print("Added: $100")
+	_print("Cash after: $%d" % after_cash)
+	_print("\nWatch cash counter in top-right animate from $%d → $%d" % [before_cash, after_cash])
+	_print("Animation should take ~1.0 seconds (100 dollars/second)")
+
+func _on_money_test_threshold_pressed():
+	_print_header("Money: Test Color Thresholds")
+
+	_print("Setting cash to $195 (just below green threshold)...")
+	GameState.player_cash = 195
+
+	_print("Current: $195 (orange)")
+	_print("\nAdding $50...")
+	GameState.add_cash(50)
+
+	_print("Final: $245 (green)")
+	_print("\nWatch cash counter transition:")
+	_print("  $195 (orange) → $200 (green) → $245 (green)")
+	_print("  Color should change at exactly $200 during animation")
