@@ -178,6 +178,19 @@ text = "Money: Test Color Thresholds"
 [node name="Separator5" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
 
+[node name="TestCustomerQueueButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Customer Queue: Display 7-10 Cards"
+theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
+
+[node name="TestCustomerPopupButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Customer Popup: Test Display"
+theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
+
+[node name="Separator6" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+
 [node name="ClearButton" type="Button" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
 text = "Clear Output"
@@ -224,4 +237,6 @@ wrap_mode = 1
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/MoneyTest50Button" to="." method="_on_money_test_50_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/MoneyTest100Button" to="." method="_on_money_test_100_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/MoneyTestThresholdButton" to="." method="_on_money_test_threshold_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerQueueButton" to="." method="_on_test_customer_queue_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerPopupButton" to="." method="_on_test_customer_popup_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/ClearButton" to="." method="_on_clear_pressed"]

@@ -1,0 +1,201 @@
+[gd_scene load_steps=4 format=3 uid="uid://c1vqoa0wmlgfy"]
+
+[ext_resource type="Script" path="res://scripts/ui/CustomerPopup.gd" id="1_popup"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_popup"]
+bg_color = Color(0.956863, 0.909804, 0.847059, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.227451, 0.145098, 0.0941176, 1)
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 8
+shadow_offset = Vector2(8, 8)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_difficulty"]
+bg_color = Color(0.956863, 0.909804, 0.847059, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 6.0
+content_margin_top = 3.0
+content_margin_right = 6.0
+content_margin_bottom = 3.0
+
+[node name="PopupOverlay" type="ColorRect"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0, 0, 0, 0.6)
+script = ExtResource("1_popup")
+
+[node name="CustomerPopup" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 660.0
+offset_top = 290.0
+offset_right = 1260.0
+offset_bottom = 790.0
+pivot_offset = Vector2(300, 250)
+theme_override_styles/panel = SubResource("StyleBoxFlat_popup")
+
+[node name="MarginContainer" type="MarginContainer" parent="CustomerPopup"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CustomerPopup/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HeaderRow" type="HBoxContainer" parent="CustomerPopup/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer/HeaderRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.227451, 0.145098, 0.0941176, 1)
+theme_override_font_sizes/font_size = 28
+text = "Customer Name"
+
+[node name="Spacer" type="Control" parent="CustomerPopup/MarginContainer/VBoxContainer/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DifficultyBadge" type="PanelContainer" parent="CustomerPopup/MarginContainer/VBoxContainer/HeaderRow"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_difficulty")
+
+[node name="DifficultyLabel" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer/HeaderRow/DifficultyBadge"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.6, 0.2, 1)
+theme_override_font_sizes/font_size = 18
+text = "★★★☆☆"
+
+[node name="PaymentLabel" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer/HeaderRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.176471, 0.501961, 0.0862745, 1)
+theme_override_font_sizes/font_size = 26
+text = "$100"
+
+[node name="DialogueLabel" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.227451, 0.145098, 0.0941176, 1)
+theme_override_font_sizes/font_size = 22
+text = "\"Customer dialogue appears here...\""
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HSeparator" type="HSeparator" parent="CustomerPopup/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TranslationLabel" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.227451, 0.145098, 0.0941176, 1)
+theme_override_font_sizes/font_size = 20
+text = "Translation: Text 1"
+
+[node name="DifficultyInfoLabel" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
+theme_override_font_sizes/font_size = 18
+text = "Difficulty: Simple translation (~15 words)"
+
+[node name="VSpacer1" type="Control" parent="CustomerPopup/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="PrioritiesHeader" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.227451, 0.145098, 0.0941176, 1)
+theme_override_font_sizes/font_size = 22
+text = "Customer Priorities:"
+
+[node name="PrioritiesList" type="VBoxContainer" parent="CustomerPopup/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="Priority1" type="HBoxContainer" parent="CustomerPopup/MarginContainer/VBoxContainer/PrioritiesList"]
+layout_mode = 2
+
+[node name="Checkmark1" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer/PrioritiesList/Priority1"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.176471, 0.501961, 0.0862745, 1)
+theme_override_font_sizes/font_size = 20
+text = "✓"
+
+[node name="PriorityText1" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer/PrioritiesList/Priority1"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.227451, 0.145098, 0.0941176, 1)
+theme_override_font_sizes/font_size = 20
+text = "Fast (Rush job required)"
+
+[node name="Priority2" type="HBoxContainer" parent="CustomerPopup/MarginContainer/VBoxContainer/PrioritiesList"]
+layout_mode = 2
+
+[node name="Checkmark2" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer/PrioritiesList/Priority2"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.176471, 0.501961, 0.0862745, 1)
+theme_override_font_sizes/font_size = 20
+text = "✓"
+
+[node name="PriorityText2" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer/PrioritiesList/Priority2"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.227451, 0.145098, 0.0941176, 1)
+theme_override_font_sizes/font_size = 20
+text = "Cheap (Budget-conscious customer)"
+
+[node name="Priority3" type="HBoxContainer" parent="CustomerPopup/MarginContainer/VBoxContainer/PrioritiesList"]
+layout_mode = 2
+
+[node name="Checkmark3" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer/PrioritiesList/Priority3"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.545098, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "✗"
+
+[node name="PriorityText3" type="Label" parent="CustomerPopup/MarginContainer/VBoxContainer/PrioritiesList/Priority3"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.227451, 0.145098, 0.0941176, 1)
+theme_override_font_sizes/font_size = 20
+text = "Accurate (Perfection expected)"
+
+[node name="ExpandSpacer" type="Control" parent="CustomerPopup/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ButtonRow" type="HBoxContainer" parent="CustomerPopup/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="AcceptButton" type="Button" parent="CustomerPopup/MarginContainer/VBoxContainer/ButtonRow"]
+custom_minimum_size = Vector2(250, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "ACCEPT"
+
+[node name="RefuseButton" type="Button" parent="CustomerPopup/MarginContainer/VBoxContainer/ButtonRow"]
+custom_minimum_size = Vector2(250, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "REFUSE"
+
+[connection signal="gui_input" from="." to="." method="_on_overlay_gui_input"]
+[connection signal="pressed" from="CustomerPopup/MarginContainer/VBoxContainer/ButtonRow/AcceptButton" to="." method="_on_accept_pressed"]
+[connection signal="pressed" from="CustomerPopup/MarginContainer/VBoxContainer/ButtonRow/RefuseButton" to="." method="_on_refuse_pressed"]

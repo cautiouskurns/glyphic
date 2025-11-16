@@ -720,3 +720,69 @@ func _on_money_test_threshold_pressed():
 	_print("\nWatch cash counter transition:")
 	_print("  $195 (orange) → $200 (green) → $245 (green)")
 	_print("  Color should change at exactly $200 during animation")
+
+# Customer Queue tests (Feature 3.1)
+func _on_test_customer_queue_pressed():
+	_print_header("Customer Queue: Display Test (Feature 3.1)")
+
+	var queue_panel = get_node("/root/Main/LeftPanel")
+	queue_panel.refresh_queue()
+
+	var queue = queue_panel.current_queue
+	_print("Queue size: %d customers" % queue.size())
+	_print_result(queue.size() >= 7 and queue.size() <= 10, "Queue has 7-10 customers")
+
+	_print("\nCustomer queue for Day %d (%s):" % [GameState.current_day, GameState.day_name])
+	for i in range(queue.size()):
+		var customer = queue[i]
+		_print("\n%d. %s" % [i + 1, customer.name])
+		_print("   Payment: $%d" % customer.payment)
+		_print("   Difficulty: %s" % customer.difficulty)
+		_print("   Description: %s" % customer.description)
+
+	# Check for recurring customers
+	var recurring_count = 0
+	var random_count = 0
+	for customer in queue:
+		if customer.has("is_recurring") and customer.is_recurring:
+			recurring_count += 1
+		else:
+			random_count += 1
+
+	_print("\n=== Queue Composition ===")
+	_print("Recurring customers: %d" % recurring_count)
+	_print("Random customers: %d" % random_count)
+
+	_print("\n✅ Check the left panel to see customer cards!")
+	_print("✅ Hover over cards to see gold tint effect")
+	_print("✅ Click cards to test click interaction (prints to console)")
+
+# Customer Popup tests (Feature 3.2)
+func _on_test_customer_popup_pressed():
+	_print_header("Customer Popup: Display Test (Feature 3.2)")
+
+	# Create test customer data (Mrs. Kowalski)
+	var test_customer = {
+		"name": "Mrs. Kowalski",
+		"payment": 50,
+		"difficulty": "Easy",
+		"priorities": ["Cheap", "Accurate"],
+		"dialogue": {
+			"greeting": "Hello dear, I found this old family book in my attic. Can you help me read it?"
+		},
+		"is_recurring": true,
+		"type": "recurring"
+	}
+
+	# Show popup
+	var popup = get_node("/root/Main/CustomerPopup")
+	popup.show_popup(test_customer)
+
+	_print("Popup displayed with test customer: Mrs. Kowalski")
+	_print("Payment: $50 (Easy)")
+	_print("Priorities: Cheap ✓, Accurate ✓, Fast ✗")
+	_print("\n✅ Check centered popup on screen!")
+	_print("✅ Test ACCEPT button (hover for green highlight)")
+	_print("✅ Test REFUSE button (hover for red highlight)")
+	_print("✅ Press Enter to accept, Escape to close")
+	_print("✅ Click overlay (dark background) to close")

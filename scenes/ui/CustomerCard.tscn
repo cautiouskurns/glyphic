@@ -1,0 +1,70 @@
+[gd_scene load_steps=3 format=3 uid="uid://ehu172nddrn6"]
+
+[ext_resource type="Script" path="res://scripts/ui/CustomerCard.gd" id="1_card"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.956863, 0.909804, 0.847059, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.227451, 0.145098, 0.0941176, 1)
+
+[node name="CustomerCard" type="PanelContainer"]
+custom_minimum_size = Vector2(360, 110)
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+script = ExtResource("1_card")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="TopRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.164706, 0.121569, 0.101961, 1)
+theme_override_font_sizes/font_size = 18
+text = "Customer Name"
+
+[node name="PaymentLabel" type="Label" parent="MarginContainer/VBoxContainer/TopRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.176471, 0.501961, 0.0862745, 1)
+theme_override_font_sizes/font_size = 18
+text = "$100"
+horizontal_alignment = 2
+
+[node name="DifficultyRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="DifficultyBadge" type="Label" parent="MarginContainer/VBoxContainer/DifficultyRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.6, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "★★☆☆☆"
+
+[node name="DescriptionLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "Customer description here"
+autowrap_mode = 3
+text_overrun_behavior = 3
+max_lines_visible = 2
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

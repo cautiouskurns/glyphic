@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://50jplsqs8xpu"]
+[gd_scene load_steps=11 format=3 uid="uid://50jplsqs8xpu"]
 
 [ext_resource type="Script" uid="uid://c1121artwyxcj" path="res://scripts/ui/DayLabel.gd" id="1_day"]
 [ext_resource type="Script" uid="uid://b88wqxj6a2xxo" path="res://scripts/ui/CapacityLabel.gd" id="2_capacity"]
@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/DebugConsole.tscn" id="4_debug"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TranslationDisplay.tscn" id="5_translation"]
 [ext_resource type="Script" path="res://scripts/ui/DictionaryPanel.gd" id="6_dictionary"]
+[ext_resource type="Script" path="res://scripts/ui/CustomerQueuePanel.gd" id="7_queue"]
+[ext_resource type="PackedScene" path="res://scenes/ui/CustomerPopup.tscn" id="8_popup"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar"]
 bg_color = Color(0.164706, 0.121569, 0.101961, 1)
@@ -84,6 +86,7 @@ offset_top = 90.0
 offset_right = 420.0
 offset_bottom = 1080.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+script = ExtResource("7_queue")
 
 [node name="TitleLabel" type="Label" parent="LeftPanel"]
 layout_mode = 0
@@ -94,6 +97,18 @@ offset_bottom = 60.0
 theme_override_colors/font_color = Color(0.956863, 0.909804, 0.847059, 1)
 theme_override_font_sizes/font_size = 30
 text = "Today's Customers"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="LeftPanel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 70.0
+offset_right = 400.0
+offset_bottom = 970.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LeftPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
 
 [node name="Workspace" type="Control" parent="."]
 anchors_preset = 0
@@ -166,3 +181,5 @@ text = "Press F1 for Debug Console"
 [node name="DebugConsole" parent="." instance=ExtResource("4_debug")]
 layout_mode = 0
 anchors_preset = 0
+
+[node name="CustomerPopup" parent="." instance=ExtResource("8_popup")]
