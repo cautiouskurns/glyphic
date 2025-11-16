@@ -78,6 +78,7 @@ func _on_test_texts_pressed():
 func _on_test_validation_pressed():
 	_print_header("TEST 3: Validation Logic")
 
+	_print("--- BASIC VALIDATION ---")
 	# Test exact match
 	var test1 = SymbolData.validate_translation(1, "the old way")
 	_print_result(test1, "validate_translation(1, 'the old way') == true")
@@ -86,25 +87,72 @@ func _on_test_validation_pressed():
 	var test2 = SymbolData.validate_translation(1, "THE OLD WAY")
 	_print_result(test2, "validate_translation(1, 'THE OLD WAY') == true (case-insensitive)")
 
-	# Test whitespace trimming
-	var test3 = SymbolData.validate_translation(1, "  the old way  ")
-	_print_result(test3, "validate_translation(1, '  the old way  ') == true (whitespace trimmed)")
+	# Test mixed case
+	var test3 = SymbolData.validate_translation(1, "The Old Way")
+	_print_result(test3, "validate_translation(1, 'The Old Way') == true (mixed case)")
 
+	# Test whitespace trimming
+	var test4 = SymbolData.validate_translation(1, "  the old way  ")
+	_print_result(test4, "validate_translation(1, '  the old way  ') == true (whitespace trimmed)")
+
+	_print("\n--- REJECTION TESTS ---")
 	# Test wrong answer
-	var test4 = !SymbolData.validate_translation(1, "wrong answer")
-	_print_result(test4, "validate_translation(1, 'wrong answer') == false")
+	var test5 = !SymbolData.validate_translation(1, "wrong answer")
+	_print_result(test5, "validate_translation(1, 'wrong answer') == false")
 
 	# Test word order matters
-	var test5 = !SymbolData.validate_translation(1, "old the way")
-	_print_result(test5, "validate_translation(1, 'old the way') == false (word order matters)")
+	var test6 = !SymbolData.validate_translation(1, "old the way")
+	_print_result(test6, "validate_translation(1, 'old the way') == false (word order matters)")
 
-	# Test Text 5
-	var test6 = SymbolData.validate_translation(5, "they are returning soon")
-	_print_result(test6, "validate_translation(5, 'they are returning soon') == true")
+	# Test incomplete answer
+	var test7 = !SymbolData.validate_translation(1, "the old")
+	_print_result(test7, "validate_translation(1, 'the old') == false (incomplete)")
+
+	# Test punctuation
+	var test8 = !SymbolData.validate_translation(1, "the old way!")
+	_print_result(test8, "validate_translation(1, 'the old way!') == false (punctuation)")
+
+	# Test spelling error
+	var test9 = !SymbolData.validate_translation(1, "the ould way")
+	_print_result(test9, "validate_translation(1, 'the ould way') == false (spelling error)")
+
+	_print("\n--- EDGE CASES ---")
+	# Test empty input
+	var test10 = !SymbolData.validate_translation(1, "")
+	_print_result(test10, "validate_translation(1, '') == false (empty input)")
+
+	# Test whitespace-only input
+	var test11 = !SymbolData.validate_translation(1, "   ")
+	_print_result(test11, "validate_translation(1, '   ') == false (whitespace only)")
+
+	# Test extra spaces between words
+	var test12 = !SymbolData.validate_translation(1, "the  old  way")
+	_print_result(test12, "validate_translation(1, 'the  old  way') == false (extra spaces)")
 
 	# Test invalid ID
-	var test7 = !SymbolData.validate_translation(99, "anything")
-	_print_result(test7, "validate_translation(99, 'anything') == false (invalid ID)")
+	var test13 = !SymbolData.validate_translation(99, "anything")
+	_print_result(test13, "validate_translation(99, 'anything') == false (invalid ID)")
+
+	_print("\n--- ALL 5 SOLUTIONS ---")
+	# Test Text 1
+	var test14 = SymbolData.validate_translation(1, "the old way")
+	_print_result(test14, "Text 1: 'the old way'")
+
+	# Test Text 2
+	var test15 = SymbolData.validate_translation(2, "the old way was forgotten")
+	_print_result(test15, "Text 2: 'the old way was forgotten'")
+
+	# Test Text 3
+	var test16 = SymbolData.validate_translation(3, "the old god sleeps")
+	_print_result(test16, "Text 3: 'the old god sleeps'")
+
+	# Test Text 4
+	var test17 = SymbolData.validate_translation(4, "magic was once known")
+	_print_result(test17, "Text 4: 'magic was once known'")
+
+	# Test Text 5
+	var test18 = SymbolData.validate_translation(5, "they are returning soon")
+	_print_result(test18, "Text 5: 'they are returning soon'")
 
 func _on_test_dict_init_pressed():
 	_print_header("TEST 4: Dictionary Initialization")
@@ -477,3 +525,28 @@ func _on_reset_translation_pressed():
 	_print("Translation display reset")
 	_print("Shows: '*Select a customer to begin...*'")
 	_print("Input field and Submit button disabled")
+
+# Feedback tests (Feature 2.3)
+func _on_test_success_feedback_pressed():
+	_print_header("Feedback: Test Success")
+
+	var translation_display = get_node("/root/Main/Workspace/TranslationDisplay")
+	translation_display.show_success_feedback(50)
+
+	_print("Success feedback displayed:")
+	_print("  - Message: '✓ Translation Accepted! +$50'")
+	_print("  - Color: Green (#2ECC71)")
+	_print("  - Customer dialogue: 'Thank you for the translation!'")
+	_print("\nDialogue will auto-clear after 2.0 seconds")
+
+func _on_test_failure_feedback_pressed():
+	_print_header("Feedback: Test Failure")
+
+	var translation_display = get_node("/root/Main/Workspace/TranslationDisplay")
+	translation_display.show_failure_feedback()
+
+	_print("Failure feedback displayed:")
+	_print("  - Message: '✗ Incorrect Translation'")
+	_print("  - Color: Red (#E74C3C)")
+	_print("  - Customer dialogue: 'Hmm, that doesn't seem right. Try again?'")
+	_print("\nDialogue will auto-clear after 1.5 seconds (manual clear needed for test)")

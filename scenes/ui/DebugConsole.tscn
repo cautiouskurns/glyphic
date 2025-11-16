@@ -134,6 +134,14 @@ text = "Translation: Load Text 5"
 layout_mode = 2
 text = "Translation: Reset to Default"
 
+[node name="TestSuccessFeedbackButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Feedback: Test Success"
+
+[node name="TestFailureFeedbackButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+layout_mode = 2
+text = "Feedback: Test Failure"
+
 [node name="Separator5" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
 layout_mode = 2
 
@@ -173,4 +181,6 @@ wrap_mode = 1
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText2Button" to="." method="_on_load_text2_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText5Button" to="." method="_on_load_text5_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/ResetTranslationButton" to="." method="_on_reset_translation_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestSuccessFeedbackButton" to="." method="_on_test_success_feedback_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestFailureFeedbackButton" to="." method="_on_test_failure_feedback_pressed"]
 [connection signal="pressed" from="HBoxContainer/ButtonPanel/ClearButton" to="." method="_on_clear_pressed"]

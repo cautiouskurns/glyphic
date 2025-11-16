@@ -96,8 +96,9 @@ func handle_success(text_id: int):
 	# Show success message (Feature 2.3)
 	show_success_feedback(payment)
 
-	# Re-enable input after 1 second
-	await get_tree().create_timer(1.0).timeout
+	# Display message for 2 seconds, then clear and reset
+	await get_tree().create_timer(2.0).timeout
+	clear_dialogue_message()
 	reset_for_next_translation()
 
 func handle_failure():
@@ -107,13 +108,17 @@ func handle_failure():
 	# Show failure message (Feature 2.3)
 	show_failure_feedback()
 
-	# Clear input and re-enable after 0.5 seconds
+	# Clear input after 0.5 seconds
 	await get_tree().create_timer(0.5).timeout
 	input_field.text = ""
 	input_field.editable = true
 	submit_button.disabled = false
 	is_validating = false
 	input_field.grab_focus()  # Re-focus for next attempt
+
+	# Clear dialogue message after total 1.5 seconds from start
+	await get_tree().create_timer(1.0).timeout  # Additional 1.0s (total 1.5s)
+	clear_dialogue_message()
 
 func reset_for_next_translation():
 	"""Prepare for next translation"""
@@ -149,13 +154,34 @@ func flash_input_field(color: Color):
 	input_field.remove_theme_stylebox_override("normal")
 	input_field.remove_theme_stylebox_override("focus")
 
-# Placeholder stubs for Feature 2.3
+# Feature 2.3: Success/Failure Feedback
 func show_success_feedback(payment: int):
-	"""Show success message in dialogue box (Feature 2.3)"""
-	# Placeholder: Just print for now
-	print("SUCCESS! +$%d" % payment)
+	"""Display success message in dialogue box"""
+	var dialogue_label = get_node("/root/Main/DialogueBox/DialogueLabel")
+
+	# Format success message
+	var message = "✓ Translation Accepted!\n"
+	message += "+$%d\n\n" % payment
+	message += "\"Thank you for the translation!\"\n"
+	message += "  — Customer"
+
+	dialogue_label.text = message
+	dialogue_label.add_theme_color_override("font_color", Color("#2ECC71"))
 
 func show_failure_feedback():
-	"""Show failure message in dialogue box (Feature 2.3)"""
-	# Placeholder: Just print for now
-	print("FAILURE! Try again.")
+	"""Display failure message in dialogue box"""
+	var dialogue_label = get_node("/root/Main/DialogueBox/DialogueLabel")
+
+	# Format failure message
+	var message = "✗ Incorrect Translation\n\n"
+	message += "\"Hmm, that doesn't seem right. Try again?\"\n"
+	message += "  — Customer"
+
+	dialogue_label.text = message
+	dialogue_label.add_theme_color_override("font_color", Color("#E74C3C"))
+
+func clear_dialogue_message():
+	"""Reset dialogue box to placeholder state"""
+	var dialogue_label = get_node("/root/Main/DialogueBox/DialogueLabel")
+	dialogue_label.text = "*Customer dialogue appears here...*"
+	dialogue_label.add_theme_color_override("font_color", Color("#999999"))

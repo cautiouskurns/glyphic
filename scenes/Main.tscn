@@ -129,7 +129,7 @@ offset_right = 1920.0
 offset_bottom = 1080.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_dialogue")
 
-[node name="PlaceholderLabel" type="Label" parent="DialogueBox"]
+[node name="DialogueLabel" type="Label" parent="DialogueBox"]
 layout_mode = 0
 offset_left = 30.0
 offset_top = 30.0
