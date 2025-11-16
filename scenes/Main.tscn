@@ -1,14 +1,17 @@
-[gd_scene load_steps=12 format=3 uid="uid://50jplsqs8xpu"]
+[gd_scene load_steps=16 format=3 uid="uid://50jplsqs8xpu"]
 
 [ext_resource type="Script" uid="uid://c1121artwyxcj" path="res://scripts/ui/DayLabel.gd" id="1_day"]
 [ext_resource type="Script" uid="uid://b88wqxj6a2xxo" path="res://scripts/ui/CapacityLabel.gd" id="2_capacity"]
 [ext_resource type="Script" uid="uid://yn6suh6di6cn" path="res://scripts/ui/CashLabel.gd" id="3_cash"]
-[ext_resource type="PackedScene" path="res://scenes/ui/DebugConsole.tscn" id="4_debug"]
+[ext_resource type="PackedScene" uid="uid://c8vqm8yvwknfb" path="res://scenes/ui/DebugConsole.tscn" id="4_debug"]
 [ext_resource type="PackedScene" path="res://scenes/ui/TranslationDisplay.tscn" id="5_translation"]
-[ext_resource type="Script" path="res://scripts/ui/DictionaryPanel.gd" id="6_dictionary"]
-[ext_resource type="Script" path="res://scripts/ui/CustomerQueuePanel.gd" id="7_queue"]
+[ext_resource type="Script" uid="uid://b51t38opabuo4" path="res://scripts/ui/DictionaryPanel.gd" id="6_dictionary"]
+[ext_resource type="Script" uid="uid://ckw5akjfpk7hb" path="res://scripts/ui/CustomerQueuePanel.gd" id="7_queue"]
 [ext_resource type="PackedScene" path="res://scenes/ui/CustomerPopup.tscn" id="8_popup"]
-[ext_resource type="Script" path="res://scripts/ui/DialogueBox.gd" id="9_dialogue"]
+[ext_resource type="Script" uid="uid://cky5vljfxird2" path="res://scripts/ui/DialogueBox.gd" id="9_dialogue"]
+[ext_resource type="PackedScene" path="res://scenes/ui/EndDayButton.tscn" id="10_endday"]
+[ext_resource type="PackedScene" path="res://scenes/ui/DayTransition.tscn" id="11_transition"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ExaminationScreen.tscn" id="12_examination"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar"]
 bg_color = Color(0.164706, 0.121569, 0.101961, 1)
@@ -69,6 +72,26 @@ text = "0/5 Customers Served"
 horizontal_alignment = 1
 script = ExtResource("2_capacity")
 
+[node name="LockIcon" type="Label" parent="TopBar/CapacityLabel"]
+visible = false
+layout_mode = 0
+offset_left = 240.0
+offset_top = 5.0
+offset_right = 260.0
+offset_bottom = 25.0
+theme_override_font_sizes/font_size = 20
+text = "🔒"
+
+[node name="CoffeeIcon" type="Label" parent="TopBar/CapacityLabel"]
+visible = false
+layout_mode = 0
+offset_left = 265.0
+offset_top = 5.0
+offset_right = 285.0
+offset_bottom = 25.0
+theme_override_font_sizes/font_size = 20
+text = "☕"
+
 [node name="CashLabel" type="Label" parent="TopBar"]
 layout_mode = 0
 offset_left = 1550.0
@@ -85,7 +108,8 @@ script = ExtResource("3_cash")
 layout_mode = 0
 offset_top = 90.0
 offset_right = 420.0
-offset_bottom = 1080.0
+offset_bottom = 780.0
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 script = ExtResource("7_queue")
 
@@ -104,7 +128,7 @@ layout_mode = 0
 offset_left = 20.0
 offset_top = 70.0
 offset_right = 400.0
-offset_bottom = 970.0
+offset_bottom = 670.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="LeftPanel/ScrollContainer"]
 layout_mode = 2
@@ -118,6 +142,10 @@ offset_top = 90.0
 offset_right = 1500.0
 offset_bottom = 780.0
 
+[node name="ExaminationScreen" parent="Workspace" instance=ExtResource("12_examination")]
+visible = false
+layout_mode = 0
+
 [node name="TranslationDisplay" parent="Workspace" instance=ExtResource("5_translation")]
 layout_mode = 0
 
@@ -126,7 +154,8 @@ layout_mode = 0
 offset_left = 1500.0
 offset_top = 90.0
 offset_right = 1920.0
-offset_bottom = 1080.0
+offset_bottom = 780.0
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 script = ExtResource("6_dictionary")
 
@@ -145,7 +174,7 @@ layout_mode = 0
 offset_left = 20.0
 offset_top = 70.0
 offset_right = 400.0
-offset_bottom = 970.0
+offset_bottom = 670.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="RightPanel/ScrollContainer"]
 layout_mode = 2
@@ -183,5 +212,18 @@ text = "Press F1 for Debug Console"
 [node name="DebugConsole" parent="." instance=ExtResource("4_debug")]
 layout_mode = 0
 anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
 
 [node name="CustomerPopup" parent="." instance=ExtResource("8_popup")]
+layout_mode = 0
+anchors_preset = 0
+
+[node name="EndDayButton" parent="." instance=ExtResource("10_endday")]
+layout_mode = 0
+
+[node name="DayTransition" parent="." instance=ExtResource("11_transition")]

@@ -20,7 +20,9 @@ var recurring_customers: Dictionary = {
 			"story_beat": "My grandmother was in a secret society, you know."
 		},
 		"story_role": "Tutorial/Heart",
-		"personality": "Patient, sweet, gentle introduction"
+		"personality": "Patient, sweet, gentle introduction",
+		"book_cover_color": Color("#F4E8D8"),  # Cream/aged parchment (Feature 4.1)
+		"uv_hidden_text": "Previous owner:\nMargaret K.\n1924"  # Feature 4.1 - UV Light reveal
 	},
 
 	"Dr. Chen": {
@@ -39,7 +41,9 @@ var recurring_customers: Dictionary = {
 			"story_beat": "Something is waking up beneath the city... we're running out of time."
 		},
 		"story_role": "Scholar/Plot",
-		"personality": "Curious, intense, driven"
+		"personality": "Curious, intense, driven",
+		"book_cover_color": Color("#8B4513"),  # Dark scholarly brown (Feature 4.1)
+		"uv_hidden_text": "⚠ FORBIDDEN SEAL\nDo not open after dark"  # Feature 4.1 - UV Light reveal
 	},
 
 	"The Stranger": {
@@ -58,7 +62,9 @@ var recurring_customers: Dictionary = {
 			"story_beat": "They are returning soon. You need to know the truth."
 		},
 		"story_role": "Mystery/Finale",
-		"personality": "Mysterious, terse, ominous"
+		"personality": "Mysterious, terse, ominous",
+		"book_cover_color": Color("#1A1A1A"),  # Black/mysterious (Feature 4.1)
+		"uv_hidden_text": "PROPERTY OF\nTHE ORDER\n⊗"  # Feature 4.1 - UV Light reveal
 	}
 }
 
@@ -144,13 +150,24 @@ func create_customer_instance(name: String, data: Dictionary) -> Dictionary:
 		"priorities": data.priorities,
 		"dialogue": data.dialogue,
 		"story_role": data.story_role,
-		"is_recurring": true
+		"is_recurring": true,
+		"book_cover_color": data.get("book_cover_color", Color("#F4E8D8")),  # Feature 4.1 - Default cream if missing
+		"uv_hidden_text": data.get("uv_hidden_text", "")  # Feature 4.1 - Empty if no UV text
 	}
 
 func generate_random_customer() -> Dictionary:
 	"""Generate a one-time random customer from templates"""
 	var template = random_customer_templates[randi() % random_customer_templates.size()]
 	var random_number = randi_range(100, 999)
+
+	# Random book cover colors for variety (Feature 4.1)
+	var random_colors = [
+		Color("#F4E8D8"),  # Cream
+		Color("#D2B48C"),  # Tan
+		Color("#8B4513"),  # Brown
+		Color("#A0826D"),  # Light brown
+		Color("#6B4423")   # Dark brown
+	]
 
 	return {
 		"name": "%s #%d" % [template.name_prefix, random_number],
@@ -160,13 +177,21 @@ func generate_random_customer() -> Dictionary:
 		"priorities": template.priorities[randi() % template.priorities.size()],
 		"dialogue": template.dialogue,
 		"story_role": "None",
-		"is_recurring": false
+		"is_recurring": false,
+		"book_cover_color": random_colors[randi() % random_colors.size()],  # Feature 4.1
+		"uv_hidden_text": ""  # No UV text for random customers (Feature 4.1)
 	}
 
 func damage_relationship(customer_name: String):
 	"""Decrease relationship value when player refuses a recurring customer"""
 	if customer_name in recurring_customers:
 		recurring_customers[customer_name].current_relationship -= 1
+
+func get_relationship_status(customer_name: String) -> int:
+	"""Get current relationship value for a recurring customer"""
+	if customer_name in recurring_customers:
+		return recurring_customers[customer_name].current_relationship
+	return -1  # Not a recurring customer
 
 func reset_relationships():
 	"""Reset all relationships to starting values (for new game)"""

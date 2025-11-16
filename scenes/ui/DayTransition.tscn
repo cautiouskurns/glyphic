@@ -1,0 +1,76 @@
+[gd_scene load_steps=3 format=3 uid="uid://davqnayvwknfc"]
+
+[ext_resource type="Script" path="res://scripts/ui/DayTransition.gd" id="1_transition"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_titlecard"]
+bg_color = Color(0.164706, 0.121569, 0.101961, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.227451, 0.145098, 0.0941176, 1)
+
+[node name="DayTransition" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_transition")
+
+[node name="Overlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+mouse_filter = 2
+
+[node name="TitleCard" type="Panel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -150.0
+offset_right = 300.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_titlecard")
+
+[node name="DayLabel" type="Label" parent="TitleCard"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -50.0
+offset_right = 250.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 48
+text = "Day 2 - Tuesday"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UtilitiesLabel" type="Label" parent="TitleCard"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = 20.0
+offset_right = 250.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.8, 0.3, 0.3, 1)
+theme_override_font_sizes/font_size = 24
+text = "Utilities: -$30"
+horizontal_alignment = 1
+vertical_alignment = 1

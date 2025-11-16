@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://ehu172nddrn6"]
+[gd_scene load_steps=4 format=3 uid="uid://ehu172nddrn6"]
 
 [ext_resource type="Script" path="res://scripts/ui/CustomerCard.gd" id="1_card"]
 
@@ -13,6 +13,9 @@ border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.227451, 0.145098, 0.0941176, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_broken_banner"]
+bg_color = Color(0.545098, 0.0, 0.0, 1)
 
 [node name="CustomerCard" type="PanelContainer"]
 custom_minimum_size = Vector2(360, 110)
@@ -85,6 +88,43 @@ text = "✓"
 horizontal_alignment = 1
 vertical_alignment = 1
 visible = false
+
+[node name="WarningTriangle" type="Label" parent="."]
+layout_mode = 0
+offset_left = 320.0
+offset_top = 80.0
+offset_right = 344.0
+offset_bottom = 104.0
+theme_override_colors/font_color = Color(0.8, 0.6, 0.0, 1)
+theme_override_font_sizes/font_size = 20
+text = "▲"
+horizontal_alignment = 1
+vertical_alignment = 1
+visible = false
+
+[node name="BrokenBanner" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 30.0
+offset_right = 450.0
+offset_bottom = 70.0
+rotation = -0.785398
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_broken_banner")
+visible = false
+
+[node name="BannerLabel" type="Label" parent="BrokenBanner"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "RELATIONSHIP BROKEN"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]

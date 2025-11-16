@@ -173,7 +173,11 @@ func check_capacity():
 	accept_button.disabled = capacity_full
 
 	if capacity_full:
-		accept_button.tooltip_text = "Shop is full (%d/%d)" % [GameState.capacity_used, GameState.max_capacity]
+		# Feature 3.4: Enhanced tooltip text format
+		if GameState.has_coffee_machine:
+			accept_button.tooltip_text = "Shop is full (%d/%d capacity - Coffee Machine active)" % [GameState.capacity_used, GameState.max_capacity]
+		else:
+			accept_button.tooltip_text = "Shop is full (%d/%d capacity)" % [GameState.capacity_used, GameState.max_capacity]
 	else:
 		accept_button.tooltip_text = ""
 

@@ -598,8 +598,8 @@ func _on_test_full_progression_pressed():
 	_print("  Text 2: %s" % text2.mappings.get("∆", "NOT FOUND"))
 	_print("  Text 3: %s" % text3.mappings.get("∆", "NOT FOUND"))
 	var delta_consistent = (text1.mappings.get("∆") == "the" and
-	                        text2.mappings.get("∆") == "the" and
-	                        text3.mappings.get("∆") == "the")
+							text2.mappings.get("∆") == "the" and
+							text3.mappings.get("∆") == "the")
 	_print_result(delta_consistent, "∆ consistently maps to 'the'")
 
 	_print("\n◊≈ = 'old' verification:")
@@ -607,15 +607,15 @@ func _on_test_full_progression_pressed():
 	_print("  Text 2: %s" % text2.mappings.get("◊≈", "NOT FOUND"))
 	_print("  Text 3: %s" % text3.mappings.get("◊≈", "NOT FOUND"))
 	var old_consistent = (text1.mappings.get("◊≈") == "old" and
-	                      text2.mappings.get("◊≈") == "old" and
-	                      text3.mappings.get("◊≈") == "old")
+						  text2.mappings.get("◊≈") == "old" and
+						  text3.mappings.get("◊≈") == "old")
 	_print_result(old_consistent, "◊≈ consistently maps to 'old'")
 
 	_print("\n⊕⊗⬡ = 'was' verification:")
 	_print("  Text 2: %s" % text2.mappings.get("⊕⊗⬡", "NOT FOUND"))
 	_print("  Text 4: %s" % text4.mappings.get("⊕⊗⬡", "NOT FOUND"))
 	var was_consistent = (text2.mappings.get("⊕⊗⬡") == "was" and
-	                      text4.mappings.get("⊕⊗⬡") == "was")
+						  text4.mappings.get("⊕⊗⬡") == "was")
 	_print_result(was_consistent, "⊕⊗⬡ consistently maps to 'was'")
 
 	_print("\n✅ Feature 2.6: Five Translation Texts - VERIFIED")
@@ -738,7 +738,7 @@ func _on_test_customer_queue_pressed():
 		_print("\n%d. %s" % [i + 1, customer.name])
 		_print("   Payment: $%d" % customer.payment)
 		_print("   Difficulty: %s" % customer.difficulty)
-		_print("   Description: %s" % customer.description)
+		_print("   Type: %s" % ("Recurring" if customer.get("is_recurring", false) else "Random"))
 
 	# Check for recurring customers
 	var recurring_count = 0
@@ -837,3 +837,341 @@ func _on_test_accept_refuse_pressed():
 
 	_print("\n✅ Click customer cards to test accept/refuse flow!")
 	_print("✅ Refresh queue button to test recurring customers")
+
+# Capacity Enforcement tests (Feature 3.4)
+func _on_test_capacity_enforcement_pressed():
+	_print_header("Capacity: Enforcement Test (Feature 3.4)")
+
+	# Reset game state
+	GameState.reset_game_state()
+	CustomerData.reset_relationships()
+
+	_print("=== CAPACITY ENFORCEMENT ===")
+	_print("Max capacity: %d" % GameState.max_capacity)
+	_print("Current capacity: %d/%d" % [GameState.capacity_used, GameState.max_capacity])
+
+	_print("\n--- VISUAL CHECKS AT 5/5 ---")
+	_print("Accept 5 customers to reach capacity, then observe:")
+	_print("  1. Capacity counter: '5/5 Customers Served' (green)")
+	_print("  2. Lock icon 🔒 appears next to counter (fade in 0.2s)")
+	_print("  3. Remaining cards show red outline (2px, #8B0000)")
+	_print("  4. Remaining cards have dimmed hover (30% gold tint)")
+	_print("  5. Auto-refuse cascade begins (0.5s delay)")
+	_print("  6. All remaining cards gray out sequentially (0.2s each)")
+
+	_print("\n--- ACCEPT BUTTON AT CAPACITY ---")
+	_print("Click any remaining customer card at 5/5:")
+	_print("  1. Popup opens normally")
+	_print("  2. ACCEPT button is grayed out (#888888)")
+	_print("  3. Hover ACCEPT shows tooltip: 'Shop is full (5/5 capacity)'")
+	_print("  4. Click ACCEPT does nothing (button disabled)")
+	_print("  5. REFUSE button still works (red, active)")
+
+	_print("\n--- EDGE CASES ---")
+	_print("Test rapid accept clicks:")
+	_print("  - Spam-click ACCEPT on different cards")
+	_print("  - Capacity should never exceed 5")
+	_print("  - GameState.accept_customer() has safeguard")
+
+	_print("\n✅ START TESTING:")
+	_print("1. Click 'Customer Queue: Display 7-10 Cards' to populate queue")
+	_print("2. Accept 5 customers and observe capacity enforcement")
+	_print("3. Try to accept 6th customer (should be blocked)")
+
+func _on_test_coffee_machine_pressed():
+	_print_header("Capacity: Coffee Machine Toggle (Feature 3.4)")
+
+	# Toggle coffee machine upgrade
+	GameState.has_coffee_machine = !GameState.has_coffee_machine
+
+	if GameState.has_coffee_machine:
+		# Enable upgrade
+		GameState.max_capacity = 6
+		_print("☕ COFFEE MACHINE ACTIVATED!")
+		_print("\nUpgrade effects:")
+		_print("  - Max capacity: 5 → 6")
+		_print("  - Coffee icon ☕ appears next to capacity counter")
+		_print("  - Capacity counter shows: '0/6 Customers Served'")
+		_print("  - At 6/6: ACCEPT tooltip: 'Shop is full (6/6 capacity - Coffee Machine active)'")
+
+		_print("\n✅ Test with Coffee Machine:")
+		_print("1. Refresh customer queue")
+		_print("2. Accept 6 customers (instead of 5)")
+		_print("3. Verify lock icon appears at 6/6 (not 5/5)")
+		_print("4. Verify coffee icon ☕ is visible")
+	else:
+		# Disable upgrade
+		GameState.max_capacity = 5
+		_print("☕ COFFEE MACHINE DEACTIVATED")
+		_print("\nUpgrade removed:")
+		_print("  - Max capacity: 6 → 5")
+		_print("  - Coffee icon ☕ hidden")
+		_print("  - Capacity counter shows: '0/5 Customers Served'")
+		_print("  - Capacity enforcement back to 5/5")
+
+		_print("\n⚠️ WARNING: If capacity_used > 5, reset game state!")
+		if GameState.capacity_used > 5:
+			_print("  Current capacity: %d/5 (over limit!)" % GameState.capacity_used)
+			_print("  Click 'GameState: Test Initial Values' to reset")
+
+	_print("\nCurrent state:")
+	_print("  has_coffee_machine: %s" % str(GameState.has_coffee_machine))
+	_print("  max_capacity: %d" % GameState.max_capacity)
+	_print("  capacity_used: %d" % GameState.capacity_used)
+
+# Relationship tests (Feature 3.5)
+func _on_test_relationship_warning_pressed():
+	_print_header("Relationship: Warning Triangle Test (Feature 3.5)")
+
+	# Reset and populate queue
+	CustomerData.reset_relationships()
+	var queue_panel = get_node("/root/Main/LeftPanel")
+	queue_panel.refresh_queue()
+
+	_print("=== RELATIONSHIP WARNING STATE ===")
+	_print("Simulating damaged relationship (1 refusal away from broken)")
+
+	# Find Mrs. Kowalski in queue
+	var mrs_k_card = null
+	for card in queue_panel.card_container.get_children():
+		if card.customer_data.get("name", "") == "Mrs. Kowalski":
+			mrs_k_card = card
+			break
+
+	if mrs_k_card:
+		# Damage relationship to 1 (from 2)
+		CustomerData.damage_relationship("Mrs. Kowalski")
+		mrs_k_card.set_warning_state()
+
+		_print("\n✅ Mrs. Kowalski relationship damaged:")
+		_print("  - Relationship: 2 → 1")
+		_print("  - Yellow warning triangle ▲ visible in bottom-right corner")
+		_print("  - Indicates one more refusal will break relationship")
+
+		var relationship = CustomerData.get_relationship_status("Mrs. Kowalski")
+		_print("\nCurrent relationship status: %d" % relationship)
+		_print_result(relationship == 1, "Relationship reduced to 1")
+	else:
+		_print("\n⚠️ Mrs. Kowalski not found in queue")
+		_print("Make sure Day 1-3 to see Mrs. Kowalski")
+
+	_print("\n=== HOW TO TEST ===")
+	_print("1. Look for yellow warning triangle ▲ on Mrs. Kowalski's card")
+	_print("2. Refuse her one more time → relationship broken")
+	_print("3. Check 'Relationship: Test Broken Banner' to see final state")
+
+func _on_test_relationship_broken_pressed():
+	_print_header("Relationship: Broken Banner Test (Feature 3.5)")
+
+	# Reset and populate queue
+	CustomerData.reset_relationships()
+	var queue_panel = get_node("/root/Main/LeftPanel")
+	queue_panel.refresh_queue()
+
+	_print("=== RELATIONSHIP BROKEN STATE ===")
+	_print("Simulating broken relationship (2 refusals)")
+
+	# Find Mrs. Kowalski in queue
+	var mrs_k_card = null
+	for card in queue_panel.card_container.get_children():
+		if card.customer_data.get("name", "") == "Mrs. Kowalski":
+			mrs_k_card = card
+			break
+
+	if mrs_k_card:
+		# Break relationship completely (damage twice: 2 → 1 → 0)
+		CustomerData.damage_relationship("Mrs. Kowalski")
+		CustomerData.damage_relationship("Mrs. Kowalski")
+		mrs_k_card.set_relationship_broken_state()
+
+		_print("\n✅ Mrs. Kowalski relationship broken:")
+		_print("  - Relationship: 2 → 1 → 0")
+		_print("  - Diagonal red banner visible: 'RELATIONSHIP BROKEN'")
+		_print("  - Card dimmed to 90% opacity")
+		_print("  - Customer will NOT appear in future queues")
+
+		var relationship = CustomerData.get_relationship_status("Mrs. Kowalski")
+		_print("\nCurrent relationship status: %d" % relationship)
+		_print_result(relationship == 0, "Relationship broken (reduced to 0)")
+
+		# Test queue generation
+		_print("\n=== QUEUE GENERATION TEST ===")
+		var next_queue = CustomerData.generate_daily_queue(2)  # Day 2 (Mrs. K should appear)
+		var has_mrs_k = false
+		for customer in next_queue:
+			if customer.get("name", "") == "Mrs. Kowalski":
+				has_mrs_k = true
+				break
+
+		_print_result(!has_mrs_k, "Mrs. Kowalski does NOT appear in Day 2 queue (relationship broken)")
+	else:
+		_print("\n⚠️ Mrs. Kowalski not found in queue")
+		_print("Make sure Day 1-3 to see Mrs. Kowalski")
+
+	_print("\n=== HOW TO TEST ===")
+	_print("1. Look for diagonal red banner on Mrs. Kowalski's card")
+	_print("2. Banner should say 'RELATIONSHIP BROKEN'")
+	_print("3. Card should be slightly dimmed (90% opacity)")
+	_print("4. Advance to next day → Mrs. Kowalski won't appear")
+
+	_print("\n=== RESET ===")
+	_print("Click 'CustomerData: Recurring Customers' to reset relationships")
+
+# End Day tests (Feature 4.5)
+func _on_test_end_day_pressed():
+	_print_header("Day: End Day Button & Transition Test (Feature 4.5)")
+
+	_print("=== END DAY BUTTON ===")
+	_print("Position: Bottom-right (1600, 1000)")
+	_print("Size: 250×60px")
+	_print("Background: Green (#2D5016)")
+	_print("Text: '🌙 END DAY'")
+
+	_print("\n=== WHEN BUTTON APPEARS ===")
+	_print("Trigger 1: Capacity reaches 5/5 (or 6/6 with coffee machine)")
+	_print("Trigger 2: All customers in queue accepted/refused")
+
+	_print("\n=== HOW TO TEST ===")
+	_print("1. Click 'Customer Queue: Display 7-10 Cards' to populate queue")
+	_print("2. Accept 5 customers to reach capacity")
+	_print("3. End Day button should appear bottom-right")
+	_print("4. Hover button → brightens, gold border glow")
+	_print("5. Click button OR press E key")
+
+	_print("\n=== DAY TRANSITION SEQUENCE ===")
+	_print("T+0.0s: Button clicked")
+	_print("T+0.2s: Screen fades to black")
+	_print("T+0.3s: Day title card appears: 'Day 2 - Tuesday'")
+	_print("T+0.4s: Subtitle: 'Utilities: -$30'")
+	_print("T+1.3s: Title card holds for 1 second")
+	_print("T+1.6s: Screen fades back in")
+	_print("T+1.6s: New queue generated with fade-in animation")
+
+	_print("\n=== GAME STATE CHANGES ===")
+	_print("- GameState.current_day increments (1 → 2)")
+	_print("- GameState.day_name updates (Monday → Tuesday)")
+	_print("- GameState.player_cash -= $30 (utilities)")
+	_print("- GameState.capacity_used resets to 0")
+	_print("- CustomerQueuePanel.refresh_queue() called")
+
+	_print("\n=== TESTING SHORTCUTS ===")
+	_print("Option A: Accept 5 customers manually")
+	_print("Option B: Use this debug command to simulate:")
+	_print("  GameState.capacity_used = 5")
+	_print("  GameState.capacity_changed.emit()")
+
+	_print("\n✅ QUICK TEST - Simulate capacity full:")
+	GameState.capacity_used = GameState.max_capacity
+	GameState.capacity_changed.emit()
+	_print("  Capacity set to %d/%d" % [GameState.capacity_used, GameState.max_capacity])
+	_print("  End Day button should now be visible!")
+	_print("  Look for green button bottom-right corner")
+	_print("  Click it or press E to test day transition")
+
+# Examination tests (Feature 4.1)
+func _on_test_examination_pressed():
+	_print_header("Examination: Book Screen & Zoom Test (Feature 4.1)")
+
+	_print("=== BOOK EXAMINATION PHASE ===")
+	_print("Triggers after accepting a customer, before translation")
+
+	_print("\n=== EXAMINATION SCREEN LAYOUT ===")
+	_print("Position: Full workspace area (1080×690px)")
+	_print("Background: Dark brown (#3A2518)")
+	_print("Book Cover: 600×800px, centered (240, 95)")
+	_print("Zoom Inset: 300×300px, bottom-right (760, 180)")
+	_print("  - Shows 2× magnified view")
+	_print("  - Gold border (#FFD700)")
+	_print("  - Label: '2× ZOOM'")
+
+	_print("\n=== CUSTOMER BOOK COLORS ===")
+	_print("Mrs. Kowalski: Cream/parchment (#F4E8D8)")
+	_print("Dr. Chen: Dark scholarly brown (#8B4513)")
+	_print("The Stranger: Black/mysterious (#1A1A1A)")
+	_print("Random customers: Variety of brown/tan shades")
+
+	_print("\n=== INTERACTION ===")
+	_print("- Move mouse over book → crosshair cursor appears")
+	_print("- Zoom inset follows mouse position in real-time")
+	_print("- Zoom shows 2× magnified portion of book")
+	_print("- Click 'SKIP EXAMINATION' → proceed to translation")
+	_print("- Press SPACEBAR or ESCAPE → skip to translation")
+
+	_print("\n=== UV LIGHT (if purchased) ===")
+	_print("- UV button appears in toolbar (purple)")
+	_print("- Click UV button or press U key → toggle UV mode")
+	_print("- Book tints purple, hidden text appears")
+	_print("- Mrs. K UV text: 'Previous owner: Margaret K. 1924'")
+	_print("- Dr. Chen UV text: '⚠ FORBIDDEN SEAL - Do not open after dark'")
+	_print("- The Stranger UV text: 'PROPERTY OF THE ORDER ⊗'")
+
+	_print("\n=== QUICK TEST - Simulate Mrs. Kowalski ===")
+	var examination_screen = get_node("/root/Main/Workspace/ExaminationScreen")
+	var translation_display = get_node("/root/Main/Workspace/TranslationDisplay")
+
+	if examination_screen:
+		# Hide translation, show examination
+		translation_display.visible = false
+
+		# Create test customer data (Mrs. Kowalski)
+		var test_customer = {
+			"name": "Mrs. Kowalski",
+			"book_cover_color": Color("#F4E8D8"),
+			"uv_hidden_text": "Previous owner:\nMargaret K.\n1924"
+		}
+
+		# Load examination screen
+		examination_screen.load_book(test_customer, 1)
+
+		_print("\n✅ Examination screen loaded with Mrs. Kowalski's book!")
+		_print("✅ Book cover: Cream/parchment color")
+		_print("✅ Move mouse over book to see zoom tracking")
+		_print("✅ Click SKIP or press SPACEBAR to proceed to translation")
+		if GameState.has_uv_light:
+			_print("✅ UV Light is active - click UV button to reveal hidden text")
+		else:
+			_print("⚠️ UV Light not purchased - use 'Toggle UV Light Upgrade' to enable")
+	else:
+		_print("\n⚠️ ExaminationScreen not found in scene tree")
+
+func _on_test_uv_light_pressed():
+	_print_header("Examination: UV Light Upgrade Toggle")
+
+	# Toggle UV Light upgrade
+	GameState.has_uv_light = !GameState.has_uv_light
+
+	if GameState.has_uv_light:
+		_print("✅ UV LIGHT UPGRADE ACTIVATED")
+		_print("\nEffects:")
+		_print("  - UV Light button appears in examination toolbar")
+		_print("  - Click UV button or press U key to toggle UV mode")
+		_print("  - Purple tint applied to book cover")
+		_print("  - Hidden text revealed (recurring customers only)")
+
+		_print("\n=== HIDDEN TEXT REVEALS ===")
+		_print("Mrs. Kowalski:")
+		_print("  'Previous owner:")
+		_print("   Margaret K.")
+		_print("   1924'")
+
+		_print("\nDr. Chen:")
+		_print("  '⚠ FORBIDDEN SEAL")
+		_print("   Do not open after dark'")
+
+		_print("\nThe Stranger:")
+		_print("  'PROPERTY OF")
+		_print("   THE ORDER")
+		_print("   ⊗'")
+
+		_print("\n✅ UV Light upgrade is now ACTIVE")
+		_print("✅ Accept a customer to see UV button in examination screen")
+	else:
+		_print("⛔ UV LIGHT UPGRADE DEACTIVATED")
+		_print("\nEffects:")
+		_print("  - UV Light button hidden in examination toolbar")
+		_print("  - Cannot reveal hidden text on books")
+
+		_print("\n⚠️ UV Light upgrade is now DISABLED")
+
+	_print("\nCurrent state:")
+	_print("  has_uv_light: %s" % str(GameState.has_uv_light))

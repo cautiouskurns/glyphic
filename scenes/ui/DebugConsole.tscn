@@ -10,6 +10,7 @@ offset_left = 100.0
 offset_top = 100.0
 offset_right = -100.0
 offset_bottom = -100.0
+mouse_filter = 2
 script = ExtResource("1_debug")
 
 [node name="Title" type="Label" parent="."]
@@ -18,6 +19,7 @@ offset_left = 20.0
 offset_top = 10.0
 offset_right = 300.0
 offset_bottom = 40.0
+mouse_filter = 2
 theme_override_font_sizes/font_size = 20
 text = "Debug Console (F1 to toggle)"
 
@@ -40,163 +42,216 @@ offset_top = 50.0
 offset_right = 1700.0
 offset_bottom = 860.0
 
-[node name="ButtonPanel" type="VBoxContainer" parent="HBoxContainer"]
+[node name="ButtonScroll" type="ScrollContainer" parent="HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.3
+scroll_vertical_enabled = true
+scroll_horizontal_enabled = false
 
-[node name="TestSymbolsButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="ButtonPanel" type="VBoxContainer" parent="HBoxContainer/ButtonScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TestSymbolsButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "1. Test Symbol Alphabet (20 symbols)"
 
-[node name="TestTextsButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestTextsButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "2. Test All 5 Texts"
 
-[node name="TestValidationButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestValidationButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "3. Test Validation Logic"
 
-[node name="TestDictInitButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestDictInitButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "4. Test Dictionary Initialization"
 
-[node name="TestDictUpdateButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestDictUpdateButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "5. Test Dictionary Updates"
 
-[node name="TestConsistencyButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestConsistencyButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "6. Test Symbol Consistency"
 
-[node name="Separator" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
+[node name="Separator" type="HSeparator" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 
-[node name="RunAllButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="RunAllButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "▶ RUN ALL TESTS"
 theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
 
-[node name="Separator2" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
+[node name="Separator2" type="HSeparator" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 
-[node name="TestGameStateButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestGameStateButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "GameState: Test Initial Values"
 
-[node name="TestGameStateAdvanceButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestGameStateAdvanceButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "GameState: Test Day Advancement"
 
-[node name="TestGameStateCashButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestGameStateCashButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "GameState: Test Cash Colors"
 
-[node name="Separator3" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
+[node name="Separator3" type="HSeparator" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 
-[node name="TestCustomerDataButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestCustomerDataButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "CustomerData: Recurring Customers"
 
-[node name="TestCustomerDataSchedulesButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestCustomerDataSchedulesButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "CustomerData: Appearance Schedules"
 
-[node name="TestCustomerDataQueueButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestCustomerDataQueueButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "CustomerData: Queue Generation"
 
-[node name="TestCustomerDataRelationshipsButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestCustomerDataRelationshipsButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "CustomerData: Relationship Damage"
 
-[node name="TestCustomerDataRandomButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestCustomerDataRandomButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "CustomerData: Random Customers"
 
-[node name="Separator4" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
+[node name="Separator4" type="HSeparator" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 
-[node name="LoadText1Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="LoadText1Button" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Translation: Load Text 1"
 
-[node name="LoadText2Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="LoadText2Button" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Translation: Load Text 2"
 
-[node name="LoadText3Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="LoadText3Button" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Translation: Load Text 3"
 
-[node name="LoadText4Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="LoadText4Button" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Translation: Load Text 4"
 
-[node name="LoadText5Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="LoadText5Button" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Translation: Load Text 5"
 
-[node name="ResetTranslationButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="ResetTranslationButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Translation: Reset to Default"
 
-[node name="TestFullProgressionButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestFullProgressionButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Translation: Test Full Progression (1→5)"
 theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
 
-[node name="TestSuccessFeedbackButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestSuccessFeedbackButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Feedback: Test Success"
 
-[node name="TestFailureFeedbackButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestFailureFeedbackButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Feedback: Test Failure"
 
-[node name="DictionaryViewButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="DictionaryViewButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Dictionary: View Current State"
 
-[node name="DictionaryUpdateButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="DictionaryUpdateButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Dictionary: Force Update"
 
-[node name="MoneyTest50Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="MoneyTest50Button" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Money: Test +$50 Payment"
 
-[node name="MoneyTest100Button" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="MoneyTest100Button" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Money: Test +$100 Payment"
 
-[node name="MoneyTestThresholdButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="MoneyTestThresholdButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Money: Test Color Thresholds"
 
-[node name="Separator5" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
+[node name="Separator5" type="HSeparator" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 
-[node name="TestCustomerQueueButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestCapacityEnforcementButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
+layout_mode = 2
+text = "Capacity: Fill to 5/5 and Test"
+theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
+
+[node name="TestCoffeeMachineButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
+layout_mode = 2
+text = "Capacity: Toggle Coffee Machine"
+theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
+
+[node name="Separator6a" type="HSeparator" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
+layout_mode = 2
+
+[node name="TestCustomerQueueButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Customer Queue: Display 7-10 Cards"
 theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
 
-[node name="TestCustomerPopupButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestCustomerPopupButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Customer Popup: Test Display"
 theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
 
-[node name="TestAcceptRefuseButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestAcceptRefuseButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Accept/Refuse: Test Logic"
 theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
 
-[node name="Separator6" type="HSeparator" parent="HBoxContainer/ButtonPanel"]
+[node name="Separator6b" type="HSeparator" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 
-[node name="ClearButton" type="Button" parent="HBoxContainer/ButtonPanel"]
+[node name="TestRelationshipWarningButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
+layout_mode = 2
+text = "Relationship: Test Warning Triangle"
+theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
+
+[node name="TestRelationshipBrokenButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
+layout_mode = 2
+text = "Relationship: Test Broken Banner"
+theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
+
+[node name="Separator6c" type="HSeparator" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
+layout_mode = 2
+
+[node name="TestEndDayButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
+layout_mode = 2
+text = "Day: Test End Day Button & Transition"
+theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
+
+[node name="Separator6d" type="HSeparator" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
+layout_mode = 2
+
+[node name="TestExaminationButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
+layout_mode = 2
+text = "Examination: Test Book Screen & Zoom"
+theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
+
+[node name="TestUVLightButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
+layout_mode = 2
+text = "Examination: Toggle UV Light Upgrade"
+theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
+
+[node name="Separator6" type="HSeparator" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
+layout_mode = 2
+
+[node name="ClearButton" type="Button" parent="HBoxContainer/ButtonScroll/ButtonPanel"]
 layout_mode = 2
 text = "Clear Output"
 
@@ -204,6 +259,8 @@ text = "Clear Output"
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+scroll_vertical_enabled = true
+scroll_horizontal_enabled = false
 
 [node name="OutputText" type="TextEdit" parent="HBoxContainer/OutputScroll"]
 layout_mode = 2
@@ -213,36 +270,43 @@ editable = false
 wrap_mode = 1
 
 [connection signal="pressed" from="CloseButton" to="." method="_on_close_button_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestSymbolsButton" to="." method="_on_test_symbols_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestTextsButton" to="." method="_on_test_texts_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestValidationButton" to="." method="_on_test_validation_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestDictInitButton" to="." method="_on_test_dict_init_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestDictUpdateButton" to="." method="_on_test_dict_update_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestConsistencyButton" to="." method="_on_test_consistency_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/RunAllButton" to="." method="_on_run_all_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestGameStateButton" to="." method="_on_test_gamestate_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestGameStateAdvanceButton" to="." method="_on_test_gamestate_advance_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestGameStateCashButton" to="." method="_on_test_gamestate_cash_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataButton" to="." method="_on_test_customerdata_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataSchedulesButton" to="." method="_on_test_customerdata_schedules_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataQueueButton" to="." method="_on_test_customerdata_queue_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataRelationshipsButton" to="." method="_on_test_customerdata_relationships_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerDataRandomButton" to="." method="_on_test_customerdata_random_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText1Button" to="." method="_on_load_text1_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText2Button" to="." method="_on_load_text2_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText3Button" to="." method="_on_load_text3_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText4Button" to="." method="_on_load_text4_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/LoadText5Button" to="." method="_on_load_text5_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/ResetTranslationButton" to="." method="_on_reset_translation_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestFullProgressionButton" to="." method="_on_test_full_progression_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestSuccessFeedbackButton" to="." method="_on_test_success_feedback_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestFailureFeedbackButton" to="." method="_on_test_failure_feedback_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/DictionaryViewButton" to="." method="_on_dictionary_view_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/DictionaryUpdateButton" to="." method="_on_dictionary_update_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/MoneyTest50Button" to="." method="_on_money_test_50_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/MoneyTest100Button" to="." method="_on_money_test_100_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/MoneyTestThresholdButton" to="." method="_on_money_test_threshold_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerQueueButton" to="." method="_on_test_customer_queue_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestCustomerPopupButton" to="." method="_on_test_customer_popup_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/TestAcceptRefuseButton" to="." method="_on_test_accept_refuse_pressed"]
-[connection signal="pressed" from="HBoxContainer/ButtonPanel/ClearButton" to="." method="_on_clear_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestSymbolsButton" to="." method="_on_test_symbols_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestTextsButton" to="." method="_on_test_texts_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestValidationButton" to="." method="_on_test_validation_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestDictInitButton" to="." method="_on_test_dict_init_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestDictUpdateButton" to="." method="_on_test_dict_update_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestConsistencyButton" to="." method="_on_test_consistency_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/RunAllButton" to="." method="_on_run_all_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestGameStateButton" to="." method="_on_test_gamestate_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestGameStateAdvanceButton" to="." method="_on_test_gamestate_advance_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestGameStateCashButton" to="." method="_on_test_gamestate_cash_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestCustomerDataButton" to="." method="_on_test_customerdata_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestCustomerDataSchedulesButton" to="." method="_on_test_customerdata_schedules_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestCustomerDataQueueButton" to="." method="_on_test_customerdata_queue_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestCustomerDataRelationshipsButton" to="." method="_on_test_customerdata_relationships_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestCustomerDataRandomButton" to="." method="_on_test_customerdata_random_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/LoadText1Button" to="." method="_on_load_text1_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/LoadText2Button" to="." method="_on_load_text2_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/LoadText3Button" to="." method="_on_load_text3_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/LoadText4Button" to="." method="_on_load_text4_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/LoadText5Button" to="." method="_on_load_text5_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/ResetTranslationButton" to="." method="_on_reset_translation_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestFullProgressionButton" to="." method="_on_test_full_progression_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestSuccessFeedbackButton" to="." method="_on_test_success_feedback_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestFailureFeedbackButton" to="." method="_on_test_failure_feedback_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/DictionaryViewButton" to="." method="_on_dictionary_view_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/DictionaryUpdateButton" to="." method="_on_dictionary_update_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/MoneyTest50Button" to="." method="_on_money_test_50_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/MoneyTest100Button" to="." method="_on_money_test_100_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/MoneyTestThresholdButton" to="." method="_on_money_test_threshold_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestCapacityEnforcementButton" to="." method="_on_test_capacity_enforcement_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestCoffeeMachineButton" to="." method="_on_test_coffee_machine_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestCustomerQueueButton" to="." method="_on_test_customer_queue_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestCustomerPopupButton" to="." method="_on_test_customer_popup_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestAcceptRefuseButton" to="." method="_on_test_accept_refuse_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestRelationshipWarningButton" to="." method="_on_test_relationship_warning_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestRelationshipBrokenButton" to="." method="_on_test_relationship_broken_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestEndDayButton" to="." method="_on_test_end_day_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestExaminationButton" to="." method="_on_test_examination_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/TestUVLightButton" to="." method="_on_test_uv_light_pressed"]
+[connection signal="pressed" from="HBoxContainer/ButtonScroll/ButtonPanel/ClearButton" to="." method="_on_clear_pressed"]
