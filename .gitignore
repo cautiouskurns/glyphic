@@ -1,0 +1,48 @@
+# Godot 4.x
+.godot/
+.import/
+/android/
+
+# Godot-specific ignores
+*.translation
+export.cfg
+export_presets.cfg
+
+# Mono-specific ignores (C# projects)
+.mono/
+data_*/
+mono_crash.*.json
+
+# System/OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+builds/
+*.exe
+*.pck
+*.zip
+*.dmg
+*.app
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
