@@ -8,6 +8,13 @@ extends Control
 @onready var right_panel = $RightPanel
 @onready var examination_screen = $Workspace/ExaminationScreen
 @onready var translation_display = $Workspace/TranslationDisplay
+@onready var queue_title = $LeftPanel/TitleLabel
+@onready var capacity_info = $LeftPanel/CapacityInfo
+@onready var difficulty_legend = $LeftPanel/DifficultyLegend
+
+# Get reference to cork board style from scene
+var corkboard_style: StyleBoxFlat
+var default_panel_style: StyleBoxFlat
 
 enum Tab {
 	WORK = 0,
@@ -29,6 +36,20 @@ var work_layout = {
 func _ready():
 	# Connect tab bar signal
 	tab_bar.tab_selected.connect(_on_tab_selected)
+
+	# Store panel styles
+	default_panel_style = left_panel.get_theme_stylebox("panel")
+
+	# Create cork board style
+	corkboard_style = StyleBoxFlat.new()
+	corkboard_style.bg_color = Color(0.76, 0.6, 0.42, 1)
+	corkboard_style.corner_radius_top_left = 8
+	corkboard_style.corner_radius_top_right = 8
+	corkboard_style.corner_radius_bottom_right = 8
+	corkboard_style.corner_radius_bottom_left = 8
+	corkboard_style.shadow_color = Color(0, 0, 0, 0.2)
+	corkboard_style.shadow_size = 6
+	corkboard_style.shadow_offset = Vector2(0, 3)
 
 	# Set initial tab
 	current_tab = Tab.WORK
@@ -85,6 +106,20 @@ func apply_work_layout():
 	tween_panel_rect(workspace, work_layout.workspace)
 	tween_panel_rect(right_panel, work_layout.right_panel)
 
+	# Restore default dark panel background
+	left_panel.add_theme_stylebox_override("panel", default_panel_style)
+
+	# Restore default title color (cream/beige)
+	queue_title.add_theme_color_override("font_color", Color(0.956863, 0.909804, 0.847059, 1))
+
+	# Hide capacity info and legend
+	capacity_info.visible = false
+	difficulty_legend.visible = false
+
+	# Set grid to 1 column for narrow left panel
+	if left_panel.has_method("set_grid_columns"):
+		left_panel.set_grid_columns(1)
+
 func apply_translation_layout():
 	"""Full-screen translation workspace"""
 	# Hide side panels
@@ -133,14 +168,35 @@ func apply_dictionary_layout():
 	tween_panel_rect(right_panel, {"left": 100, "top": 130, "right": 1820, "bottom": 780})
 
 func apply_queue_layout():
-	"""Full-screen customer queue"""
+	"""Full-screen customer queue with cork board grid"""
 	# Hide workspace and right panel
 	set_panel_visible_animated(workspace, false)
 	set_panel_visible_animated(right_panel, false)
 
-	# Expand left panel to full width
+	# Expand left panel to full width with padding for cork board aesthetic
 	set_panel_visible_animated(left_panel, true)
-	tween_panel_rect(left_panel, {"left": 0, "top": 130, "right": 1920, "bottom": 780})
+	tween_panel_rect(left_panel, {"left": 100, "top": 130, "right": 1820, "bottom": 780})
+
+	# Apply cork board background
+	left_panel.add_theme_stylebox_override("panel", corkboard_style)
+
+	# Update title color for cork board (darker brown for contrast)
+	queue_title.add_theme_color_override("font_color", Color(0.25, 0.18, 0.13, 1))
+
+	# Show capacity info and difficulty legend
+	capacity_info.visible = true
+	difficulty_legend.visible = true
+
+	# Update capacity info text
+	var remaining = GameState.max_capacity - GameState.capacity_used
+	if remaining > 0:
+		capacity_info.text = "%d slot%s remaining today" % [remaining, "s" if remaining != 1 else ""]
+	else:
+		capacity_info.text = "No slots remaining today"
+
+	# Set grid to 3 columns for wide cork board view
+	if left_panel.has_method("set_grid_columns"):
+		left_panel.set_grid_columns(3)
 
 func set_panel_visible_animated(panel: Control, is_visible: bool):
 	"""Fade in/out panel visibility"""

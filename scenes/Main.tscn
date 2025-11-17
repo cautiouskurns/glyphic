@@ -1,21 +1,29 @@
-[gd_scene load_steps=17 format=3 uid="uid://50jplsqs8xpu"]
+[gd_scene load_steps=19 format=3 uid="uid://50jplsqs8xpu"]
 
-[ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="Script" uid="uid://c1121artwyxcj" path="res://scripts/ui/DayLabel.gd" id="1_day"]
+[ext_resource type="Script" uid="uid://d0hnb5k3hw8yj" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="Script" uid="uid://b88wqxj6a2xxo" path="res://scripts/ui/CapacityLabel.gd" id="2_capacity"]
 [ext_resource type="Script" uid="uid://yn6suh6di6cn" path="res://scripts/ui/CashLabel.gd" id="3_cash"]
 [ext_resource type="PackedScene" uid="uid://c8vqm8yvwknfb" path="res://scenes/ui/DebugConsole.tscn" id="4_debug"]
-[ext_resource type="PackedScene" path="res://scenes/ui/TranslationDisplay.tscn" id="5_translation"]
+[ext_resource type="PackedScene" uid="uid://dxqm8yvwknfc" path="res://scenes/ui/TranslationDisplay.tscn" id="5_translation"]
 [ext_resource type="Script" uid="uid://b51t38opabuo4" path="res://scripts/ui/DictionaryPanel.gd" id="6_dictionary"]
 [ext_resource type="Script" uid="uid://ckw5akjfpk7hb" path="res://scripts/ui/CustomerQueuePanel.gd" id="7_queue"]
-[ext_resource type="PackedScene" path="res://scenes/ui/CustomerPopup.tscn" id="8_popup"]
+[ext_resource type="PackedScene" uid="uid://c1vqoa0wmlgfy" path="res://scenes/ui/CustomerPopup.tscn" id="8_popup"]
 [ext_resource type="Script" uid="uid://cky5vljfxird2" path="res://scripts/ui/DialogueBox.gd" id="9_dialogue"]
-[ext_resource type="PackedScene" path="res://scenes/ui/EndDayButton.tscn" id="10_endday"]
-[ext_resource type="PackedScene" path="res://scenes/ui/DayTransition.tscn" id="11_transition"]
-[ext_resource type="PackedScene" path="res://scenes/ui/ExaminationScreen.tscn" id="12_examination"]
+[ext_resource type="PackedScene" uid="uid://b6tamcdmb4rjc" path="res://scenes/ui/EndDayButton.tscn" id="10_endday"]
+[ext_resource type="PackedScene" uid="uid://davqnayvwknfc" path="res://scenes/ui/DayTransition.tscn" id="11_transition"]
+[ext_resource type="PackedScene" uid="uid://bexamscreen1" path="res://scenes/ui/ExaminationScreen.tscn" id="12_examination"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar"]
 bg_color = Color(0.164706, 0.121569, 0.101961, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_unselected"]
+bg_color = Color(0.164706, 0.121569, 0.101961, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_selected"]
+bg_color = Color(0.290196, 0.215686, 0.156863, 1)
+border_width_bottom = 3
+border_color = Color(0.956863, 0.909804, 0.847059, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.164706, 0.121569, 0.101961, 1)
@@ -30,14 +38,6 @@ bg_color = Color(0.227451, 0.145098, 0.0941176, 1)
 border_width_top = 2
 border_color = Color(0.290196, 0.215686, 0.156863, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_selected"]
-bg_color = Color(0.290196, 0.215686, 0.156863, 1)
-border_width_bottom = 3
-border_color = Color(0.956863, 0.909804, 0.847059, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_unselected"]
-bg_color = Color(0.164706, 0.121569, 0.101961, 1)
-
 [node name="Main" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -46,6 +46,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_main")
+metadata/_edit_lock_ = true
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 0
@@ -122,8 +123,9 @@ offset_bottom = 130.0
 theme_override_colors/font_selected_color = Color(0.956863, 0.909804, 0.847059, 1)
 theme_override_colors/font_unselected_color = Color(0.7, 0.65, 0.6, 1)
 theme_override_font_sizes/font_size = 18
-theme_override_styles/tab_selected = SubResource("StyleBoxFlat_tab_selected")
 theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_tab_unselected")
+theme_override_styles/tab_selected = SubResource("StyleBoxFlat_tab_selected")
+current_tab = 0
 tab_count = 5
 tab_0/title = "📋 Work"
 tab_1/title = "📝 Translation"
@@ -150,17 +152,113 @@ theme_override_colors/font_color = Color(0.956863, 0.909804, 0.847059, 1)
 theme_override_font_sizes/font_size = 30
 text = "Today's Customers"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="LeftPanel"]
+[node name="CapacityInfo" type="Label" parent="LeftPanel"]
+visible = false
 layout_mode = 0
 offset_left = 20.0
-offset_top = 70.0
+offset_top = 635.0
 offset_right = 400.0
-offset_bottom = 670.0
+offset_bottom = 655.0
+theme_override_colors/font_color = Color(0.8, 0.75, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "5 slots remaining today"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="LeftPanel/ScrollContainer"]
+[node name="DifficultyLegend" type="VBoxContainer" parent="LeftPanel"]
+visible = false
+layout_mode = 0
+offset_left = 20.0
+offset_top = 580.0
+offset_right = 400.0
+offset_bottom = 630.0
+theme_override_constants/separation = 4
+
+[node name="LegendTitle" type="Label" parent="LeftPanel/DifficultyLegend"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.75, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+text = "Difficulty Legend:"
+
+[node name="LegendRow" type="HBoxContainer" parent="LeftPanel/DifficultyLegend"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="EasyPin" type="HBoxContainer" parent="LeftPanel/DifficultyLegend/LegendRow"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Pin" type="ColorRect" parent="LeftPanel/DifficultyLegend/LegendRow/EasyPin"]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+color = Color(0.4, 0.7, 0.4, 1)
+
+[node name="Label" type="Label" parent="LeftPanel/DifficultyLegend/LegendRow/EasyPin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.65, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "Easy"
+
+[node name="MediumPin" type="HBoxContainer" parent="LeftPanel/DifficultyLegend/LegendRow"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Pin" type="ColorRect" parent="LeftPanel/DifficultyLegend/LegendRow/MediumPin"]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+color = Color(0.9, 0.7, 0.2, 1)
+
+[node name="Label" type="Label" parent="LeftPanel/DifficultyLegend/LegendRow/MediumPin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.65, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "Medium"
+
+[node name="HardPin" type="HBoxContainer" parent="LeftPanel/DifficultyLegend/LegendRow"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Pin" type="ColorRect" parent="LeftPanel/DifficultyLegend/LegendRow/HardPin"]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+color = Color(0.85, 0.3, 0.2, 1)
+
+[node name="Label" type="Label" parent="LeftPanel/DifficultyLegend/LegendRow/HardPin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.65, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "Hard"
+
+[node name="ExpertPin" type="HBoxContainer" parent="LeftPanel/DifficultyLegend/LegendRow"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Pin" type="ColorRect" parent="LeftPanel/DifficultyLegend/LegendRow/ExpertPin"]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+color = Color(0.6, 0.3, 0.7, 1)
+
+[node name="Label" type="Label" parent="LeftPanel/DifficultyLegend/LegendRow/ExpertPin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.65, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "Expert"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="LeftPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 70.0
+offset_right = -20.0
+offset_bottom = -110.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer" type="GridContainer" parent="LeftPanel/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 20
 
 [node name="Workspace" type="Control" parent="."]
 anchors_preset = 0
@@ -224,41 +322,41 @@ custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 11
-text = "All"
 toggle_mode = true
 button_pressed = true
+text = "All"
 
 [node name="ElementalButton" type="Button" parent="RightPanel/Header/FilterButtons"]
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 11
-text = "Elemental"
 toggle_mode = true
+text = "Elemental"
 
 [node name="StructuralButton" type="Button" parent="RightPanel/Header/FilterButtons"]
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 11
-text = "Structural"
 toggle_mode = true
+text = "Structural"
 
 [node name="TemporalButton" type="Button" parent="RightPanel/Header/FilterButtons"]
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 11
-text = "Temporal"
 toggle_mode = true
+text = "Temporal"
 
 [node name="MysticalButton" type="Button" parent="RightPanel/Header/FilterButtons"]
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 11
-text = "Mystical"
 toggle_mode = true
+text = "Mystical"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="RightPanel"]
 layout_mode = 1
@@ -319,8 +417,16 @@ offset_bottom = 0.0
 [node name="CustomerPopup" parent="." instance=ExtResource("8_popup")]
 layout_mode = 0
 anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="EndDayButton" parent="." instance=ExtResource("10_endday")]
 layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 250.0
+offset_bottom = 60.0
 
 [node name="DayTransition" parent="." instance=ExtResource("11_transition")]

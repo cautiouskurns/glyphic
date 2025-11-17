@@ -1,117 +1,179 @@
-[gd_scene load_steps=4 format=3 uid="uid://ehu172nddrn6"]
+[gd_scene load_steps=6 format=3 uid="uid://ehu172nddrn6"]
 
-[ext_resource type="Script" path="res://scripts/ui/CustomerCard.gd" id="1_card"]
+[ext_resource type="Script" uid="uid://lkgyv3i1e1wj" path="res://scripts/ui/CustomerCard.gd" id="1_card"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
-bg_color = Color(0.956863, 0.909804, 0.847059, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pin"]
+bg_color = Color(1, 1, 1, 0)
+draw_center = false
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0)
+shadow_size = 0
+shadow_offset = Vector2(0, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_difficulty"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 1, 1, 0)
+draw_center = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_broken_banner"]
+bg_color = Color(0.545098, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_priority"]
+bg_color = Color(1, 0.2, 0.2, 0.15)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.227451, 0.145098, 0.0941176, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_broken_banner"]
-bg_color = Color(0.545098, 0.0, 0.0, 1)
+border_color = Color(1, 0.2, 0.2, 1)
 
 [node name="CustomerCard" type="PanelContainer"]
-custom_minimum_size = Vector2(360, 110)
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+custom_minimum_size = Vector2(520, 220)
 script = ExtResource("1_card")
+
+[node name="Pin" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 248.0
+offset_top = -8.0
+offset_right = 272.0
+offset_bottom = 16.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_pin")
+
+[node name="PinCenter" type="Panel" parent="Pin"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 18.0
+offset_bottom = 18.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_pin")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 5
+theme_override_constants/separation = 8
 
-[node name="TopRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-
-[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer/TopRow"]
-layout_mode = 2
-size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.164706, 0.121569, 0.101961, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "Customer Name"
-
-[node name="PaymentLabel" type="Label" parent="MarginContainer/VBoxContainer/TopRow"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.176471, 0.501961, 0.0862745, 1)
-theme_override_font_sizes/font_size = 18
-text = "$100"
-horizontal_alignment = 2
 
 [node name="DifficultyRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_constants/separation = 8
 
-[node name="DifficultyBadge" type="Label" parent="MarginContainer/VBoxContainer/DifficultyRow"]
+[node name="DifficultyBadge" type="PanelContainer" parent="MarginContainer/VBoxContainer/DifficultyRow"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.6, 0.2, 1)
-theme_override_font_sizes/font_size = 14
-text = "★★☆☆☆"
+theme_override_styles/panel = SubResource("StyleBoxFlat_difficulty")
 
-[node name="DescriptionLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+[node name="HBox" type="HBoxContainer" parent="MarginContainer/VBoxContainer/DifficultyRow/DifficultyBadge"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DifficultyLabel" type="Label" parent="MarginContainer/VBoxContainer/DifficultyRow/DifficultyBadge/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
+theme_override_font_sizes/font_size = 11
+text = "EASY"
+
+[node name="StarsLabel" type="Label" parent="MarginContainer/VBoxContainer/DifficultyRow/DifficultyBadge/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = "●●○○○"
+
+[node name="MetaRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TimeContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MetaRow"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ClockIcon" type="Label" parent="MarginContainer/VBoxContainer/MetaRow/TimeContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
 theme_override_font_sizes/font_size = 14
-text = "Customer description here"
+text = "🕐"
+
+[node name="TimeLabel" type="Label" parent="MarginContainer/VBoxContainer/MetaRow/TimeContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "2:00 PM"
+
+[node name="PaymentContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MetaRow"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DollarIcon" type="Label" parent="MarginContainer/VBoxContainer/MetaRow/PaymentContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.176471, 0.501961, 0.0862745, 1)
+theme_override_font_sizes/font_size = 14
+text = "$"
+
+[node name="PaymentLabel" type="Label" parent="MarginContainer/VBoxContainer/MetaRow/PaymentContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.176471, 0.501961, 0.0862745, 1)
+theme_override_font_sizes/font_size = 14
+text = "45"
+
+[node name="DescriptionLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.25, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+text = "Sweet elderly woman. Always brings cookies."
 autowrap_mode = 3
-text_overrun_behavior = 3
-max_lines_visible = 2
+max_lines_visible = 3
+
+[node name="SignatureLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.4, 0.35, 1)
+theme_override_font_sizes/font_size = 11
+horizontal_alignment = 2
 
 [node name="StatusLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.176471, 0.501961, 0.0862745, 1)
 theme_override_font_sizes/font_size = 18
 text = "ACCEPTED"
 horizontal_alignment = 1
-visible = false
 
 [node name="StatusBadge" type="Label" parent="."]
-layout_mode = 0
-offset_left = 310.0
-offset_top = 10.0
-offset_right = 350.0
-offset_bottom = 50.0
+visible = false
+layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 32
 text = "✓"
 horizontal_alignment = 1
 vertical_alignment = 1
-visible = false
 
 [node name="WarningTriangle" type="Label" parent="."]
-layout_mode = 0
-offset_left = 320.0
-offset_top = 80.0
-offset_right = 344.0
-offset_bottom = 104.0
-theme_override_colors/font_color = Color(0.8, 0.6, 0.0, 1)
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.6, 0, 1)
 theme_override_font_sizes/font_size = 20
 text = "▲"
 horizontal_alignment = 1
 vertical_alignment = 1
-visible = false
 
 [node name="BrokenBanner" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 280.0
-offset_top = 30.0
-offset_right = 450.0
-offset_bottom = 70.0
-rotation = -0.785398
+visible = false
+layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_broken_banner")
-visible = false
 
 [node name="BannerLabel" type="Label" parent="BrokenBanner"]
 layout_mode = 1
@@ -123,6 +185,34 @@ grow_vertical = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 12
 text = "RELATIONSHIP BROKEN"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PriorityStamp" type="Panel" parent="."]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_priority")
+
+[node name="StampLabel" type="Label" parent="PriorityStamp"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.2, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "PRIORITY"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HeartIcon" type="Label" parent="."]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.5, 1)
+theme_override_font_sizes/font_size = 20
+text = "♥"
 horizontal_alignment = 1
 vertical_alignment = 1
 
