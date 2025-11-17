@@ -173,11 +173,11 @@ color = Color(0.25, 0.2, 0.15, 1)
 
 [node name="DoorLight" type="ColorRect" parent="Doorway"]
 layout_mode = 1
-offset_left = 49.0
+offset_left = 33.0
 offset_top = 48.0
-offset_right = 349.0
+offset_right = 333.0
 offset_bottom = 498.0
-scale = Vector2(0.7974703, 1.0562136)
+scale = Vector2(1.1162796, 1.1363229)
 color = Color(0.831373, 0.784314, 0.709804, 1)
 
 [node name="WindowDivider" type="ColorRect" parent="Doorway/DoorLight"]

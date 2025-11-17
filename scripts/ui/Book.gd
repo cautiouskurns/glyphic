@@ -9,9 +9,15 @@ extends PanelContainer
 var spine_symbols = ["∆", "◊", "○", "□", "▽", "◈", "⬡", "※", "✦", "★", "◉", "◎"]
 var spine_letters = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "A", "B", "C", "D"]
 
+# Store book appearance data
+var book_color: Color
+var book_spine_text: String = ""
+var skip_randomization: bool = false
+
 func _ready():
 	"""Apply book styling with outline and shadow"""
-	randomize_appearance()
+	if not skip_randomization:
+		randomize_appearance()
 
 func randomize_appearance():
 	"""Set random book appearance with warm brown tones"""
@@ -24,7 +30,7 @@ func randomize_appearance():
 	var hue_base = 0.08 + randf_range(-0.02, 0.02)  # Around brown/orange
 	var saturation = randf_range(0.4, 0.7)
 	var value = randf_range(0.2, 0.45)
-	var book_color = Color.from_hsv(hue_base, saturation, value)
+	book_color = Color.from_hsv(hue_base, saturation, value)
 
 	# Create book style with outline and shadow
 	var book_style = StyleBoxFlat.new()
@@ -58,10 +64,12 @@ func randomize_appearance():
 	if randf() < 0.3:
 		if randf() < 0.5:
 			# Symbol
-			spine_text.text = spine_symbols[randi() % spine_symbols.size()]
+			book_spine_text = spine_symbols[randi() % spine_symbols.size()]
 		else:
 			# Letter/number
-			spine_text.text = spine_letters[randi() % spine_letters.size()]
+			book_spine_text = spine_letters[randi() % spine_letters.size()]
+
+		spine_text.text = book_spine_text
 
 		# Make text color slightly lighter than book for subtle contrast
 		spine_text.add_theme_color_override("font_color", Color(
@@ -71,6 +79,7 @@ func randomize_appearance():
 			0.6
 		))
 	else:
+		book_spine_text = ""
 		spine_text.text = ""
 
 	# Slight random tilt
@@ -78,6 +87,8 @@ func randomize_appearance():
 
 func set_color_override(color: Color):
 	"""Manually set book color instead of random"""
+	book_color = color
+
 	var book_style = StyleBoxFlat.new()
 	book_style.bg_color = color
 
@@ -98,3 +109,42 @@ func set_color_override(color: Color):
 
 	add_theme_stylebox_override("panel", book_style)
 	book_spine.color = Color(color.r * 0.8, color.g * 0.8, color.b * 0.8, 1)
+
+func get_book_data() -> Dictionary:
+	"""Get all book appearance data for saving"""
+	return {
+		"color": book_color,
+		"spine_text": book_spine_text,
+		"size": custom_minimum_size,
+		"rotation": rotation
+	}
+
+func restore_appearance(data: Dictionary):
+	"""Restore book appearance from saved data"""
+	skip_randomization = true
+
+	# Set size first
+	if data.has("size"):
+		custom_minimum_size = data.size
+
+	# Restore color
+	if data.has("color"):
+		set_color_override(data.color)
+
+	# Restore spine text
+	if data.has("spine_text"):
+		book_spine_text = data.spine_text
+		spine_text.text = book_spine_text
+
+		# Set text color if there's text
+		if book_spine_text != "":
+			spine_text.add_theme_color_override("font_color", Color(
+				book_color.r * 1.4,
+				book_color.g * 1.4,
+				book_color.b * 1.4,
+				0.6
+			))
+
+	# Restore rotation
+	if data.has("rotation"):
+		rotation = data.rotation

@@ -15,8 +15,12 @@ extends Control
 # Preload book scene
 var book_scene = preload("res://scenes/ui/Book.tscn")
 
+# Store references to top bar labels for updating
+var day_label: Label
+var cash_label: Label
+
 func _ready():
-	"""Initialize shop scene"""
+	"""Initialize shop scene (only runs once now that scene persists)"""
 	add_top_bar()
 	setup_lighting()
 	setup_wood_paneling()
@@ -25,9 +29,12 @@ func _ready():
 	add_shelf_dividers(left_bookshelf2)
 	add_shelf_dividers(right_bookshelf)
 	setup_doorway_scene()
+
+	# Generate books (only happens once since scene persists)
 	generate_books(left_books_container, 70)
 	generate_books(left_books_container2, 70)
 	generate_books(right_books_container, 65)
+
 	setup_papers_styling()
 	setup_book_styling()
 	add_desk_texture()
@@ -50,8 +57,8 @@ func add_top_bar():
 	top_bar.add_theme_stylebox_override("panel", top_bar_style)
 	add_child(top_bar)
 
-	# Day label
-	var day_label = Label.new()
+	# Day label - store reference for updates
+	day_label = Label.new()
 	day_label.position = Vector2(30, 30)
 	day_label.size = Vector2(345, 38)
 	day_label.text = "Day %d - %s" % [GameState.current_day, get_day_name(GameState.current_day)]
@@ -59,8 +66,8 @@ func add_top_bar():
 	day_label.add_theme_font_size_override("font_size", 27)
 	top_bar.add_child(day_label)
 
-	# Cash label
-	var cash_label = Label.new()
+	# Cash label - store reference for updates
+	cash_label = Label.new()
 	cash_label.position = Vector2(1550, 22)
 	cash_label.size = Vector2(340, 46)
 	cash_label.text = "$%d" % GameState.player_cash
@@ -703,9 +710,24 @@ func _on_button_hover(button: Button, is_hovering: bool):
 
 func _on_button_pressed(callback: Callable):
 	"""Handle click on interactive button"""
-	print("Button pressed! Executing callback...")
 	callback.call()
 
 func _input(event):
 	"""Handle input"""
 	pass
+
+func hide_shop():
+	"""Hide shop UI when navigating to game screens"""
+	visible = false
+
+func show_shop():
+	"""Show shop UI when returning from game screens"""
+	visible = true
+	update_top_bar()
+
+func update_top_bar():
+	"""Update day and money displays on the top bar"""
+	if day_label:
+		day_label.text = "Day %d - %s" % [GameState.current_day, get_day_name(GameState.current_day)]
+	if cash_label:
+		cash_label.text = "$%d" % GameState.player_cash

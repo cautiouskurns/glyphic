@@ -33,6 +33,8 @@ var work_layout = {
 	"right_panel": {"left": 1500, "top": 130, "right": 1920, "bottom": 780}
 }
 
+var return_button_added: bool = false
+
 func _ready():
 	# Connect tab bar signal
 	tab_bar.tab_selected.connect(_on_tab_selected)
@@ -51,6 +53,20 @@ func _ready():
 	corkboard_style.shadow_size = 6
 	corkboard_style.shadow_offset = Vector2(0, 3)
 
+	# Add return to shop button (only once)
+	if not return_button_added:
+		add_return_to_shop_button()
+		return_button_added = true
+
+	# Apply initial layout
+	apply_initial_tab()
+
+func apply_initial_tab():
+	"""Apply the appropriate tab when scene becomes visible"""
+	# Make sure the scene is ready before accessing onready variables
+	if not tab_bar:
+		return
+
 	# Check if we came from shop with a target tab
 	if SceneManager.target_tab >= 0:
 		current_tab = SceneManager.target_tab
@@ -61,18 +77,20 @@ func _ready():
 		current_tab = Tab.WORK
 		apply_tab_layout(Tab.WORK)
 
-	# Add "Return to Shop" button if we came from shop
-	if SceneManager.is_from_shop():
-		add_return_to_shop_button()
+func _notification(what):
+	"""Handle visibility changes"""
+	if what == NOTIFICATION_VISIBILITY_CHANGED:
+		if visible and is_node_ready():
+			# Scene just became visible and is ready, apply the target tab
+			apply_initial_tab()
 
 func _input(event):
 	"""Handle keyboard shortcuts for tab switching"""
-	if event is InputEventKey and event.pressed:
+	if event is InputEventKey and event.pressed and visible:
 		match event.keycode:
 			KEY_ESCAPE:
-				# Return to shop if we came from there
-				if SceneManager.is_from_shop():
-					SceneManager.return_to_shop()
+				# Return to shop
+				SceneManager.return_to_shop()
 			KEY_1:
 				tab_bar.current_tab = Tab.WORK
 				_on_tab_selected(Tab.WORK)
