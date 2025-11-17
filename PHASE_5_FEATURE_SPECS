@@ -1021,6 +1021,2528 @@ ReferenceBook (Panel) - 700×800px
 
 ---
 
-(Continuing with features 3A.4 through 3A.9...)
+## Feature 3A.4: Diegetic Reference Manager
 
-Would you like me to continue with the remaining 6 features (3A.4: Diegetic Reference Manager, 3A.5: Main Book Workspace, 3A.6: Working Dictionary Panel, 3A.7: Customer Context Card, 3A.8: Tab Stacking System, 3A.9: Hover & Interaction Polish)?
+**Priority:** CRITICAL - Central orchestrator for entire diegetic system
+
+**Tests Critical Question:** Q3 (Engaging texture) - Does coordinated book management prevent chaos when multiple books are open?
+
+**Estimated Time:** 90 minutes
+
+**Dependencies:**
+- Feature 3A.1 (Interactive Bookshelf) must be complete
+- Feature 3A.2 (Workspace Zones) must be complete
+- Feature 3A.3 (Reference Book Sliding) must be complete
+
+---
+
+### Overview
+
+DiegeticReferenceManager is the central controller that listens to bookshelf clicks, instantiates reference books, manages the stack of open books (max 3), handles tab switching, and coordinates close animations. It's the "brain" that makes all the diegetic pieces work together without player confusion.
+
+**Critical Design Constraint:** Maximum 3 reference books open simultaneously. Opening a 4th automatically closes the oldest.
+
+---
+
+### What Player Sees
+
+**Screen Layout:**
+- No direct visuals - this is a controller
+- Player sees results: Books sliding, stacking, closing
+
+**Visual Feedback:**
+- When max reached: Oldest book auto-closes as new one opens
+- Smooth coordination: Never see "book appears then moves" - appears already moving
+
+---
+
+### What Player Does
+
+**Input Methods:**
+- Player clicks spines (Feature 3A.1)
+- Manager handles everything automatically
+- Player sees seamless coordination
+
+**Immediate Response:**
+- Click spine → Book slides down within 50ms
+- Open 4th book → Oldest closes first, then new one opens
+- Click tab → Book comes to front within 0.3s
+
+**Feedback Loop:**
+
+**Example: Opening 4 books in sequence**
+1. **Click Grimoire:** Slides down to Reference Area position (1100, 150)
+2. **Click Translations:** Slides down BEHIND Grimoire, offset (1130, 150)
+3. **Click Context:** Slides down behind both, offset (1160, 150)
+4. **Click Notes:** Grimoire auto-closes (returns to shelf), Notes slides down
+
+---
+
+### Underlying Behavior
+
+**GDScript Structure:**
+
+```gdscript
+# res://scripts/managers/DiegeticReferenceManager.gd
+extends Node
+
+const MAX_OPEN_REFERENCES = 3
+const REFERENCE_AREA_START = Vector2(1100, 150)
+const STACK_OFFSET = Vector2(30, 0)
+
+# Book scene references
+var grimoire_scene = preload("res://scenes/ui/books/GrimoireBook.tscn")
+var translations_scene = preload("res://scenes/ui/books/TranslationsBook.tscn")
+var context_scene = preload("res://scenes/ui/books/ContextBook.tscn")
+var notes_scene = preload("res://scenes/ui/books/NotesBook.tscn")
+
+# Track open books
+var open_books: Array[String] = []  # Book names in order (oldest first)
+var book_instances: Dictionary = {}  # book_name -> ReferenceBook node
+var active_book: String = ""  # Which book is on top
+
+# References to other systems
+@onready var bookshelf: InteractiveBookshelf
+@onready var workspace: Node2D
+
+signal book_opened(book_name: String)
+signal book_closed(book_name: String)
+signal active_book_changed(book_name: String)
+
+func _ready():
+    # Connect to bookshelf clicks
+    bookshelf = get_node("/root/MainScene/InteractiveBookshelf")
+    workspace = get_node("/root/MainScene/Workspace")
+    
+    bookshelf.book_clicked.connect(_on_book_clicked)
+
+func _on_book_clicked(book_name: String):
+    """Handle spine click from Interactive Bookshelf"""
+    
+    if book_name in open_books:
+        # Book already open - bring to front OR close
+        if active_book == book_name:
+            # Clicking active book = close it
+            close_reference(book_name)
+        else:
+            # Clicking background book = bring to front
+            bring_to_front(book_name)
+    else:
+        # Book not open - open it
+        open_reference(book_name)
+
+func open_reference(book_name: String):
+    """Open a new reference book"""
+    
+    # Check max limit
+    if open_books.size() >= MAX_OPEN_REFERENCES:
+        # Close oldest book first
+        var oldest = open_books[0]
+        close_reference(oldest)
+        await get_tree().create_timer(0.5).timeout  # Wait for close animation
+    
+    # Get spine position for animation start
+    var spine_node = bookshelf.get_spine_node(book_name)
+    var spine_global_pos = spine_node.global_position
+    
+    # Calculate target position (stacked)
+    var stack_index = open_books.size()
+    var target_position = REFERENCE_AREA_START + (STACK_OFFSET * stack_index)
+    
+    # Instantiate book
+    var book_instance = create_book_instance(book_name)
+    book_instances[book_name] = book_instance
+    workspace.add_child(book_instance)
+    
+    # Set z_index (higher = on top)
+    book_instance.z_index = 10 + stack_index
+    
+    # Connect signals
+    book_instance.book_closed.connect(_on_book_close_requested.bind(book_name))
+    
+    # Slide from shelf
+    book_instance.slide_from_shelf(spine_global_pos, target_position)
+    
+    # Track as open
+    open_books.append(book_name)
+    active_book = book_name
+    
+    book_opened.emit(book_name)
+    active_book_changed.emit(book_name)
+
+func create_book_instance(book_name: String) -> ReferenceBook:
+    """Instantiate the correct book scene"""
+    match book_name:
+        "grimoire":
+            return grimoire_scene.instantiate()
+        "translations":
+            return translations_scene.instantiate()
+        "context":
+            return context_scene.instantiate()
+        "notes":
+            return notes_scene.instantiate()
+    
+    push_error("Unknown book name: " + book_name)
+    return null
+
+func close_reference(book_name: String):
+    """Close a reference book"""
+    
+    if book_name not in open_books:
+        return
+    
+    var book_instance = book_instances[book_name]
+    var spine_node = bookshelf.get_spine_node(book_name)
+    var spine_global_pos = spine_node.global_position
+    
+    # Slide back to shelf
+    book_instance.slide_to_shelf(spine_global_pos)
+    
+    # Remove from tracking
+    open_books.erase(book_name)
+    book_instances.erase(book_name)
+    
+    # Update active book
+    if active_book == book_name:
+        active_book = open_books[-1] if open_books.size() > 0 else ""
+        if active_book:
+            active_book_changed.emit(active_book)
+    
+    # Restack remaining books
+    update_stack_positions()
+    
+    book_closed.emit(book_name)
+
+func bring_to_front(book_name: String):
+    """Bring a background book to the front"""
+    
+    if book_name not in open_books:
+        return
+    
+    # Remove from current position
+    open_books.erase(book_name)
+    
+    # Add to end (top of stack)
+    open_books.append(book_name)
+    active_book = book_name
+    
+    # Update visual stack
+    update_stack_positions()
+    
+    active_book_changed.emit(book_name)
+
+func update_stack_positions():
+    """Reposition all open books based on stack order"""
+    
+    for i in range(open_books.size()):
+        var book_name = open_books[i]
+        var book_instance = book_instances[book_name]
+        var is_top = (i == open_books.size() - 1)
+        
+        # Calculate position (stacked offset)
+        var offset = STACK_OFFSET * (open_books.size() - 1 - i)
+        var target_pos = REFERENCE_AREA_START + offset
+        
+        # Calculate opacity (fade background books)
+        var target_alpha = 1.0 if is_top else 0.7 - ((open_books.size() - 1 - i) * 0.15)
+        
+        # Update z_index
+        book_instance.z_index = 10 + i
+        
+        # Animate to new position
+        var tween = create_tween()
+        tween.set_parallel(true)
+        tween.tween_property(book_instance, "position", target_pos, 0.3)
+        tween.tween_property(book_instance, "modulate:a", target_alpha, 0.3)
+
+func _on_book_close_requested(book_name: String):
+    """User clicked close button on a book"""
+    close_reference(book_name)
+
+func get_active_book_name() -> String:
+    return active_book
+
+func is_book_open(book_name: String) -> bool:
+    return book_name in open_books
+
+func get_open_book_count() -> int:
+    return open_books.size()
+```
+
+**Key Numbers:**
+- Max open books: 3
+- Stack offset: 30px horizontal per book
+- Fade amount: 0.15 per stacked book
+- Restack animation: 0.3s
+- Auto-close delay: 0.5s (wait for animation)
+- Z-index start: 10 (references above desk, below UI)
+
+---
+
+### Acceptance Criteria
+
+**Visual Checks:**
+- [ ] Books stack with 30px horizontal offset
+- [ ] Background books fade (alpha 0.7, 0.55, etc.)
+- [ ] Only top book is fully opaque (alpha 1.0)
+- [ ] Z-index ensures correct stacking order
+
+**Interaction Checks:**
+- [ ] Click spine → Book opens in Reference Area
+- [ ] Click spine again → Book closes and returns to shelf
+- [ ] Click 4th book → Oldest closes first automatically
+- [ ] Click background book tab → Brings to front
+
+**Functional Checks:**
+- [ ] open_books array tracks correctly (max 3)
+- [ ] book_instances dictionary has correct references
+- [ ] active_book string always matches top book
+- [ ] Signals emit at correct times:
+  - [ ] book_opened when book slides down
+  - [ ] book_closed when book returns to shelf
+  - [ ] active_book_changed when stack reorders
+
+**Integration Checks:**
+- [ ] Connects to bookshelf.book_clicked signal
+- [ ] Uses WorkspaceZones.REFERENCE_AREA constant
+- [ ] Instantiates correct book scenes (grimoire_scene, etc.)
+- [ ] Book instances connect book_closed signal back to manager
+
+**State Management Checks:**
+- [ ] Opening book A, B, C → open_books = ["A", "B", "C"]
+- [ ] Closing book B → open_books = ["A", "C"]
+- [ ] Opening book D (4th) → Auto-closes A → open_books = ["B", "C", "D"]
+- [ ] Bringing B to front → open_books = ["C", "D", "B"]
+
+**Edge Case Checks:**
+- [ ] Rapid clicks (open/close/open) handle gracefully
+- [ ] Closing book during slide animation completes correctly
+- [ ] Opening 4th book during close animation waits properly
+- [ ] All books closed → active_book = ""
+
+---
+
+### Manual Test Script
+
+1. **Test basic open/close:**
+   ```
+   - Click Grimoire spine
+   - Verify: Grimoire slides down to (1100, 150)
+   - Verify: open_books = ["grimoire"]
+   - Verify: active_book = "grimoire"
+   - Click Grimoire spine again
+   - Verify: Grimoire slides back to shelf
+   - Verify: open_books = []
+   ```
+
+2. **Test stacking:**
+   ```
+   - Click Grimoire → Position (1100, 150), z_index 10
+   - Click Translations → Position (1130, 150), z_index 11
+   - Verify: Grimoire alpha = 0.7 (faded)
+   - Verify: Translations alpha = 1.0 (full opacity)
+   - Click Context → Position (1160, 150), z_index 12
+   - Verify: Grimoire alpha = 0.55
+   - Verify: Translations alpha = 0.7
+   - Verify: Context alpha = 1.0
+   ```
+
+3. **Test max limit (3 books):**
+   ```
+   - Open Grimoire, Translations, Context (3 books)
+   - Click Notes spine (4th book)
+   - Verify: Grimoire closes automatically (slides to shelf)
+   - Wait 0.5s for close animation
+   - Verify: Notes slides down
+   - Verify: open_books = ["translations", "context", "notes"]
+   ```
+
+4. **Test bring to front:**
+   ```
+   - Open Grimoire, Translations, Context (in that order)
+   - Click Grimoire tab (Feature 3A.8 will add tabs)
+   - OR: Click Grimoire spine again to bring forward
+   - Verify: Grimoire comes to front (position and z_index update)
+   - Verify: open_books = ["translations", "context", "grimoire"]
+   - Verify: Grimoire alpha = 1.0, others fade
+   ```
+
+5. **Test rapid interactions:**
+   ```
+   - Rapidly click: Grimoire, Translations, Grimoire, Context
+   - Verify: No errors in console
+   - Verify: Final state is consistent
+   - Verify: Animations complete correctly (no stuck books)
+   ```
+
+6. **Pass criteria:** All book states tracked correctly, max 3 enforced, stacking visual hierarchy clear
+
+---
+
+### Known Simplifications
+
+**Phase 3A shortcuts:**
+- Linear stack (horizontal offset only)
+- Simple fade formula (0.15 per book)
+- No fancy shuffle animations when restacking
+- 0.5s hardcoded delay between auto-close and new open
+
+**Technical debt:**
+- await get_tree().create_timer() for sequencing
+  - **Impact:** Blocks during wait, can't cancel
+  - **Solution:** Use proper async state machine
+- Hardcoded book scene paths
+  - **Impact:** Can't add books without code changes
+  - **Solution:** Data-driven book registry
+- No animation interruption handling
+  - **Impact:** Must wait for animations to complete
+  - **Acceptable:** Animations are fast (0.3-0.5s)
+
+---
+
+## Feature 3A.5: Main Book Workspace
+
+**Priority:** HIGH - The focus area for active translation
+
+**Tests Critical Question:** Q2 (Clear puzzle design) - Does seeing the book context while accessing references improve translation clarity?
+
+**Estimated Time:** 60 minutes
+
+**Dependencies:**
+- Feature 3A.2 (Workspace Zones) must be complete
+- Phase 2A (Translation Workspace) must be complete for content
+
+---
+
+### Overview
+
+Main Book Workspace displays the customer's book in the Work Area (left side of desk). Shows the passage being translated with surrounding English context, plus the translation input field. Unlike reference books (which slide from shelf), the main book slides in from the right side when customer arrives, reinforcing that this is their book brought to your desk.
+
+**Critical Design Constraint:** Main book never moves from Work Area. It's the stable focal point while references come and go around it.
+
+---
+
+### What Player Sees
+
+**Screen Layout:**
+- **Position:** Work Area center (200, 150) + centered
+- **Size:** 700×600px book + 100px input field below
+- **Total footprint:** 700×700px in Work Area (800×700px available)
+
+**Visual Appearance:**
+
+**Book Panel:**
+- Background: Lighter aged paper #F8F0E0
+- Border: 6px medium brown #4A3428
+- No close button (main book stays until translation complete)
+
+**Page Layout:**
+```
+┌─────────────────────────────────┐
+│  Emma's Diary, 1891             │ ← Book title, 14pt
+├─────────────────────────────────┤
+│                                 │
+│  ...grandmother always spoke    │ ← Context (English)
+│  of the old traditions from     │   Italic, gray #666
+│  Europe. In her diary she       │
+│  wrote:                         │
+│                                 │
+│      ∆ ◊≈ ⊕⊗◈                   │ ← Glyphic symbols
+│                                 │   48pt, centered
+│                                 │   Black #1A1A1A
+│  which they practiced in        │
+│  secret meetings. The sisters   │ ← More context
+│  of the lodge...                │   (English)
+│                                 │
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│ Your Translation:               │ ← Input label
+│ [_____________________________] │ ← Text input field
+│                                 │   600×40px
+│           [Submit]              │ ← Submit button
+└─────────────────────────────────┘
+```
+
+**Visual States:**
+
+**Default State:**
+```gdscript
+position = Work Area center
+modulate = Color(1, 1, 1)  # Full brightness (lamp focus)
+```
+
+**Translation Submitted State:**
+```gdscript
+# Input field disabled, grayed out
+input_field.editable = false
+input_field.modulate = Color(0.7, 0.7, 0.7)
+submit_button.disabled = true
+```
+
+**Customer Arrives Animation:**
+```
+Frame 1: Book off-screen right (1920, 400)
+Frame 2: Book slides left to Work Area (400, 300)
+Duration: 0.5s, ease-out
+```
+
+**Customer Leaves Animation:**
+```
+Frame 1: Book at Work Area (400, 300)
+Frame 2: Book slides right off-screen (1920, 400)
+Duration: 0.5s, ease-in
+```
+
+**Visual Feedback:**
+- Book arrival: Slides smoothly from right
+- Typing in input: Real-time character display
+- Submit click: Button flashes, input locks
+- Validation: Green checkmarks appear on correct words (Feature from Phase 2)
+
+---
+
+### What Player Does
+
+**Input Methods:**
+
+**Keyboard:**
+- Type translation in input field
+- ENTER key = submit translation
+- ESC key = clear input field
+
+**Mouse:**
+- Click input field to focus (if not already focused)
+- Click Submit button = submit translation
+
+**Immediate Response:**
+- Type character → Appears in field within 16ms
+- Click Submit → Button flashes, validation starts within 50ms
+- ENTER key → Same as clicking Submit
+
+**Feedback Loop:**
+
+**Example: Translating Text 1**
+1. **Customer arrives:** Mrs. Kowalski brings book
+2. **Book slides in:** From right to Work Area center
+3. **Player sees:** "∆ ◊≈ ⊕⊗◈" with English context
+4. **Player opens:** Grimoire (Feature 3A.4)
+5. **Player researches:** While glancing at main book symbols
+6. **Player types:** "the old way"
+7. **Player submits:** Click button OR press ENTER
+8. **Validation happens:** (Phase 2 logic)
+9. **If correct:** Customer accepts, book slides out
+10. **Next customer:** New book slides in
+
+---
+
+### Underlying Behavior
+
+**GDScript Structure:**
+
+```gdscript
+# res://scripts/ui/MainBookWorkspace.gd
+extends Control
+
+@onready var book_panel = $BookPanel
+@onready var book_title = $BookPanel/BookTitle
+@onready var context_before = $BookPanel/ContextBefore
+@onready var glyphic_symbols = $BookPanel/GlyphicSymbols
+@onready var context_after = $BookPanel/ContextAfter
+@onready var translation_input = $TranslationInput/InputField
+@onready var submit_button = $TranslationInput/SubmitButton
+
+var current_text_data: Dictionary = {}
+var is_active: bool = false
+
+signal translation_submitted(translation: String)
+
+func _ready():
+    custom_minimum_size = Vector2(700, 700)
+    
+    # Position in Work Area center
+    var work_center = WorkspaceZones.get_work_area_center()
+    position = work_center - (size / 2)
+    
+    # Start off-screen
+    position.x = 1920
+    visible = false
+    
+    # Connect input
+    submit_button.pressed.connect(_on_submit_pressed)
+    translation_input.text_submitted.connect(_on_text_submitted)
+
+func show_translation_task(text_data: Dictionary):
+    """Display new translation task from customer"""
+    current_text_data = text_data
+    is_active = true
+    
+    # Populate content
+    book_title.text = text_data.get("book_title", "Unknown Book")
+    context_before.text = text_data.get("context_before", "")
+    glyphic_symbols.text = text_data.get("glyphic_text", "")
+    context_after.text = text_data.get("context_after", "")
+    
+    # Clear previous input
+    translation_input.text = ""
+    translation_input.editable = true
+    submit_button.disabled = false
+    
+    # Slide in from right
+    slide_in_from_right()
+    
+    # Auto-focus input
+    await get_tree().create_timer(0.6).timeout
+    translation_input.grab_focus()
+
+func slide_in_from_right():
+    """Animate book arriving on desk"""
+    visible = true
+    position.x = 1920  # Off-screen right
+    
+    var target_x = WorkspaceZones.get_work_area_center().x - (size.x / 2)
+    
+    var tween = create_tween()
+    tween.set_trans(Tween.TRANS_CUBIC)
+    tween.set_ease(Tween.EASE_OUT)
+    tween.tween_property(self, "position:x", target_x, 0.5)
+
+func slide_out_to_right():
+    """Animate book leaving desk"""
+    var tween = create_tween()
+    tween.set_trans(Tween.TRANS_CUBIC)
+    tween.set_ease(Tween.EASE_IN)
+    tween.tween_property(self, "position:x", 1920, 0.5)
+    
+    await tween.finished
+    visible = false
+    is_active = false
+
+func _on_submit_pressed():
+    """Submit button clicked"""
+    _submit_translation()
+
+func _on_text_submitted(text: String):
+    """ENTER key pressed in input field"""
+    _submit_translation()
+
+func _submit_translation():
+    """Process translation submission"""
+    if not is_active:
+        return
+    
+    var translation = translation_input.text.strip_edges()
+    
+    if translation.is_empty():
+        # Flash input red (invalid)
+        var tween = create_tween()
+        tween.tween_property(translation_input, "modulate", Color(1, 0.5, 0.5), 0.1)
+        tween.tween_property(translation_input, "modulate", Color(1, 1, 1), 0.1)
+        return
+    
+    # Lock input during validation
+    translation_input.editable = false
+    submit_button.disabled = true
+    
+    # Flash button (feedback)
+    var tween = create_tween()
+    tween.tween_property(submit_button, "modulate", Color(0.5, 1, 0.5), 0.1)
+    tween.tween_property(submit_button, "modulate", Color(1, 1, 1), 0.1)
+    
+    # Emit to game manager for validation
+    translation_submitted.emit(translation)
+
+func complete_translation(accepted: bool):
+    """Called after validation - book leaves"""
+    if accepted:
+        slide_out_to_right()
+    else:
+        # Translation rejected - unlock for retry
+        translation_input.editable = true
+        submit_button.disabled = false
+        translation_input.grab_focus()
+
+func _input(event):
+    """Handle keyboard shortcuts"""
+    if not is_active:
+        return
+    
+    if event is InputEventKey and event.pressed:
+        if event.keycode == KEY_ESCAPE:
+            # Clear input
+            translation_input.text = ""
+```
+
+**Scene Structure:**
+```
+MainBookWorkspace (Control) - 700×700px
+├── BookPanel (Panel) - 700×600px, aged paper
+│   ├── BookTitle (Label) - Top, 14pt
+│   ├── ContextBefore (RichTextLabel) - Gray italic
+│   ├── GlyphicSymbols (Label) - 48pt, centered
+│   └── ContextAfter (RichTextLabel) - Gray italic
+└── TranslationInput (VBoxContainer) - 700×100px
+    ├── InputLabel (Label) - "Your Translation:"
+    ├── InputField (LineEdit) - 600×40px
+    └── SubmitButton (Button) - 150×40px
+```
+
+**Key Numbers:**
+- Book size: 700×600px
+- Input field: 600×40px
+- Submit button: 150×40px
+- Glyphic symbols: 48pt font
+- Context text: 16pt italic
+- Slide in duration: 0.5s
+- Slide out duration: 0.5s
+- Auto-focus delay: 0.6s (after slide completes)
+
+---
+
+### Acceptance Criteria
+
+**Visual Checks:**
+- [ ] Book panel 700×600px in Work Area
+- [ ] Lighter paper background (#F8F0E0) than reference books
+- [ ] Book title visible at top (14pt)
+- [ ] Glyphic symbols centered, 48pt, black
+- [ ] Context text gray (#666666), italic
+- [ ] Input field 600×40px below book
+- [ ] Submit button 150×40px, centered
+
+**Interaction Checks:**
+- [ ] Type in input → Characters appear immediately
+- [ ] Press ENTER → Submits translation
+- [ ] Click Submit → Submits translation
+- [ ] Press ESC → Clears input field
+- [ ] Empty submission → Input flashes red, not submitted
+- [ ] After submit → Input locks (grayed, disabled)
+
+**Functional Checks:**
+- [ ] show_translation_task() populates content correctly
+- [ ] translation_submitted signal emits correct text
+- [ ] complete_translation(true) slides book out
+- [ ] complete_translation(false) unlocks input for retry
+- [ ] Auto-focus works after slide-in
+
+**Animation Checks:**
+- [ ] Slide in from right takes 0.5s
+- [ ] Slide out to right takes 0.5s
+- [ ] Starts at x=1920 (off-screen)
+- [ ] Ends at Work Area center
+- [ ] Smooth ease-out curve on arrival
+- [ ] Smooth ease-in curve on departure
+
+**Integration Checks:**
+- [ ] Uses WorkspaceZones.get_work_area_center()
+- [ ] Connects to game manager for validation
+- [ ] Receives text_data from customer arrival system
+- [ ] Doesn't interfere with reference books (separate zones)
+
+**Edge Case Checks:**
+- [ ] Rapid ENTER presses don't double-submit
+- [ ] Typing during slide-in works correctly
+- [ ] ESC during locked state does nothing
+- [ ] Multiple submissions queue correctly
+
+---
+
+### Manual Test Script
+
+1. **Test book arrival:**
+   ```
+   - Trigger customer arrival (Mrs. Kowalski)
+   - Observe: Book starts off-screen right
+   - Observe: Book slides to Work Area center
+   - Time: ~0.5s
+   - Verify: Book shows correct content:
+     - Title: "Emma's Diary, 1891"
+     - Context: English text before/after symbols
+     - Symbols: ∆ ◊≈ ⊕⊗◈
+   ```
+
+2. **Test input interaction:**
+   ```
+   - After book arrives, wait 0.6s
+   - Verify: Input field auto-focuses (cursor blinking)
+   - Type: "test translation"
+   - Verify: Text appears in real-time
+   - Press ESC
+   - Verify: Input clears
+   ```
+
+3. **Test submission:**
+   ```
+   - Type: "the old way"
+   - Press ENTER
+   - Verify: Input locks (grayed)
+   - Verify: Submit button disabled
+   - Verify: Button flashes green briefly
+   - Verify: translation_submitted signal emits "the old way"
+   ```
+
+4. **Test empty submission:**
+   ```
+   - Clear input (empty field)
+   - Click Submit
+   - Verify: Input flashes red
+   - Verify: No signal emitted
+   - Verify: Input remains editable
+   ```
+
+5. **Test book departure:**
+   ```
+   - After correct translation validated
+   - Call: complete_translation(true)
+   - Observe: Book slides right off-screen
+   - Time: ~0.5s
+   - Verify: visible = false after animation
+   ```
+
+6. **Test rejection:**
+   ```
+   - Submit incorrect translation
+   - Call: complete_translation(false)
+   - Verify: Input unlocks
+   - Verify: Input auto-focuses
+   - Verify: Book stays on desk (doesn't leave)
+   ```
+
+7. **Pass criteria:** Book animations smooth, input responsive, submission logic correct
+
+---
+
+### Known Simplifications
+
+**Phase 3A shortcuts:**
+- Linear slide (no curve or bounce)
+- No page-turn animation
+- Simple flash feedback (no particles)
+- Fixed book size (not responsive)
+
+**Technical debt:**
+- Hardcoded slide positions (1920 for off-screen)
+  - **Impact:** Doesn't adapt to different resolutions
+  - **Solution:** Calculate as screen.size.x + book.size.x
+- Auto-focus uses timer instead of animation signal
+  - **Impact:** Could focus too early if animation interrupted
+  - **Solution:** await tween.finished
+- No retry counter display
+  - **Impact:** Player doesn't know how many attempts made
+  - **Future:** Add small "Attempt 2/3" label
+
+---
+
+## Feature 3A.6: Working Dictionary Panel
+
+**Priority:** MEDIUM - Persistent reference, helps reduce mental load
+
+**Tests Critical Question:** Q2 (Clear puzzle design) - Does visible learned symbols reduce backtracking to references?
+
+**Estimated Time:** 45 minutes
+
+**Dependencies:**
+- Feature 3A.2 (Workspace Zones) must be complete
+- Phase 2B.4 (Working Notes) must provide learned symbols data
+
+---
+
+### Overview
+
+Working Dictionary Panel displays learned symbols in bottom-left corner. Always visible, updates automatically when symbols confirmed. Shows symbol + English word + confirmation status (✓ or ?). This is the player's "cheat sheet" - quick reference without opening Grimoire.
+
+**Critical Design Constraint:** Compact (300×160px) - must fit in small space without cluttering desk.
+
+---
+
+### What Player Sees
+
+**Screen Layout:**
+- **Position:** Bottom-left (20, 900)
+- **Size:** 300×160px
+- **Always visible:** Never hides or minimizes
+
+**Visual Appearance:**
+
+**Panel Background:**
+- Light parchment: #E8DCC8
+- Thin border: 2px dark brown #2A1F1A
+- Subtle paper texture overlay
+
+**Header:**
+```
+┌─────────────────────────┐
+│ LEARNED SYMBOLS         │ ← 12pt bold
+├─────────────────────────┤
+```
+
+**Symbol List (Scrollable):**
+```
+│ ∆ = "the" ✓            │
+│ ◊≈ = "old" ✓           │
+│ ⊕⊗◈ = "way" ✓          │
+│ ⊞⊟≈ = "god" ?          │ ← ? = probable, not confirmed
+│                        │
+│ (3 confirmed)          │ ← Count at bottom
+└─────────────────────────┘
+```
+
+**Symbol Entry Format:**
+- Symbol: 20pt, black
+- Equals sign: 16pt, gray
+- English word: 16pt, dark brown
+- Status icon: 16pt, green (✓) or yellow (?)
+
+**Visual States:**
+
+**Default State:**
+```gdscript
+modulate = Color(1, 1, 1)
+z_index = 100  # Always on top
+```
+
+**New Symbol Added:**
+```gdscript
+# New entry fades in
+new_entry.modulate.a = 0
+tween.tween_property(new_entry, "modulate:a", 1.0, 0.3)
+# Slight yellow glow
+tween.parallel().tween_property(new_entry, "modulate", Color(1, 1, 0.8), 0.3)
+tween.tween_property(new_entry, "modulate", Color(1, 1, 1), 0.3)
+```
+
+**Symbol Confirmed:**
+```
+? changes to ✓
+Entry flashes green briefly
+```
+
+**Visual Feedback:**
+- New symbol: Fades in with yellow glow
+- Confirmation: ? → ✓ with green flash
+- Hover over entry: Slight brighten (shows tooltip with usage examples)
+
+---
+
+### What Player Does
+
+**Input Methods:**
+
+**Mouse:**
+- Hover entry → Tooltip shows usage examples
+- Scroll if > 6 entries (most fit without scrolling)
+- No clicking needed (read-only display)
+
+**Immediate Response:**
+- New symbol learned → Appears in list within 0.3s
+- Symbol confirmed → ? changes to ✓ within 0.1s
+- Hover → Tooltip after 0.3s
+
+**Feedback Loop:**
+
+**Example: Learning first 3 symbols**
+1. **Translate Text 1:** "the old way"
+2. **Validation succeeds:** Customer accepts
+3. **Dictionary updates:** 
+   - ∆ = "the" ✓ (fades in)
+   - ◊≈ = "old" ✓ (fades in)
+   - ⊕⊗◈ = "way" ✓ (fades in)
+4. **Player glances:** Quick reference available
+5. **Next translation:** Can check dictionary instead of Grimoire
+
+---
+
+### Underlying Behavior
+
+**GDScript Structure:**
+
+```gdscript
+# res://scripts/ui/WorkingDictionaryPanel.gd
+extends Panel
+
+@onready var symbol_list = $ScrollContainer/SymbolList
+@onready var count_label = $CountLabel
+
+var learned_symbols: Dictionary = {}  # symbol -> {word: String, confirmed: bool}
+
+func _ready():
+    custom_minimum_size = Vector2(300, 160)
+    position = WorkspaceZones.get_dictionary_position()
+    z_index = 100  # Always on top
+    
+    # Style
+    var style = StyleBoxFlat.new()
+    style.bg_color = Color("#E8DCC8")
+    style.border_width_left = 2
+    style.border_width_right = 2
+    style.border_width_top = 2
+    style.border_width_bottom = 2
+    style.border_color = Color("#2A1F1A")
+    add_theme_stylebox_override("panel", style)
+
+func add_symbol(symbol: String, word: String, confirmed: bool = false):
+    """Add new learned symbol to dictionary"""
+    
+    if symbol in learned_symbols:
+        # Update existing
+        learned_symbols[symbol].word = word
+        learned_symbols[symbol].confirmed = confirmed
+        update_entry(symbol)
+    else:
+        # Add new
+        learned_symbols[symbol] = {
+            "word": word,
+            "confirmed": confirmed
+        }
+        create_entry(symbol, word, confirmed)
+    
+    update_count()
+
+func create_entry(symbol: String, word: String, confirmed: bool):
+    """Create visual entry for symbol"""
+    
+    var entry = HBoxContainer.new()
+    entry.name = "Entry_" + symbol
+    entry.custom_minimum_size = Vector2(280, 30)
+    
+    # Symbol label
+    var symbol_label = Label.new()
+    symbol_label.text = symbol
+    symbol_label.add_theme_font_size_override("font_size", 20)
+    symbol_label.add_theme_color_override("font_color", Color("#1A1A1A"))
+    symbol_label.custom_minimum_size = Vector2(40, 30)
+    entry.add_child(symbol_label)
+    
+    # Equals
+    var equals = Label.new()
+    equals.text = " = "
+    equals.add_theme_font_size_override("font_size", 16)
+    equals.add_theme_color_override("font_color", Color("#666666"))
+    entry.add_child(equals)
+    
+    # Word label
+    var word_label = Label.new()
+    word_label.name = "WordLabel"
+    word_label.text = '"' + word + '"'
+    word_label.add_theme_font_size_override("font_size", 16)
+    word_label.add_theme_color_override("font_color", Color("#4A3428"))
+    word_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    entry.add_child(word_label)
+    
+    # Status icon
+    var status = Label.new()
+    status.name = "StatusIcon"
+    status.text = "✓" if confirmed else "?"
+    status.add_theme_font_size_override("font_size", 16)
+    status.add_theme_color_override("font_color", 
+        Color("#2D5016") if confirmed else Color("#CC6600"))
+    status.custom_minimum_size = Vector2(20, 30)
+    entry.add_child(status)
+    
+    # Add to list
+    symbol_list.add_child(entry)
+    
+    # Fade in animation
+    entry.modulate.a = 0
+    var tween = create_tween()
+    tween.tween_property(entry, "modulate:a", 1.0, 0.3)
+    tween.parallel().tween_property(entry, "modulate", Color(1, 1, 0.8), 0.3)
+    tween.tween_property(entry, "modulate", Color(1, 1, 1), 0.3)
+
+func confirm_symbol(symbol: String):
+    """Mark symbol as confirmed (? → ✓)"""
+    
+    if symbol not in learned_symbols:
+        return
+    
+    learned_symbols[symbol].confirmed = true
+    
+    var entry = symbol_list.get_node("Entry_" + symbol)
+    if not entry:
+        return
+    
+    var status_icon = entry.get_node("StatusIcon")
+    status_icon.text = "✓"
+    status_icon.add_theme_color_override("font_color", Color("#2D5016"))
+    
+    # Flash green
+    var tween = create_tween()
+    tween.tween_property(entry, "modulate", Color(0.8, 1, 0.8), 0.2)
+    tween.tween_property(entry, "modulate", Color(1, 1, 1), 0.2)
+    
+    update_count()
+
+func update_entry(symbol: String):
+    """Update existing entry (word or status changed)"""
+    
+    var entry = symbol_list.get_node("Entry_" + symbol)
+    if not entry:
+        return
+    
+    var data = learned_symbols[symbol]
+    var word_label = entry.get_node("WordLabel")
+    var status_icon = entry.get_node("StatusIcon")
+    
+    word_label.text = '"' + data.word + '"'
+    status_icon.text = "✓" if data.confirmed else "?"
+    status_icon.add_theme_color_override("font_color",
+        Color("#2D5016") if data.confirmed else Color("#CC6600"))
+
+func update_count():
+    """Update confirmed count label"""
+    
+    var confirmed_count = 0
+    for symbol in learned_symbols:
+        if learned_symbols[symbol].confirmed:
+            confirmed_count += 1
+    
+    count_label.text = "(%d confirmed)" % confirmed_count
+
+func get_symbol_word(symbol: String) -> String:
+    """Query dictionary for symbol's word"""
+    
+    if symbol in learned_symbols:
+        return learned_symbols[symbol].word
+    return ""
+
+func is_symbol_confirmed(symbol: String) -> bool:
+    """Check if symbol is confirmed"""
+    
+    if symbol in learned_symbols:
+        return learned_symbols[symbol].confirmed
+    return false
+```
+
+**Scene Structure:**
+```
+WorkingDictionaryPanel (Panel) - 300×160px
+├── HeaderLabel (Label) - "LEARNED SYMBOLS"
+├── ScrollContainer (ScrollContainer) - 280×120px
+│   └── SymbolList (VBoxContainer) - Dynamic entries
+│       ├── Entry_∆ (HBoxContainer)
+│       │   ├── SymbolLabel (Label) - "∆"
+│       │   ├── EqualsLabel (Label) - " = "
+│       │   ├── WordLabel (Label) - "the"
+│       │   └── StatusIcon (Label) - "✓"
+│       └── [More entries...]
+└── CountLabel (Label) - "(3 confirmed)"
+```
+
+**Key Numbers:**
+- Panel size: 300×160px
+- Entry height: 30px
+- Symbol font: 20pt
+- Word font: 16pt
+- Status icon: 16pt
+- Max entries without scroll: ~6
+- Fade in duration: 0.3s
+- Confirmation flash: 0.4s total (green → normal)
+
+---
+
+### Acceptance Criteria
+
+**Visual Checks:**
+- [ ] Panel at position (20, 900)
+- [ ] Panel size 300×160px
+- [ ] Parchment background (#E8DCC8)
+- [ ] 2px dark brown border
+- [ ] Header "LEARNED SYMBOLS" visible
+- [ ] Symbols displayed at 20pt
+- [ ] Words displayed at 16pt in quotes
+- [ ] Status icons (✓ or ?) at 16pt
+- [ ] Count label shows "(X confirmed)"
+
+**Interaction Checks:**
+- [ ] Hover entry → Shows tooltip (future: usage examples)
+- [ ] Scrollable if > 6 entries
+- [ ] Read-only (no editing)
+
+**Functional Checks:**
+- [ ] add_symbol() creates new entry correctly
+- [ ] add_symbol() with existing symbol updates entry
+- [ ] confirm_symbol() changes ? to ✓
+- [ ] update_count() shows correct confirmed count
+- [ ] get_symbol_word() returns correct translation
+- [ ] is_symbol_confirmed() returns correct boolean
+
+**Animation Checks:**
+- [ ] New entry fades in over 0.3s
+- [ ] New entry has yellow glow briefly
+- [ ] Confirmation flashes green for 0.4s
+- [ ] No animation jitter or overlap
+
+**Integration Checks:**
+- [ ] Receives updates from validation system (Phase 2)
+- [ ] Uses WorkspaceZones.get_dictionary_position()
+- [ ] Z-index 100 keeps it above other elements
+- [ ] Always visible (never hidden)
+
+**Edge Case Checks:**
+- [ ] Adding 20+ symbols handles correctly (scroll works)
+- [ ] Confirming non-existent symbol fails gracefully
+- [ ] Duplicate add_symbol calls don't create duplicates
+- [ ] Empty dictionary shows "(0 confirmed)"
+
+---
+
+### Manual Test Script
+
+1. **Test initial state:**
+   ```
+   - Launch game
+   - Verify: Dictionary panel visible at (20, 900)
+   - Verify: Header "LEARNED SYMBOLS"
+   - Verify: Empty list
+   - Verify: "(0 confirmed)" label
+   ```
+
+2. **Test adding symbols:**
+   ```
+   - Simulate learning 3 symbols:
+     add_symbol("∆", "the", true)
+     add_symbol("◊≈", "old", true)
+     add_symbol("⊕⊗◈", "way", true)
+   - Verify: 3 entries appear
+   - Verify: Each entry shows:
+     - Symbol (20pt, black)
+     - = (gray)
+     - Word in quotes (16pt, brown)
+     - ✓ (green)
+   - Verify: "(3 confirmed)" at bottom
+   ```
+
+3. **Test unconfirmed symbol:**
+   ```
+   - add_symbol("⊞⊟≈", "god", false)
+   - Verify: Entry appears with ? (yellow/orange)
+   - Verify: "(3 confirmed)" unchanged
+   ```
+
+4. **Test confirmation:**
+   ```
+   - confirm_symbol("⊞⊟≈")
+   - Verify: ? changes to ✓ (green)
+   - Verify: Entry flashes green briefly
+   - Verify: "(4 confirmed)" updates
+   ```
+
+5. **Test scroll (if needed):**
+   ```
+   - Add 10 symbols
+   - Verify: Scroll bar appears
+   - Verify: Can scroll to see all entries
+   ```
+
+6. **Test query functions:**
+   ```gdscript
+   print(dictionary.get_symbol_word("∆"))
+   # Expected: "the"
+   
+   print(dictionary.is_symbol_confirmed("⊞⊟≈"))
+   # Expected: true (after confirmation)
+   ```
+
+7. **Pass criteria:** All symbols display correctly, animations smooth, queries work
+
+---
+
+### Known Simplifications
+
+**Phase 3A shortcuts:**
+- No usage examples tooltip yet
+- No symbol filtering/search
+- Simple list (not grouped by text or day)
+- No "export dictionary" feature
+
+**Technical debt:**
+- Symbols stored as strings (could conflict if special characters)
+  - **Impact:** Potential key collision if symbol encoding changes
+  - **Solution:** Use symbol IDs instead of literal glyphs
+- No data persistence (resets on game restart)
+  - **Impact:** Lost progress between sessions
+  - **Future:** Save/load learned symbols
+
+---
+
+## Feature 3A.7: Customer Context Card
+
+**Priority:** MEDIUM - Provides thematic hints without overwhelming
+
+**Tests Critical Question:** Q2 (Clear puzzle design) - Does customer background provide useful context clues?
+
+**Estimated Time:** 45 minutes
+
+**Dependencies:**
+- Feature 3A.2 (Workspace Zones) must be complete
+- Phase 2B.3 (Customer Context) must provide customer data
+
+---
+
+### Overview
+
+Customer Context Card displays current customer's background info in bottom-right corner. Shows name, brief description, translation hints. Provides thematic context without giving direct answers. Updates automatically when new customer arrives.
+
+**Critical Design Constraint:** Compact (700×160px) - must convey useful info without clutter or spoiling puzzle.
+
+---
+
+### What Player Sees
+
+**Screen Layout:**
+- **Position:** Bottom-right (1200, 900)
+- **Size:** 700×160px
+- **Always visible:** Never hides (unless no customer active)
+
+**Visual Appearance:**
+
+**Panel Background:**
+- Cream paper: #F4E8D8
+- Thin border: 2px dark brown #2A1F1A
+- Slightly warmer than dictionary (differentiates purpose)
+
+**Card Layout:**
+```
+┌────────────────────────────────────────┐
+│ MRS. KOWALSKI                          │ ← Name, 16pt bold
+├────────────────────────────────────────┤
+│ Background:                            │
+│ Elderly immigrant, bringing            │
+│ grandmother's diary from 1891.         │ ← 14pt, dark gray
+│ Mentions "old traditions" from Europe. │
+│                                        │
+│ Translation Hints:                     │
+│ • Secret society references            │ ← Bullets, 12pt
+│ • Pre-WWI occult practices             │
+│ • Personal diary tone                  │
+└────────────────────────────────────────┘
+```
+
+**Visual States:**
+
+**Default State:**
+```gdscript
+modulate = Color(1, 1, 1)
+z_index = 100  # Always on top
+```
+
+**Customer Arrives:**
+```gdscript
+# Fade in with slide up slightly
+modulate.a = 0
+position.y += 20
+tween.tween_property(self, "modulate:a", 1.0, 0.3)
+tween.parallel().tween_property(self, "position:y", original_y, 0.3)
+```
+
+**Customer Leaves:**
+```gdscript
+# Fade out
+tween.tween_property(self, "modulate:a", 0, 0.3)
+```
+
+**Visual Feedback:**
+- Customer arrives → Card fades in with slide up
+- Customer leaves → Card fades out
+- Hover → Slight brighten (no interaction needed, just visual feedback)
+
+---
+
+### What Player Does
+
+**Input Methods:**
+- No direct interaction (read-only display)
+- Read info while working on translation
+- Glance at hints when stuck
+
+**Immediate Response:**
+- New customer → Card updates within 0.3s
+- Always readable (no scrolling needed)
+
+**Feedback Loop:**
+
+**Example: Mrs. Kowalski arrives**
+1. **Customer appears:** Mrs. K brings book
+2. **Card updates:** Shows her background
+3. **Player reads:** "Grandmother's diary, old traditions"
+4. **Player makes connection:** Old = likely time-related word
+5. **Player researches:** With thematic anchor from card
+6. **Translation:** "the old way" makes sense in context
+
+---
+
+### Underlying Behavior
+
+**GDScript Structure:**
+
+```gdscript
+# res://scripts/ui/CustomerContextCard.gd
+extends Panel
+
+@onready var customer_name = $NameLabel
+@onready var background_label = $BackgroundLabel
+@onready var hints_list = $HintsList
+
+var current_customer: Dictionary = {}
+
+func _ready():
+    custom_minimum_size = Vector2(700, 160)
+    position = WorkspaceZones.get_customer_card_position()
+    z_index = 100
+    
+    # Style
+    var style = StyleBoxFlat.new()
+    style.bg_color = Color("#F4E8D8")
+    style.border_width_left = 2
+    style.border_width_right = 2
+    style.border_width_top = 2
+    style.border_width_bottom = 2
+    style.border_color = Color("#2A1F1A")
+    add_theme_stylebox_override("panel", style)
+    
+    # Start hidden
+    modulate.a = 0
+    visible = false
+
+func show_customer(customer_data: Dictionary):
+    """Display new customer context"""
+    
+    current_customer = customer_data
+    
+    # Populate content
+    customer_name.text = customer_data.get("name", "UNKNOWN CUSTOMER")
+    background_label.text = "Background:\n" + customer_data.get("background", "")
+    
+    # Clear and populate hints
+    for child in hints_list.get_children():
+        child.queue_free()
+    
+    var hints = customer_data.get("hints", [])
+    for hint in hints:
+        var hint_label = Label.new()
+        hint_label.text = "• " + hint
+        hint_label.add_theme_font_size_override("font_size", 12)
+        hint_label.add_theme_color_override("font_color", Color("#4A3428"))
+        hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+        hints_list.add_child(hint_label)
+    
+    # Fade in with slide up
+    visible = true
+    position.y = WorkspaceZones.get_customer_card_position().y + 20
+    modulate.a = 0
+    
+    var tween = create_tween()
+    tween.set_parallel(true)
+    tween.tween_property(self, "modulate:a", 1.0, 0.3)
+    tween.tween_property(self, "position:y", 
+        WorkspaceZones.get_customer_card_position().y, 0.3)
+        .set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+func hide_customer():
+    """Fade out customer context"""
+    
+    var tween = create_tween()
+    tween.tween_property(self, "modulate:a", 0, 0.3)
+    
+    await tween.finished
+    visible = false
+    current_customer = {}
+
+func get_customer_name() -> String:
+    return current_customer.get("name", "")
+```
+
+**Scene Structure:**
+```
+CustomerContextCard (Panel) - 700×160px
+├── NameLabel (Label) - 16pt bold, top
+├── BackgroundLabel (Label) - 14pt, wrapped
+└── HintsList (VBoxContainer) - Dynamic hints
+    ├── HintLabel1 (Label) - "• Hint 1"
+    ├── HintLabel2 (Label) - "• Hint 2"
+    └── [More hints...]
+```
+
+**Customer Data Format:**
+```gdscript
+var customer_data = {
+    "name": "MRS. KOWALSKI",
+    "background": "Elderly immigrant, bringing grandmother's diary from 1891. Mentions 'old traditions' from Europe.",
+    "hints": [
+        "Secret society references",
+        "Pre-WWI occult practices",
+        "Personal diary tone"
+    ]
+}
+```
+
+**Key Numbers:**
+- Panel size: 700×160px
+- Name font: 16pt bold
+- Background font: 14pt
+- Hints font: 12pt
+- Fade in duration: 0.3s
+- Slide up offset: 20px
+
+---
+
+### Acceptance Criteria
+
+**Visual Checks:**
+- [ ] Panel at position (1200, 900)
+- [ ] Panel size 700×160px
+- [ ] Cream background (#F4E8D8)
+- [ ] 2px dark brown border
+- [ ] Customer name at top (16pt bold)
+- [ ] Background text readable (14pt, wrapped)
+- [ ] Hints bulleted (• prefix, 12pt)
+- [ ] All text fits without scrolling
+
+**Interaction Checks:**
+- [ ] No interaction needed (read-only)
+- [ ] Hover provides slight visual feedback (optional)
+
+**Functional Checks:**
+- [ ] show_customer() populates all fields correctly
+- [ ] hide_customer() clears and hides panel
+- [ ] get_customer_name() returns correct name
+- [ ] Multiple hints display correctly (each on new line)
+
+**Animation Checks:**
+- [ ] Fade in takes 0.3s
+- [ ] Slide up 20px during fade in
+- [ ] Smooth ease-out curve
+- [ ] Fade out takes 0.3s
+
+**Integration Checks:**
+- [ ] Receives customer_data from game manager
+- [ ] Uses WorkspaceZones.get_customer_card_position()
+- [ ] Z-index 100 keeps it visible
+- [ ] Updates when new customer arrives
+
+**Edge Case Checks:**
+- [ ] Missing background text handles gracefully
+- [ ] Empty hints array doesn't break layout
+- [ ] Long customer name wraps or truncates
+- [ ] Very long hints wrap correctly
+
+---
+
+### Manual Test Script
+
+1. **Test initial state:**
+   ```
+   - Launch game
+   - Verify: Card not visible (no customer yet)
+   ```
+
+2. **Test customer arrival:**
+   ```
+   - Trigger Mrs. Kowalski arrival
+   - Call: show_customer(mrs_k_data)
+   - Observe: Card fades in from bottom
+   - Observe: Slide up 20px during fade
+   - Time: ~0.3s
+   - Verify: Content displays:
+     - Name: "MRS. KOWALSKI"
+     - Background: Paragraph about grandmother
+     - Hints: 3 bullet points
+   ```
+
+3. **Test content readability:**
+   ```
+   - Read all text
+   - Verify: No text overflow
+   - Verify: No scrolling needed
+   - Verify: All hints visible
+   ```
+
+4. **Test customer change:**
+   ```
+   - New customer arrives (Dr. Chen)
+   - Observe: Card fades out (0.3s)
+   - Observe: Card fades in with new content (0.3s)
+   - Verify: No overlap between animations
+   ```
+
+5. **Test customer leaving:**
+   ```
+   - Translation complete
+   - Call: hide_customer()
+   - Observe: Card fades out
+   - Time: ~0.3s
+   - Verify: visible = false after animation
+   ```
+
+6. **Test edge cases:**
+   ```
+   - Test with 1 hint: Displays correctly
+   - Test with 5 hints: All fit (or scroll if needed)
+   - Test with very long hint: Wraps to multiple lines
+   - Test with missing background: Shows empty or "N/A"
+   ```
+
+7. **Pass criteria:** Card updates correctly, animations smooth, all content readable
+
+---
+
+### Known Simplifications
+
+**Phase 3A shortcuts:**
+- No customer portrait/image
+- Simple text layout (no fancy formatting)
+- Static card (no expand/collapse)
+- No customer mood indicator
+
+**Technical debt:**
+- Fixed text sizes (not responsive)
+  - **Impact:** May not fit all content in 160px height
+  - **Solution:** Make font sizes scale down if content too long
+- No text overflow handling
+  - **Impact:** Long hints might get cut off
+  - **Solution:** Add ScrollContainer for hints section
+
+---
+
+## Feature 3A.8: Tab Stacking System
+
+**Priority:** HIGH - Critical for managing multiple open books
+
+**Tests Critical Question:** Q3 (Engaging texture) - Does tab metaphor make multiple references feel organized vs. cluttered?
+
+**Estimated Time:** 75 minutes
+
+**Dependencies:**
+- Feature 3A.3 (Reference Book Sliding) must be complete
+- Feature 3A.4 (Diegetic Reference Manager) must be complete
+
+---
+
+### Overview
+
+When multiple reference books are open, they stack with visible tabs at the top (like browser tabs or trading cards). Clicking a tab brings that book to the front. Tab shows book name and color-coded indicator. This prevents visual chaos when 2-3 books are open simultaneously.
+
+**Critical Design Constraint:** Tabs must be large enough to click easily (min 120×30px) but compact enough to fit 3 tabs across top of reference area.
+
+---
+
+### What Player Sees
+
+**Screen Layout:**
+
+**Single Book Open:**
+```
+┌─────────────────────────────┐
+│ GRIMOIRE INDEX              │ ← No tab needed, just title
+├─────────────────────────────┤
+│                             │
+│ Symbol: ⊞⊟≈                 │
+│ Contexts:                   │
+│ • Deity symbol              │
+```
+
+**Two Books Open:**
+```
+┌───────────┬─────────────────┐
+│ GRIMOIRE  │ TRANSLATIONS    │ ← Two tabs visible
+└───────────┴─────────────────┤
+│ TRANSLATIONS (on top)       │
+├─────────────────────────────┤
+│                             │
+│ TEXT 1 - Day 1              │
+│ ∆ = "the"                   │
+```
+
+**Three Books Open (Max):**
+```
+┌─────────┬─────────┬─────────┐
+│GRIMOIRE │  TRANS  │ CONTEXT │ ← Three tabs, text truncated
+└─────────┴─────────┴─────────┤
+│ CONTEXT (on top)            │
+├─────────────────────────────┤
+│ MRS. KOWALSKI               │
+│ Background:                 │
+```
+
+**Visual Appearance:**
+
+**Tab Design:**
+- Width: Min 120px, max 250px (scales based on number of tabs)
+- Height: 30px
+- Background: Book color (red/green/orange/brown) at 70% opacity
+- Text: Book name, 14pt, white or cream
+- Border: 2px darker shade on sides and top
+
+**Active Tab (Top Book):**
+```gdscript
+background_color = book_color  # Full color (100%)
+border_bottom = 0  # Connects seamlessly to book content
+z_index = 2  # Above other tabs
+```
+
+**Inactive Tab (Background Books):**
+```gdscript
+background_color = book_color.darkened(0.3)  # Darker
+border_bottom = 2px  # Shows separation
+z_index = 1  # Behind active tab
+modulate.a = 0.8  # Slightly faded
+```
+
+**Visual States:**
+
+**Default (Active):**
+- Full color
+- No bottom border
+- Brighter
+
+**Inactive:**
+- Darkened 30%
+- Bottom border visible
+- Slightly faded
+
+**Hover (Inactive):**
+```gdscript
+modulate = Color(1.15, 1.15, 1.15)  # Brightens
+cursor = CURSOR_POINTING_HAND
+```
+
+**Click Animation:**
+```gdscript
+# Quick flash to indicate selection
+modulate = Color(1.3, 1.3, 1.3)
+await 0.1s
+modulate = Color(1, 1, 1)
+```
+
+**Visual Feedback:**
+- Click tab → Book slides to front (0.3s)
+- Active tab brightens, inactive tabs darken
+- Smooth stacking animation
+
+---
+
+### What Player Does
+
+**Input Methods:**
+
+**Mouse:**
+- Click inactive tab → Brings book to front
+- Click active tab → No effect (already on top)
+- Hover tab → Shows tooltip (book name if truncated)
+
+**Keyboard:**
+- TAB key → Cycle through open books (future enhancement)
+
+**Immediate Response:**
+- Click tab → Book starts moving to front within 50ms
+- Tab visual state updates immediately
+- Book reaches front position in 0.3s
+
+**Feedback Loop:**
+
+**Example: Switching between Grimoire and Translations**
+1. **Both open:** Grimoire on top, Translations tab visible behind
+2. **Player clicks:** Translations tab
+3. **Tab flashes:** Brief brighten
+4. **Books restack:** Translations slides to front (0.3s)
+5. **Tabs update:** Translations tab becomes active (full color, no bottom border)
+6. **Player sees:** Translations content, can still see Grimoire tab
+7. **Next action:** Click Grimoire tab to switch back OR keep reading
+
+---
+
+### Underlying Behavior
+
+**GDScript Structure:**
+
+```gdscript
+# res://scripts/ui/ReferenceBookTab.gd
+extends Button
+class_name ReferenceBookTab
+
+@export var book_name: String = "grimoire"
+@export var book_color: Color = Color("#8B0000")
+@export var is_active: bool = false
+
+signal tab_clicked(book_name: String)
+
+func _ready():
+    custom_minimum_size = Vector2(120, 30)
+    
+    # Style
+    update_visual_state()
+    
+    # Connect signals
+    pressed.connect(_on_pressed)
+    mouse_entered.connect(_on_hover)
+    mouse_exited.connect(_on_unhover)
+
+func set_active(active: bool):
+    """Update tab to active or inactive state"""
+    is_active = active
+    update_visual_state()
+
+func update_visual_state():
+    """Apply visual styling based on state"""
+    
+    var style = StyleBoxFlat.new()
+    
+    if is_active:
+        # Active tab - full color, no bottom border
+        style.bg_color = book_color
+        style.border_width_left = 2
+        style.border_width_right = 2
+        style.border_width_top = 2
+        style.border_width_bottom = 0  # Seamless connection
+        style.border_color = book_color.darkened(0.4)
+        modulate = Color(1, 1, 1)
+        z_index = 2
+    else:
+        # Inactive tab - darkened, has bottom border
+        style.bg_color = book_color.darkened(0.3)
+        style.border_width_left = 2
+        style.border_width_right = 2
+        style.border_width_top = 2
+        style.border_width_bottom = 2  # Shows separation
+        style.border_color = book_color.darkened(0.5)
+        modulate = Color(0.8, 0.8, 0.8)
+        z_index = 1
+    
+    add_theme_stylebox_override("normal", style)
+    add_theme_stylebox_override("pressed", style)
+    add_theme_stylebox_override("hover", style)
+    
+    # Text color
+    add_theme_color_override("font_color", Color("#F4E8D8"))
+
+func _on_pressed():
+    """Tab clicked"""
+    if is_active:
+        return  # Already active, no action
+    
+    # Flash animation
+    var tween = create_tween()
+    tween.tween_property(self, "modulate", Color(1.3, 1.3, 1.3), 0.1)
+    tween.tween_property(self, "modulate", Color(1, 1, 1), 0.1)
+    
+    # Notify manager
+    tab_clicked.emit(book_name)
+
+func _on_hover():
+    """Mouse over inactive tab"""
+    if is_active:
+        return
+    
+    modulate = Color(1.15, 1.15, 1.15)
+    mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+
+func _on_unhover():
+    """Mouse leave inactive tab"""
+    if is_active:
+        return
+    
+    modulate = Color(0.8, 0.8, 0.8)
+    mouse_default_cursor_shape = Control.CURSOR_ARROW
+```
+
+**Tab Container Integration:**
+
+```gdscript
+# In ReferenceBook (Feature 3A.3), add:
+var tab: ReferenceBookTab
+
+func _ready():
+    # ... existing code ...
+    
+    # Create tab
+    tab = ReferenceBookTab.new()
+    tab.book_name = book_name
+    tab.book_color = book_color
+    tab.text = get_display_name()
+    tab.tab_clicked.connect(_on_tab_clicked)
+    
+    # Tab positioned above book
+    tab.position = Vector2(0, -30)
+    add_child(tab)
+
+func set_active(active: bool):
+    """Called by DiegeticReferenceManager when stacking changes"""
+    tab.set_active(active)
+
+func _on_tab_clicked(name: String):
+    """Tab clicked - forward to manager"""
+    # DiegeticReferenceManager handles bring_to_front()
+    pass
+```
+
+**In DiegeticReferenceManager (Feature 3A.4), enhance:**
+
+```gdscript
+func update_stack_positions():
+    """Enhanced to update tab states"""
+    
+    for i in range(open_books.size()):
+        var book_name = open_books[i]
+        var book_instance = book_instances[book_name]
+        var is_top = (i == open_books.size() - 1)
+        
+        # ... existing position/alpha logic ...
+        
+        # Update tab state
+        book_instance.set_active(is_top)
+        
+        # Position tab (tabs stack horizontally above books)
+        var tab_x_offset = i * 130  # 120px tab + 10px gap
+        book_instance.tab.position = Vector2(tab_x_offset, -30)
+```
+
+**Key Numbers:**
+- Tab width: 120-250px (scales based on count)
+- Tab height: 30px
+- Tab gap: 10px
+- Tab offset above book: 30px
+- Active z_index: 2
+- Inactive z_index: 1
+- Hover brightness: 1.15x
+- Inactive opacity: 0.8
+- Flash duration: 0.2s (0.1s up, 0.1s down)
+
+---
+
+### Acceptance Criteria
+
+**Visual Checks:**
+- [ ] Tabs appear above reference books (y offset -30)
+- [ ] Tab height 30px
+- [ ] Tab width scales: 1 book = 250px, 2 books = 230px each, 3 books = 120px each
+- [ ] Active tab full color, no bottom border
+- [ ] Inactive tabs darkened 30%, have bottom border
+- [ ] Tab colors match book colors (red/green/orange/brown)
+- [ ] Text readable on all tab backgrounds
+
+**Interaction Checks:**
+- [ ] Click inactive tab → Brings book to front
+- [ ] Click active tab → No effect
+- [ ] Hover inactive tab → Brightens (1.15x)
+- [ ] Unhover inactive tab → Returns to 0.8 opacity
+- [ ] Click animation flashes tab (0.2s)
+
+**Functional Checks:**
+- [ ] tab_clicked signal emits correct book_name
+- [ ] set_active() updates visual state correctly
+- [ ] Only one tab is active at a time
+- [ ] Tab z_index ensures correct stacking (active on top)
+
+**Animation Checks:**
+- [ ] Tab click flash smooth (0.1s brighten, 0.1s return)
+- [ ] Hover/unhover transitions smooth
+- [ ] Tab state changes instantly (no lag)
+
+**Integration Checks:**
+- [ ] Tabs created by ReferenceBook instances
+- [ ] DiegeticReferenceManager calls set_active() on stack updates
+- [ ] Tabs positioned correctly relative to books
+- [ ] Tab clicks trigger bring_to_front() in manager
+
+**Stack Management Checks:**
+- [ ] 1 book open: No tab needed (or single tab shown)
+- [ ] 2 books open: 2 tabs visible
+- [ ] 3 books open: 3 tabs visible, widths adjusted
+- [ ] Closing book removes tab
+- [ ] Opening new book adds tab
+
+**Edge Case Checks:**
+- [ ] Rapid tab clicking handles correctly (no double-animations)
+- [ ] Clicking tab during book slide animation works
+- [ ] Long book names truncate with ellipsis (...)
+- [ ] Very short book names still have min width (120px)
+
+---
+
+### Manual Test Script
+
+1. **Test single book (no tabs):**
+   ```
+   - Open Grimoire only
+   - Verify: Single tab OR no tab displayed (design choice)
+   - Verify: Book title clearly visible
+   ```
+
+2. **Test two books (2 tabs):**
+   ```
+   - Open Grimoire and Translations
+   - Verify: 2 tabs appear above books
+   - Verify: Tab widths ~230px each
+   - Verify: Translations tab active (full green, no bottom border)
+   - Verify: Grimoire tab inactive (dark red, has bottom border)
+   ```
+
+3. **Test tab switching:**
+   ```
+   - Click Grimoire tab (inactive)
+   - Observe: Tab flashes briefly
+   - Observe: Grimoire book slides to front (0.3s)
+   - Verify: Grimoire tab now active (full red)
+   - Verify: Translations tab now inactive (dark green)
+   ```
+
+4. **Test three books (3 tabs):**
+   ```
+   - Open Grimoire, Translations, Context
+   - Verify: 3 tabs visible
+   - Verify: Tab widths ~120px each (minimum)
+   - Verify: Context tab active (on top)
+   - Verify: Other tabs inactive
+   - Click Grimoire tab
+   - Verify: Grimoire comes to front
+   - Verify: Tabs reorder visually (Grimoire active)
+   ```
+
+5. **Test hover states:**
+   ```
+   - Hover over inactive tab
+   - Verify: Tab brightens (1.15x)
+   - Verify: Cursor changes to pointing hand
+   - Move mouse away
+   - Verify: Tab returns to inactive state (0.8 opacity)
+   ```
+
+6. **Test closing book with tabs:**
+   ```
+   - Have 3 books open
+   - Close middle book (Translations)
+   - Verify: Translations tab disappears
+   - Verify: Remaining tabs reposition (no gap)
+   - Verify: Tab widths increase (2 tabs = more space each)
+   ```
+
+7. **Pass criteria:** Tabs clearly show which book is active, switching is smooth and intuitive
+
+---
+
+### Known Simplifications
+
+**Phase 3A shortcuts:**
+- Simple horizontal tabs (not angled/3D)
+- No drag-to-reorder tabs
+- No close button on tabs (must use book's close button)
+- Fixed tab order (based on open order)
+
+**Technical debt:**
+- Tab width calculation hardcoded (120-250px)
+  - **Impact:** Doesn't adapt well to very long book names
+  - **Solution:** Calculate based on text width + padding
+- No keyboard tab cycling (TAB key)
+  - **Impact:** Mouse-only interaction
+  - **Future:** Add keyboard shortcuts
+- Tabs recreated on every stack update
+  - **Impact:** Unnecessary node operations
+  - **Solution:** Reuse existing tabs, just update positions
+
+---
+
+## Feature 3A.9: Hover & Interaction Polish
+
+**Priority:** MEDIUM - Final polish pass for professional feel
+
+**Tests Critical Question:** Q3 (Engaging texture) - Does polished feedback make the system feel responsive and satisfying?
+
+**Estimated Time:** 60 minutes
+
+**Dependencies:**
+- All previous features (3A.1 through 3A.8) must be complete
+
+---
+
+### Overview
+
+Final polish pass adding subtle visual feedback to every interactive element: hover states, click feedback, smooth cursor changes, tooltips, and micro-animations. This transforms a functional system into a polished, professional-feeling experience. Small details that make the diegetic UI feel "real" and satisfying to use.
+
+**Critical Design Constraint:** Subtle enhancements only - don't add clutter or slow down interactions. Every animation < 0.3s.
+
+---
+
+### What Player Sees
+
+**Enhanced Visual Feedback:**
+
+**1. Book Spine Hover (Enhancement to 3A.1):**
+```gdscript
+# Add to existing hover:
+- Lift animation (existing: 5px)
++ Subtle glow shader
++ Shadow grows as spine lifts
++ Soft "paper rustle" sound (optional)
+```
+
+**2. Reference Book Shadows:**
+```gdscript
+# Add to books in Reference Area:
+- Dynamic shadow based on z_index
+- Top book = darker shadow (closer to desk)
+- Background books = lighter shadows
+- Shadow position shifts with stack
+```
+
+**3. Cursor Changes:**
+```
+- Over book spine: Pointing hand
+- Over book content: I-beam (text cursor)
+- Over close button: Pointing hand + red tint
+- Over inactive tab: Pointing hand
+- Over input field: I-beam
+- Dragging (future): Grabbing hand
+```
+
+**4. Tooltips:**
+```
+Grimoire spine hover → "Consult Grimoire Index"
+Reference book close button → "Return to shelf"
+Dictionary entry hover → "Symbol usage examples" (future)
+Customer card → "Customer background"
+Inactive tab → Full book name (if truncated)
+```
+
+**5. Click Feedback:**
+```
+Any button click:
+- Scale down to 0.95 (press down effect)
+- Scale back to 1.0 (release effect)
+- Duration: 0.1s down, 0.1s up
+```
+
+**6. Desk Lamp Breathing:**
+```gdscript
+# Continuous subtle animation:
+lamp.energy oscillates 1.7 ↔ 2.1
+Duration: 3s per cycle
+Creates living, atmospheric feel
+```
+
+**7. Dust Motes (Very Subtle):**
+```gdscript
+# Optional atmospheric particles:
+- 5-10 particles max
+- Very slow drift (5-10 px/s)
+- Only visible in lamp light cone
+- Low opacity (0.1-0.2)
+```
+
+**Visual States:**
+
+**Button Press Animation:**
+```gdscript
+# Universal for all buttons:
+func _on_button_down():
+    scale = Vector2(0.95, 0.95)
+
+func _on_button_up():
+    var tween = create_tween()
+    tween.tween_property(self, "scale", Vector2(1, 1), 0.1)
+        .set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+```
+
+**Smooth Cursor Transitions:**
+```gdscript
+# Set on every interactive element:
+func _ready():
+    mouse_default_cursor_shape = Control.CURSOR_ARROW  # Default
+    
+func _on_hover():
+    mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+```
+
+---
+
+### What Player Does
+
+**No New Interactions:**
+- This feature enhances existing interactions
+- All feedback is automatic/passive
+- Player just experiences more responsive feel
+
+**Immediate Response:**
+- All hover states < 16ms (single frame)
+- All click animations < 0.2s
+- Cursor changes instant
+- Tooltips after 0.3s delay
+
+---
+
+### Underlying Behavior
+
+**GDScript Enhancements:**
+
+```gdscript
+# res://scripts/utils/InteractionPolish.gd
+extends Node
+class_name InteractionPolish
+
+## Universal button polish
+static func add_button_polish(button: Button):
+    """Add press animation to any button"""
+    button.button_down.connect(func():
+        button.scale = Vector2(0.95, 0.95)
+    )
+    button.button_up.connect(func():
+        var tween = button.create_tween()
+        tween.tween_property(button, "scale", Vector2(1, 1), 0.1)
+            .set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+    )
+
+## Universal hover glow
+static func add_hover_glow(control: Control, glow_color: Color = Color(1, 1, 0.8)):
+    """Add subtle glow on hover"""
+    var original_modulate = control.modulate
+    
+    control.mouse_entered.connect(func():
+        var tween = control.create_tween()
+        tween.tween_property(control, "modulate", glow_color, 0.15)
+    )
+    
+    control.mouse_exited.connect(func():
+        var tween = control.create_tween()
+        tween.tween_property(control, "modulate", original_modulate, 0.15)
+    )
+
+## Tooltip system
+static func add_tooltip(control: Control, tooltip_text: String):
+    """Add tooltip with delay"""
+    var tooltip_label: Label = null
+    var tooltip_timer: Timer = null
+    
+    control.mouse_entered.connect(func():
+        # Create timer for delay
+        tooltip_timer = Timer.new()
+        tooltip_timer.wait_time = 0.3
+        tooltip_timer.one_shot = true
+        control.add_child(tooltip_timer)
+        tooltip_timer.timeout.connect(func():
+            # Show tooltip
+            tooltip_label = Label.new()
+            tooltip_label.text = tooltip_text
+            tooltip_label.add_theme_stylebox_override("normal", create_tooltip_style())
+            tooltip_label.add_theme_color_override("font_color", Color.WHITE)
+            tooltip_label.position = control.get_local_mouse_position() + Vector2(10, 10)
+            tooltip_label.z_index = 1000
+            control.add_child(tooltip_label)
+        )
+        tooltip_timer.start()
+    )
+    
+    control.mouse_exited.connect(func():
+        # Cancel timer if still waiting
+        if tooltip_timer:
+            tooltip_timer.queue_free()
+        # Remove tooltip if showing
+        if tooltip_label:
+            tooltip_label.queue_free()
+    )
+
+static func create_tooltip_style() -> StyleBoxFlat:
+    var style = StyleBoxFlat.new()
+    style.bg_color = Color(0.1, 0.1, 0.1, 0.9)
+    style.corner_radius_top_left = 4
+    style.corner_radius_top_right = 4
+    style.corner_radius_bottom_left = 4
+    style.corner_radius_bottom_right = 4
+    style.content_margin_left = 8
+    style.content_margin_right = 8
+    style.content_margin_top = 4
+    style.content_margin_bottom = 4
+    return style
+
+## Shadow enhancement
+static func add_dynamic_shadow(control: Control):
+    """Add shadow that adjusts to z_index"""
+    var shadow = ColorRect.new()
+    shadow.name = "DynamicShadow"
+    shadow.color = Color(0, 0, 0, 0.3)
+    shadow.size = control.size + Vector2(8, 8)
+    shadow.position = Vector2(4, 4)
+    shadow.z_index = control.z_index - 1
+    control.add_child(shadow)
+    control.move_child(shadow, 0)  # Behind everything
+    
+    # Update shadow when z_index changes
+    control.tree_entered.connect(func():
+        shadow.z_index = control.z_index - 1
+        # Darker shadow for higher z_index (closer to desk)
+        var shadow_alpha = 0.2 + (control.z_index * 0.05)
+        shadow.color.a = clamp(shadow_alpha, 0.2, 0.6)
+    )
+```
+
+**Application to Existing Features:**
+
+```gdscript
+# In InteractiveBookshelf._ready():
+for spine in [grimoire_spine, translations_spine, context_spine, notes_spine]:
+    InteractionPolish.add_button_polish(spine)
+    InteractionPolish.add_hover_glow(spine, Color(1.15, 1.15, 1.05))
+    InteractionPolish.add_tooltip(spine, "Consult " + spine.text)
+
+# In ReferenceBook._ready():
+InteractionPolish.add_dynamic_shadow(self)
+InteractionPolish.add_button_polish(close_button)
+InteractionPolish.add_tooltip(close_button, "Return to shelf")
+
+# In MainBookWorkspace._ready():
+InteractionPolish.add_button_polish(submit_button)
+translation_input.mouse_default_cursor_shape = Control.CURSOR_IBEAM
+
+# In ReferenceBookTab._ready():
+InteractionPolish.add_button_polish(self)
+InteractionPolish.add_tooltip(self, book_name)  # Full name if truncated
+```
+
+**Lamp Breathing Animation:**
+
+```gdscript
+# In main Workspace scene:
+func _ready():
+    # ... existing setup ...
+    
+    # Add lamp breathing
+    var lamp = $DeskLamp  # PointLight2D
+    var tween = create_tween().set_loops()
+    tween.tween_property(lamp, "energy", 1.7, 3.0)
+        .set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+    tween.tween_property(lamp, "energy", 2.1, 3.0)
+        .set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+```
+
+**Optional Dust Particles:**
+
+```gdscript
+# In main Workspace scene (optional):
+func add_dust_motes():
+    var dust = CPUParticles2D.new()
+    dust.amount = 8
+    dust.lifetime = 6.0
+    dust.preprocess = 3.0
+    dust.emission_shape = CPUParticles2D.EMISSION_SHAPE_BOX
+    dust.emission_box_extents = Vector3(300, 200, 0)
+    dust.direction = Vector2(0, -1)
+    dust.spread = 20
+    dust.gravity = Vector2(0, -3)
+    dust.initial_velocity_min = 3
+    dust.initial_velocity_max = 8
+    dust.color = Color(1, 1, 1, 0.15)
+    dust.scale_amount_min = 1
+    dust.scale_amount_max = 2
+    dust.position = Vector2(600, 400)  # Near desk center
+    add_child(dust)
+```
+
+**Key Numbers:**
+- Button press scale: 0.95
+- Button release time: 0.1s
+- Hover glow time: 0.15s
+- Tooltip delay: 0.3s
+- Lamp breathing cycle: 6s (3s up, 3s down)
+- Lamp energy range: 1.7 to 2.1
+- Dust particles: 8 max
+- Dust opacity: 0.15
+- Shadow alpha range: 0.2 to 0.6
+
+---
+
+### Acceptance Criteria
+
+**Visual Checks:**
+- [ ] All buttons have press animation (scale 0.95)
+- [ ] All hover elements brighten slightly
+- [ ] All shadows present and appropriate darkness
+- [ ] Lamp energy oscillates smoothly
+- [ ] Cursor changes appropriately per element
+- [ ] No visual glitches or jitter
+
+**Interaction Checks:**
+- [ ] Hover any button → Brightens in 0.15s
+- [ ] Click any button → Scales down then up (0.2s total)
+- [ ] Hover book spine → Glow effect visible
+- [ ] Hover tooltip elements → Tooltip after 0.3s
+- [ ] Move away from tooltip → Tooltip disappears
+
+**Functional Checks:**
+- [ ] InteractionPolish.add_button_polish() works on all buttons
+- [ ] add_hover_glow() doesn't interfere with existing hover logic
+- [ ] add_tooltip() shows correct text
+- [ ] add_dynamic_shadow() adjusts to z_index changes
+- [ ] Lamp breathing loops infinitely
+
+**Animation Checks:**
+- [ ] All animations smooth (no stuttering)
+- [ ] Button press uses back ease (satisfying bounce)
+- [ ] Hover transitions are gentle (sine curve)
+- [ ] Lamp breathing is subtle (not distracting)
+- [ ] No animation conflicts (hover during press, etc.)
+
+**Polish Checks:**
+- [ ] Cursor hand on all clickable elements
+- [ ] Cursor I-beam on text input
+- [ ] Tooltips readable (dark bg, white text)
+- [ ] Tooltips positioned near cursor (not obscuring element)
+- [ ] Shadows don't clip or overlap incorrectly
+
+**Performance Checks:**
+- [ ] Hover glow doesn't cause lag
+- [ ] Multiple simultaneous animations smooth
+- [ ] Dust particles (if enabled) don't impact FPS
+- [ ] Tooltip creation/destruction doesn't leak memory
+
+**Integration Checks:**
+- [ ] Polish applies to all features (3A.1 through 3A.8)
+- [ ] Doesn't break existing functionality
+- [ ] Enhances, doesn't distract from core interactions
+- [ ] Consistent feel across all UI elements
+
+**Edge Case Checks:**
+- [ ] Rapid hover on/off doesn't cause animation pile-up
+- [ ] Tooltips don't persist after element removed
+- [ ] Press animation completes even if button disabled mid-press
+- [ ] Multiple elements hovering simultaneously work correctly
+
+---
+
+### Manual Test Script
+
+1. **Test universal button polish:**
+   ```
+   - Click Submit button in Main Book
+   - Observe: Scales down to 0.95
+   - Observe: Bounces back to 1.0 with back ease
+   - Time: ~0.2s total
+   - Repeat on: Grimoire spine, close buttons, tabs
+   - Verify: Consistent feel across all buttons
+   ```
+
+2. **Test hover glow:**
+   ```
+   - Hover over Grimoire spine
+   - Observe: Brightens over 0.15s
+   - Move away
+   - Observe: Returns to normal over 0.15s
+   - Repeat on other interactive elements
+   - Verify: No jitter or overshoot
+   ```
+
+3. **Test tooltips:**
+   ```
+   - Hover over Grimoire spine
+   - Wait 0.3s
+   - Verify: Tooltip appears "Consult Grimoire Index"
+   - Move mouse away
+   - Verify: Tooltip disappears immediately
+   - Hover over close button
+   - Verify: "Return to shelf" tooltip after 0.3s
+   ```
+
+4. **Test cursor changes:**
+   ```
+   - Move cursor over different elements:
+     - Book spine → Pointing hand
+     - Input field → I-beam
+     - Close button → Pointing hand
+     - Book content → Arrow (no interaction)
+     - Tab → Pointing hand
+   - Verify: Cursor changes instantly
+   ```
+
+5. **Test dynamic shadows:**
+   ```
+   - Open 3 books (stacked)
+   - Observe shadows under each book
+   - Verify: Top book has darkest shadow
+   - Verify: Background books have lighter shadows
+   - Click tab to bring background book forward
+   - Observe: Shadow darkens as book comes to front
+   ```
+
+6. **Test lamp breathing:**
+   ```
+   - Watch lamp for 6 seconds
+   - Observe: Energy oscillates 1.7 ↔ 2.1
+   - Verify: Smooth sine wave (not linear)
+   - Verify: Loops continuously
+   - Verify: Subtle (not distracting)
+   ```
+
+7. **Test dust particles (if enabled):**
+   ```
+   - Watch for dust motes in lamp light
+   - Verify: 5-10 particles max
+   - Verify: Slow upward drift
+   - Verify: Very low opacity (barely visible)
+   - Verify: No FPS impact
+   ```
+
+8. **Test polish interactions:**
+   ```
+   - Rapidly hover on/off button
+   - Verify: Glow transitions smoothly
+   - Click button during hover
+   - Verify: Both animations work (glow + press)
+   - Hover during book slide animation
+   - Verify: No conflicts
+   ```
+
+9. **Pass criteria:** All interactions feel polished, responsive, and professional
+
+---
+
+### Known Simplifications
+
+**Phase 3A shortcuts:**
+- Universal glow color (could be per-element)
+- Simple tooltip system (no rich text/formatting)
+- No sound effects (paper rustle, book thud, etc.)
+- Static dust particles (not affected by mouse movement)
+
+**Technical debt:**
+- Tooltip positioning doesn't check screen bounds
+  - **Impact:** Tooltip might go off-screen at edges
+  - **Solution:** Clamp tooltip position to viewport
+- No tooltip pooling (creates/destroys each time)
+  - **Impact:** Minor GC pressure
+  - **Solution:** Reuse single tooltip instance
+- Shadow as separate node (not shader)
+  - **Impact:** Extra draw calls
+  - **Future:** Use shader for better performance
+
+---
+
+## PHASE 3A SUMMARY
+
+**Total Estimated Time:** 10 hours
+
+**Feature Breakdown:**
+- 3A.1: Interactive Bookshelf (90 min)
+- 3A.2: Workspace Zones (45 min)
+- 3A.3: Reference Book Sliding (120 min)
+- 3A.4: Diegetic Reference Manager (90 min)
+- 3A.5: Main Book Workspace (60 min)
+- 3A.6: Working Dictionary Panel (45 min)
+- 3A.7: Customer Context Card (45 min)
+- 3A.8: Tab Stacking System (75 min)
+- 3A.9: Hover & Interaction Polish (60 min)
+
+**Phase Goal Achieved:**
+Transform modal reference panels into immersive diegetic UI where books physically slide from shelf to desk, stack with tabs, and return to shelf. Tests whether "scholar surrounded by books" fantasy enhances or clutters the puzzle-solving experience.
+
+**Critical Path:**
+1. Must implement 3A.1 and 3A.2 first (foundation)
+2. Then 3A.3 (book sliding mechanic)
+3. Then 3A.4 (orchestration)
+4. Then parallel: 3A.5, 3A.6, 3A.7 (UI panels)
+5. Then 3A.8 (tab system)
+6. Finally 3A.9 (polish pass)
+
+**Success Criteria:**
+- Player can open/close 3 reference books smoothly
+- Books stack visually with clear hierarchy
+- Main translation book remains focal point
+- No visual clutter (zones prevent overlap)
+- All interactions feel responsive and polished
+- System enhances immersion vs. modal panels

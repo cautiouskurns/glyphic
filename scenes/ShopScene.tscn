@@ -298,9 +298,9 @@ color = Color(0.2, 0.15, 0.1, 1)
 [node name="DiaryButton" parent="Desk" instance=ExtResource("2_diary")]
 layout_mode = 0
 offset_left = 350.0
-offset_top = 50.0
+offset_top = 51.0
 offset_right = 430.0
-offset_bottom = 150.0
+offset_bottom = 151.0
 
 [node name="DictionaryButton" parent="Desk" instance=ExtResource("3_dictionary")]
 layout_mode = 0
