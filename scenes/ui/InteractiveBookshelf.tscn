@@ -1,0 +1,274 @@
+[gd_scene load_steps=7 format=3 uid="uid://bookshelf_001"]
+
+[ext_resource type="Script" path="res://scripts/ui/InteractiveBookshelf.gd" id="1_bookshelf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shelf"]
+bg_color = Color(0.227451, 0.133333, 0.0705882, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_spine_button"]
+bg_color = Color(0, 0, 0, 0)
+draw_center = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_grimoire"]
+bg_color = Color(0.545098, 0, 0, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_translations"]
+bg_color = Color(0.176471, 0.313726, 0.0862745, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.1, 0.18, 0.05, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_context"]
+bg_color = Color(0.8, 0.4, 0, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5, 0.25, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.3)
+shadow_size = 3
+
+[node name="InteractiveBookshelf" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 120.0
+script = ExtResource("1_bookshelf")
+
+[node name="ShelfBackground" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.227451, 0.133333, 0.0705882, 1)
+
+[node name="ShelfShadow" type="ColorRect" parent="."]
+layout_mode = 0
+offset_top = 117.0
+offset_right = 1920.0
+offset_bottom = 120.0
+color = Color(0, 0, 0, 0.2)
+
+[node name="Spines" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -620.0
+offset_top = -40.0
+offset_right = 620.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 40
+
+[node name="GrimoireSpine" type="Button" parent="Spines"]
+custom_minimum_size = Vector2(280, 80)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/focus = SubResource("StyleBoxFlat_spine_button")
+flat = true
+
+[node name="SpineCover" type="Panel" parent="Spines/GrimoireSpine"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_grimoire")
+
+[node name="Binding" type="ColorRect" parent="Spines/GrimoireSpine/SpineCover"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.3, 0, 0, 1)
+
+[node name="Label" type="Label" parent="Spines/GrimoireSpine/SpineCover"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -120.0
+offset_right = 40.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5708
+theme_override_colors/font_color = Color(1, 0.843137, 0, 1)
+theme_override_font_sizes/font_size = 18
+text = "GRIMOIRE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TranslationsSpine" type="Button" parent="Spines"]
+custom_minimum_size = Vector2(280, 80)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/focus = SubResource("StyleBoxFlat_spine_button")
+flat = true
+
+[node name="SpineCover" type="Panel" parent="Spines/TranslationsSpine"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_translations")
+
+[node name="Binding" type="ColorRect" parent="Spines/TranslationsSpine/SpineCover"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.1, 0.18, 0.05, 1)
+
+[node name="Label" type="Label" parent="Spines/TranslationsSpine/SpineCover"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -140.0
+offset_right = 40.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5708
+theme_override_colors/font_color = Color(0.956863, 0.909804, 0.847059, 1)
+theme_override_font_sizes/font_size = 18
+text = "TRANSLATIONS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ContextSpine" type="Button" parent="Spines"]
+custom_minimum_size = Vector2(280, 80)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/focus = SubResource("StyleBoxFlat_spine_button")
+flat = true
+
+[node name="SpineCover" type="Panel" parent="Spines/ContextSpine"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_context")
+
+[node name="Binding" type="ColorRect" parent="Spines/ContextSpine/SpineCover"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.5, 0.25, 0, 1)
+
+[node name="Label" type="Label" parent="Spines/ContextSpine/SpineCover"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -120.0
+offset_right = 40.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5708
+theme_override_colors/font_color = Color(0.164706, 0.121569, 0.0588235, 1)
+theme_override_font_sizes/font_size = 18
+text = "CONTEXT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NotesSpine" type="Button" parent="Spines"]
+custom_minimum_size = Vector2(280, 80)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_spine_button")
+theme_override_styles/focus = SubResource("StyleBoxFlat_spine_button")
+flat = true
+
+[node name="SpineCover" type="Panel" parent="Spines/NotesSpine"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_shelf")
+
+[node name="Binding" type="ColorRect" parent="Spines/NotesSpine/SpineCover"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.5, 0.4, 0.3, 1)
+
+[node name="Label" type="Label" parent="Spines/NotesSpine/SpineCover"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -100.0
+offset_right = 40.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -1.5708
+theme_override_colors/font_color = Color(0.101961, 0.101961, 0.101961, 1)
+theme_override_font_sizes/font_size = 18
+text = "NOTES"
+horizontal_alignment = 1
+vertical_alignment = 1
