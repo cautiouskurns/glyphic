@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://book_scene_001"]
+
+[ext_resource type="Script" path="res://scripts/ui/Book.gd" id="1_book"]
+
+[node name="Book" type="PanelContainer"]
+custom_minimum_size = Vector2(40, 100)
+script = ExtResource("1_book")
+
+[node name="BookSpine" type="ColorRect" parent="."]
+layout_mode = 2
+color = Color(0.3, 0.2, 0.12, 1)
+
+[node name="SpineText" type="Label" parent="."]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.75, 0.6, 0.6)
+theme_override_font_sizes/font_size = 10
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -105,9 +105,9 @@ func set_symbol_data(symbol: String, entry_data: Dictionary):
 		metadata_row.visible = false
 		aliases_row.visible = false
 
-		# Dark background for unknown
+		# Cream background for unknown (same as learned)
 		var unknown_style = StyleBoxFlat.new()
-		unknown_style.bg_color = Color("#1A1A1A")
+		unknown_style.bg_color = Color(0.956863, 0.909804, 0.847059, 1)  # Cream color
 		unknown_style.corner_radius_top_left = 8
 		unknown_style.corner_radius_top_right = 8
 		unknown_style.corner_radius_bottom_right = 8
@@ -116,6 +116,9 @@ func set_symbol_data(symbol: String, entry_data: Dictionary):
 		unknown_style.content_margin_top = 20.0
 		unknown_style.content_margin_right = 24.0
 		unknown_style.content_margin_bottom = 20.0
+		unknown_style.shadow_size = 4
+		unknown_style.shadow_offset = Vector2(0, 2)
+		unknown_style.shadow_color = Color(0, 0, 0, 0.15)
 		add_theme_stylebox_override("panel", unknown_style)
 
 func clear_aliases():

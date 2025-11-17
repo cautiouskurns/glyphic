@@ -1,0 +1,291 @@
+[gd_scene load_steps=2 format=3 uid="uid://bmulqlda6e6dp"]
+
+[ext_resource type="Script" uid="uid://ps14xqgmeo40" path="res://scripts/ShopScene.gd" id="1_shop"]
+
+[node name="ShopScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_shop")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0509804, 0.031372547, 0.015686275, 1)
+
+[node name="LeftBookshelf" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 500.0
+offset_bottom = 1080.0
+
+[node name="ShelfPanel" type="Panel" parent="LeftBookshelf"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 80.0
+offset_right = 470.0
+offset_bottom = 950.0
+
+[node name="BooksContainer" type="Control" parent="LeftBookshelf"]
+anchors_preset = 0
+offset_left = 50.0
+offset_top = 100.0
+offset_right = 450.0
+offset_bottom = 930.0
+
+[node name="LeftBookshelf2" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 437.0
+offset_top = -2.0
+offset_right = 937.0
+offset_bottom = 1078.0
+
+[node name="ShelfPanel" type="Panel" parent="LeftBookshelf2"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 80.0
+offset_right = 470.0
+offset_bottom = 950.0
+
+[node name="BooksContainer" type="Control" parent="LeftBookshelf2"]
+anchors_preset = 0
+offset_left = 50.0
+offset_top = 100.0
+offset_right = 450.0
+offset_bottom = 930.0
+
+[node name="RightBookshelf" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 1427.0001
+offset_right = 1847.0001
+offset_bottom = 1080.0
+scale = Vector2(1.1599951, 1)
+
+[node name="ShelfPanel" type="Panel" parent="RightBookshelf"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 80.0
+offset_right = 390.0
+offset_bottom = 950.0
+
+[node name="BooksContainer" type="Control" parent="RightBookshelf"]
+anchors_preset = 0
+offset_left = 50.0
+offset_top = 100.0
+offset_right = 370.0
+offset_bottom = 930.0
+
+[node name="Ladder" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 0
+offset_left = 520.0
+offset_top = 200.0
+offset_right = 620.0
+offset_bottom = 800.0
+
+[node name="LeftRail" type="ColorRect" parent="Ladder"]
+layout_mode = 0
+offset_left = 5.0
+offset_right = 15.0
+offset_bottom = 600.0
+rotation = -0.15
+color = Color(0.290196, 0.207843, 0.133333, 1)
+
+[node name="RightRail" type="ColorRect" parent="Ladder"]
+layout_mode = 0
+offset_left = 75.0
+offset_right = 85.0
+offset_bottom = 600.0
+rotation = -0.15
+color = Color(0.290196, 0.207843, 0.133333, 1)
+
+[node name="Rung1" type="ColorRect" parent="Ladder"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 80.0
+offset_right = 80.0
+offset_bottom = 88.0
+rotation = -0.15
+color = Color(0.35, 0.25, 0.16, 1)
+
+[node name="Rung2" type="ColorRect" parent="Ladder"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 180.0
+offset_right = 80.0
+offset_bottom = 188.0
+rotation = -0.15
+color = Color(0.35, 0.25, 0.16, 1)
+
+[node name="Rung3" type="ColorRect" parent="Ladder"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 280.0
+offset_right = 80.0
+offset_bottom = 288.0
+rotation = -0.15
+color = Color(0.35, 0.25, 0.16, 1)
+
+[node name="Rung4" type="ColorRect" parent="Ladder"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 380.0
+offset_right = 80.0
+offset_bottom = 388.0
+rotation = -0.15
+color = Color(0.35, 0.25, 0.16, 1)
+
+[node name="Rung5" type="ColorRect" parent="Ladder"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 480.0
+offset_right = 80.0
+offset_bottom = 488.0
+rotation = -0.15
+color = Color(0.35, 0.25, 0.16, 1)
+
+[node name="Doorway" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 991.0
+offset_top = 109.0
+offset_right = 1391.0
+offset_bottom = 659.0
+
+[node name="DoorFrame" type="ColorRect" parent="Doorway"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.25, 0.2, 0.15, 1)
+
+[node name="DoorLight" type="ColorRect" parent="Doorway"]
+layout_mode = 1
+offset_left = 49.0
+offset_top = 39.0
+offset_right = 349.0
+offset_bottom = 489.0
+scale = Vector2(1, 1.3600006)
+color = Color(0.831373, 0.784314, 0.709804, 1)
+
+[node name="WindowDivider" type="ColorRect" parent="Doorway/DoorLight"]
+visible = false
+layout_mode = 0
+offset_left = 145.0
+offset_right = 155.0
+offset_bottom = 450.0
+color = Color(0.25, 0.2, 0.15, 1)
+
+[node name="Silhouette" type="ColorRect" parent="Doorway/DoorLight"]
+visible = false
+layout_mode = 0
+offset_left = 100.0
+offset_top = 150.0
+offset_right = 200.0
+offset_bottom = 450.0
+color = Color(0.05, 0.05, 0.05, 1)
+
+[node name="Head" type="ColorRect" parent="Doorway/DoorLight/Silhouette"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = -50.0
+offset_right = 80.0
+offset_bottom = 10.0
+color = Color(0.05, 0.05, 0.05, 1)
+
+[node name="Desk" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_top = 650.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+
+[node name="DeskSurface" type="ColorRect" parent="Desk"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.4, 0.266667, 0.12549, 1)
+
+[node name="Papers" type="Control" parent="Desk"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 200.0
+offset_top = 50.0
+offset_right = 800.0
+offset_bottom = 350.0
+
+[node name="Paper1" type="Panel" parent="Desk/Papers"]
+layout_mode = 0
+offset_top = 20.0
+offset_right = 180.0
+offset_bottom = 240.0
+rotation = -0.12
+
+[node name="Paper2" type="Panel" parent="Desk/Papers"]
+layout_mode = 0
+offset_left = 150.0
+offset_right = 330.0
+offset_bottom = 220.0
+rotation = 0.08
+
+[node name="Paper3" type="Panel" parent="Desk/Papers"]
+layout_mode = 0
+offset_left = 300.0
+offset_top = 30.0
+offset_right = 480.0
+offset_bottom = 250.0
+rotation = -0.06
+
+[node name="Paper4" type="Panel" parent="Desk/Papers"]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 80.0
+offset_right = 280.0
+offset_bottom = 300.0
+rotation = 0.15
+
+[node name="OpenBook" type="Panel" parent="Desk"]
+layout_mode = 0
+offset_left = 1150.0
+offset_top = 40.0
+offset_right = 1700.0
+offset_bottom = 380.0
+
+[node name="LeftPage" type="ColorRect" parent="Desk/OpenBook"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 15.0
+offset_right = 260.0
+offset_bottom = 325.0
+color = Color(0.960784, 0.937255, 0.898039, 1)
+
+[node name="RightPage" type="ColorRect" parent="Desk/OpenBook"]
+layout_mode = 0
+offset_left = 290.0
+offset_top = 15.0
+offset_right = 535.0
+offset_bottom = 325.0
+color = Color(0.960784, 0.937255, 0.898039, 1)
+
+[node name="Spine" type="ColorRect" parent="Desk/OpenBook"]
+layout_mode = 0
+offset_left = 260.0
+offset_top = 15.0
+offset_right = 290.0
+offset_bottom = 325.0
+color = Color(0.2, 0.15, 0.1, 1)

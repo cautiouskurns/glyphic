@@ -74,6 +74,9 @@ func _input(event):
 			KEY_5:
 				tab_bar.current_tab = Tab.QUEUE
 				_on_tab_selected(Tab.QUEUE)
+			KEY_0:
+				# DEBUG: Access shop scene test
+				get_tree().change_scene_to_file("res://scenes/ShopScene.tscn")
 
 func _on_tab_selected(tab: int):
 	"""Handle tab change"""
