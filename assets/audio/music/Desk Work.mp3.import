@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c4er40g3uj0uw"
+path="res://.godot/imported/Desk Work.mp3-b66fc481b0f56d63ba2eea230b773efd.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/music/Desk Work.mp3"
+dest_files=["res://.godot/imported/Desk Work.mp3-b66fc481b0f56d63ba2eea230b773efd.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

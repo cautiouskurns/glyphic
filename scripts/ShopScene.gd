@@ -25,6 +25,28 @@ var book_scene = preload("res://scenes/ui/Book.tscn")
 # Store references to top bar labels for updating
 var day_label: Label
 var cash_label: Label
+var hint_label: Label  # Bottom hint text
+
+# Feature 3A.2: Shop Workspace Zones - Camera and focus mode
+var camera: Camera2D  # Created programmatically
+var background_dim: ColorRect  # Overlay for dimming bookshelves
+
+# Workspace zone state
+var is_focused_mode: bool = false
+var focus_tween: Tween
+
+# Camera positions and zoom levels
+var default_camera_position: Vector2 = Vector2(960, 540)  # Center of 1920×1080
+var focused_camera_position: Vector2 = Vector2(960, 870)  # Shifted down to desk focus
+var default_zoom: Vector2 = Vector2(1.0, 1.0)
+var focused_zoom: Vector2 = Vector2(1.0, 1.0)  # Keep same zoom, just shift perspective
+
+# Panel zone configuration
+const DESK_ZONE_WIDTH = 768  # Left 40%
+const PANEL_ZONE_X = 800
+const PANEL_ZONE_Y = 115
+const PANEL_ZONE_WIDTH = 1100
+const PANEL_ZONE_HEIGHT = 850
 
 func _ready():
 	"""Initialize shop scene (only runs once now that scene persists)"""
@@ -50,6 +72,11 @@ func _ready():
 	add_shadows()
 	add_dust_particles()
 	setup_interactive_buttons()
+
+	# Feature 3A.2: Setup workspace zones and camera
+	setup_camera()
+	setup_background_dim()
+	connect_desk_objects()
 
 func add_top_bar():
 	"""Add top bar with day and money information"""
@@ -83,8 +110,8 @@ func add_top_bar():
 	cash_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	top_bar.add_child(cash_label)
 
-	# Bottom hint label
-	var hint_label = Label.new()
+	# Bottom hint label - store reference for focus mode
+	hint_label = Label.new()
 	hint_label.position = Vector2(0, 1040)
 	hint_label.size = Vector2(1920, 40)
 	hint_label.text = "Click on objects to navigate • Press ESC or click 🏠 Return to Shop button to come back"
@@ -556,16 +583,39 @@ func create_circle_polygon(center: Vector2, radius: float) -> Polygon2D:
 
 func setup_interactive_buttons():
 	"""Connect navigation signals for interactive buttons (visual/hover logic is now in each button scene)"""
-	# Connect pressed signals to navigation
-	diary_button.pressed.connect(SceneManager.goto_queue_screen)
-	dictionary_button.pressed.connect(SceneManager.goto_dictionary_screen)
-	papers_button.pressed.connect(SceneManager.goto_translation_screen)
-	magnifying_glass_button.pressed.connect(SceneManager.goto_examination_screen)
-	bell_button.pressed.connect(SceneManager.goto_work_screen)
+	# Feature 3A.1/3A.2: Old SceneManager navigation removed
+	# Desk objects now emit object_clicked signals instead
+	# Navigation will be handled by DiegeticScreenManager in Feature 3A.4
+
+	# Old navigation (REMOVED):
+	# diary_button.pressed.connect(SceneManager.goto_queue_screen)
+	# dictionary_button.pressed.connect(SceneManager.goto_dictionary_screen)
+	# papers_button.pressed.connect(SceneManager.goto_translation_screen)
+	# magnifying_glass_button.pressed.connect(SceneManager.goto_examination_screen)
+	# bell_button.pressed.connect(SceneManager.goto_work_screen)
 
 func _input(event):
-	"""Handle input"""
-	pass
+	"""Handle keyboard shortcuts for desk objects - Feature 3A.1 + ESC for focus mode - Feature 3A.2"""
+	if event is InputEventKey and event.pressed and not event.echo:
+		# Feature 3A.2: ESC to exit focus mode
+		if event.keycode == KEY_ESCAPE:
+			if is_focused_mode:
+				exit_focus_mode()
+				get_viewport().set_input_as_handled()  # Don't propagate ESC
+				return
+
+		# Feature 3A.1: Keyboard shortcuts for desk objects
+		match event.keycode:
+			KEY_Q:  # Queue (Diary)
+				diary_button._on_clicked()
+			KEY_T:  # Translation (Papers)
+				papers_button._on_clicked()
+			KEY_D:  # Dictionary
+				dictionary_button._on_clicked()
+			KEY_E:  # Examination (Magnifying Glass)
+				magnifying_glass_button._on_clicked()
+			KEY_W:  # Work (Bell)
+				bell_button._on_clicked()
 
 func hide_shop():
 	"""Hide shop UI when navigating to game screens"""
@@ -582,3 +632,145 @@ func update_top_bar():
 		day_label.text = "Day %d - %s" % [GameState.current_day, get_day_name(GameState.current_day)]
 	if cash_label:
 		cash_label.text = "$%d" % GameState.player_cash
+
+# Feature 3A.2: Shop Workspace Zones Implementation
+
+func setup_camera():
+	"""Initialize camera for perspective shifts"""
+	camera = Camera2D.new()
+	add_child(camera)
+
+	camera.position = default_camera_position
+	camera.zoom = default_zoom
+	camera.enabled = true
+
+func setup_background_dim():
+	"""Create dimming overlay for bookshelves during focus mode"""
+	background_dim = ColorRect.new()
+	background_dim.size = Vector2(1920, 650)  # Cover bookshelf area
+	background_dim.position = Vector2(0, 0)
+	background_dim.color = Color(0, 0, 0, 0)  # Transparent initially
+	background_dim.mouse_filter = Control.MOUSE_FILTER_STOP  # Blocks clicks when active
+	background_dim.visible = false
+	background_dim.z_index = 50  # Above bookshelves, below panels
+	add_child(background_dim)
+
+	# Connect click to exit focus mode
+	background_dim.gui_input.connect(_on_background_clicked)
+
+func connect_desk_objects():
+	"""Connect desk object signals to focus mode - Feature 3A.1 integration"""
+	diary_button.object_clicked.connect(_on_desk_object_clicked)
+	papers_button.object_clicked.connect(_on_desk_object_clicked)
+	dictionary_button.object_clicked.connect(_on_desk_object_clicked)
+	magnifying_glass_button.object_clicked.connect(_on_desk_object_clicked)
+	bell_button.object_clicked.connect(_on_desk_object_clicked)
+
+func _on_desk_object_clicked(screen_type: String):
+	"""Handle desk object click - enter focus mode if not already"""
+	if not is_focused_mode:
+		enter_focus_mode()
+
+	# Signal will be handled by DiegeticScreenManager in Feature 3A.4
+	# For now, just enter focus mode
+
+func enter_focus_mode():
+	"""Shift perspective to focus on desk workspace"""
+	if is_focused_mode:
+		return  # Already in focus mode
+
+	is_focused_mode = true
+
+	# Kill existing tween if any
+	if focus_tween:
+		focus_tween.kill()
+
+	focus_tween = create_tween()
+	focus_tween.set_parallel(true)
+	focus_tween.set_ease(Tween.EASE_OUT)
+	focus_tween.set_trans(Tween.TRANS_CUBIC)
+
+	# Camera shift and zoom
+	focus_tween.tween_property(camera, "position", focused_camera_position, 0.4)
+	focus_tween.tween_property(camera, "zoom", focused_zoom, 0.4)
+
+	# Dim and blur bookshelves
+	background_dim.visible = true
+	focus_tween.tween_property(background_dim, "color:a", 0.4, 0.4)  # 40% dark overlay
+
+	# Dim bookshelf modulate (separate from overlay for blur effect)
+	focus_tween.tween_property(left_bookshelf, "modulate:a", 0.6, 0.4)
+	focus_tween.tween_property(left_bookshelf2, "modulate:a", 0.6, 0.4)
+	focus_tween.tween_property(right_bookshelf, "modulate:a", 0.6, 0.4)
+	focus_tween.tween_property(doorway, "modulate:a", 0.5, 0.4)
+
+	# Brighten desk surface slightly
+	var desk_surface = $Desk/DeskSurface
+	focus_tween.tween_property(desk_surface, "modulate", Color(1.1, 1.1, 1.1), 0.4)
+
+	# Dim hint label at bottom
+	if hint_label:
+		focus_tween.tween_property(hint_label, "modulate:a", 0.0, 0.4)
+
+func exit_focus_mode():
+	"""Return perspective to default shop view"""
+	if not is_focused_mode:
+		return  # Already in default mode
+
+	is_focused_mode = false
+
+	# Kill existing tween if any
+	if focus_tween:
+		focus_tween.kill()
+
+	focus_tween = create_tween()
+	focus_tween.set_parallel(true)
+	focus_tween.set_ease(Tween.EASE_IN)
+	focus_tween.set_trans(Tween.TRANS_CUBIC)
+
+	# Camera return to default
+	focus_tween.tween_property(camera, "position", default_camera_position, 0.4)
+	focus_tween.tween_property(camera, "zoom", default_zoom, 0.4)
+
+	# Remove dim overlay
+	focus_tween.tween_property(background_dim, "color:a", 0.0, 0.4)
+
+	# Restore bookshelf brightness
+	focus_tween.tween_property(left_bookshelf, "modulate:a", 1.0, 0.4)
+	focus_tween.tween_property(left_bookshelf2, "modulate:a", 1.0, 0.4)
+	focus_tween.tween_property(right_bookshelf, "modulate:a", 1.0, 0.4)
+	focus_tween.tween_property(doorway, "modulate:a", 1.0, 0.4)
+
+	# Return desk to normal brightness
+	var desk_surface = $Desk/DeskSurface
+	focus_tween.tween_property(desk_surface, "modulate", Color(1, 1, 1), 0.4)
+
+	# Restore hint label at bottom
+	if hint_label:
+		focus_tween.tween_property(hint_label, "modulate:a", 1.0, 0.4)
+
+	# Hide background dim after animation
+	await focus_tween.finished
+	background_dim.visible = false
+
+	# Clear all object glows (Feature 3A.1 integration)
+	diary_button.set_panel_open(false)
+	papers_button.set_panel_open(false)
+	dictionary_button.set_panel_open(false)
+	magnifying_glass_button.set_panel_open(false)
+	bell_button.set_panel_open(false)
+
+func _on_background_clicked(event: InputEvent):
+	"""Handle click on dimmed background - exit focus mode"""
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		exit_focus_mode()
+
+# Public API for DiegeticScreenManager (Feature 3A.4)
+
+func get_panel_zone_rect() -> Rect2:
+	"""Returns the panel display zone in global coordinates"""
+	return Rect2(PANEL_ZONE_X, PANEL_ZONE_Y, PANEL_ZONE_WIDTH, PANEL_ZONE_HEIGHT)
+
+func is_in_focus_mode() -> bool:
+	"""Check if shop is currently in focused desk mode"""
+	return is_focused_mode

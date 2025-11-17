@@ -21,6 +21,7 @@ GameState="*res://scripts/GameState.gd"
 SymbolData="*res://scripts/SymbolData.gd"
 CustomerData="*res://scripts/CustomerData.gd"
 SceneManager="*res://scripts/SceneManager.gd"
+AudioManager="*res://scripts/managers/AudioManager.gd"
 
 [display]
 
@@ -28,4 +29,3 @@ window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/size/resizable=false
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
