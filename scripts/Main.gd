@@ -51,14 +51,28 @@ func _ready():
 	corkboard_style.shadow_size = 6
 	corkboard_style.shadow_offset = Vector2(0, 3)
 
-	# Set initial tab
-	current_tab = Tab.WORK
-	apply_tab_layout(Tab.WORK)
+	# Check if we came from shop with a target tab
+	if SceneManager.target_tab >= 0:
+		current_tab = SceneManager.target_tab
+		tab_bar.current_tab = SceneManager.target_tab
+		apply_tab_layout(SceneManager.target_tab)
+	else:
+		# Set initial tab
+		current_tab = Tab.WORK
+		apply_tab_layout(Tab.WORK)
+
+	# Add "Return to Shop" button if we came from shop
+	if SceneManager.is_from_shop():
+		add_return_to_shop_button()
 
 func _input(event):
 	"""Handle keyboard shortcuts for tab switching"""
 	if event is InputEventKey and event.pressed:
 		match event.keycode:
+			KEY_ESCAPE:
+				# Return to shop if we came from there
+				if SceneManager.is_from_shop():
+					SceneManager.return_to_shop()
 			KEY_1:
 				tab_bar.current_tab = Tab.WORK
 				_on_tab_selected(Tab.WORK)
@@ -75,8 +89,8 @@ func _input(event):
 				tab_bar.current_tab = Tab.QUEUE
 				_on_tab_selected(Tab.QUEUE)
 			KEY_0:
-				# DEBUG: Access shop scene test
-				get_tree().change_scene_to_file("res://scenes/ShopScene.tscn")
+				# DEBUG: Access shop scene directly
+				SceneManager.return_to_shop()
 
 func _on_tab_selected(tab: int):
 	"""Handle tab change"""
@@ -221,3 +235,35 @@ func tween_panel_rect(panel: Control, rect: Dictionary):
 	tween.tween_property(panel, "offset_top", rect.top, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_property(panel, "offset_right", rect.right, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_property(panel, "offset_bottom", rect.bottom, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+func add_return_to_shop_button():
+	"""Add a button to return to the shop scene"""
+	var button = Button.new()
+	button.text = "🏠 Return to Shop"
+	button.position = Vector2(1650, 25)
+	button.size = Vector2(240, 40)
+	button.add_theme_font_size_override("font_size", 16)
+	button.add_theme_color_override("font_color", Color(0.956863, 0.909804, 0.847059, 1))
+	button.add_theme_color_override("font_hover_color", Color(1, 1, 1, 1))
+
+	# Style button
+	var button_style = StyleBoxFlat.new()
+	button_style.bg_color = Color(0.25, 0.18, 0.13, 1)
+	button_style.corner_radius_top_left = 4
+	button_style.corner_radius_top_right = 4
+	button_style.corner_radius_bottom_right = 4
+	button_style.corner_radius_bottom_left = 4
+	button.add_theme_stylebox_override("normal", button_style)
+
+	var hover_style = StyleBoxFlat.new()
+	hover_style.bg_color = Color(0.35, 0.28, 0.23, 1)
+	hover_style.corner_radius_top_left = 4
+	hover_style.corner_radius_top_right = 4
+	hover_style.corner_radius_bottom_right = 4
+	hover_style.corner_radius_bottom_left = 4
+	button.add_theme_stylebox_override("hover", hover_style)
+
+	button.pressed.connect(func(): SceneManager.return_to_shop())
+
+	# Add to top bar
+	$TopBar.add_child(button)
