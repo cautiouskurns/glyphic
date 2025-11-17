@@ -1,0 +1,62 @@
+[gd_scene load_steps=2 format=3 uid="uid://dictionary_button_001"]
+
+[ext_resource type="Script" path="res://scripts/ui/DictionaryButton.gd" id="1_dictionary"]
+
+[node name="DictionaryButton" type="Button"]
+offset_right = 120.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 0)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 0)
+flat = true
+script = ExtResource("1_dictionary")
+metadata/tooltip_text = "Glyph Dictionary"
+
+[node name="BookBase" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 115.0
+offset_bottom = 85.0
+mouse_filter = 2
+
+[node name="LeftPage" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 55.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.96, 0.94, 0.9, 1)
+
+[node name="RightPage" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 65.0
+offset_top = 10.0
+offset_right = 110.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.96, 0.94, 0.9, 1)
+
+[node name="Spine" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 55.0
+offset_top = 10.0
+offset_right = 65.0
+offset_bottom = 80.0
+mouse_filter = 2
+color = Color(0.2, 0.15, 0.1, 1)
+
+[node name="Tooltip" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_left = -15.0
+offset_top = -60.0
+offset_right = 135.0
+offset_bottom = 0.0
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Tooltip"]
+layout_mode = 2
+text = "Glyph Dictionary"
+horizontal_alignment = 1

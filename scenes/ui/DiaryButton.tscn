@@ -1,0 +1,62 @@
+[gd_scene load_steps=2 format=3 uid="uid://d1dajjqaswbc5"]
+
+[ext_resource type="Script" uid="uid://680ypwemrhef" path="res://scripts/ui/DiaryButton.gd" id="1_diary"]
+
+[node name="DiaryButton" type="Button"]
+offset_right = 80.0
+offset_bottom = 100.0
+theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 0)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 0)
+flat = true
+script = ExtResource("1_diary")
+metadata/tooltip_text = "Customer Queue"
+
+[node name="DiaryBase" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 70.0
+offset_bottom = 90.0
+mouse_filter = 2
+color = Color(0.35, 0.25, 0.15, 1)
+
+[node name="DiaryCover" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 68.0
+offset_bottom = 88.0
+mouse_filter = 2
+color = Color(0.4, 0.28, 0.16, 1)
+
+[node name="DiaryPages" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 72.0
+offset_top = 15.0
+offset_right = 75.0
+offset_bottom = 85.0
+mouse_filter = 2
+color = Color(0.95, 0.92, 0.88, 1)
+
+[node name="DiaryBinding" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 40.0
+offset_right = 20.0
+offset_bottom = 60.0
+mouse_filter = 2
+color = Color(0.2, 0.15, 0.1, 1)
+
+[node name="Tooltip" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_left = -35.0
+offset_top = -60.0
+offset_right = 115.0
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Tooltip"]
+layout_mode = 2
+text = "Customer Queue"
+horizontal_alignment = 1

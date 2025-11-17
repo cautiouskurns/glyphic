@@ -1,0 +1,63 @@
+[gd_scene load_steps=2 format=3 uid="uid://bell_button_001"]
+
+[ext_resource type="Script" path="res://scripts/ui/BellButton.gd" id="1_bell"]
+
+[node name="BellButton" type="Button"]
+offset_right = 60.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 0)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 0)
+flat = true
+script = ExtResource("1_bell")
+metadata/tooltip_text = "Start Working"
+
+[node name="BellBase" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 50.0
+offset_right = 50.0
+offset_bottom = 60.0
+mouse_filter = 2
+color = Color(0.5, 0.4, 0.3, 1)
+
+[node name="BellDome" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 25.0
+offset_right = 45.0
+offset_bottom = 50.0
+mouse_filter = 2
+color = Color(0.7, 0.6, 0.4, 1)
+
+[node name="BellTop" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 20.0
+offset_right = 35.0
+offset_bottom = 25.0
+mouse_filter = 2
+color = Color(0.6, 0.5, 0.35, 1)
+
+[node name="Highlight" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 28.0
+offset_right = 28.0
+offset_bottom = 35.0
+mouse_filter = 2
+color = Color(0.9, 0.85, 0.7, 0.6)
+
+[node name="Tooltip" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_left = -30.0
+offset_top = -60.0
+offset_right = 90.0
+offset_bottom = 0.0
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Tooltip"]
+layout_mode = 2
+text = "Start Working"
+horizontal_alignment = 1

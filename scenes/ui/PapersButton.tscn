@@ -1,0 +1,63 @@
+[gd_scene load_steps=2 format=3 uid="uid://papers_button_001"]
+
+[ext_resource type="Script" path="res://scripts/ui/PapersButton.gd" id="1_papers"]
+
+[node name="PapersButton" type="Button"]
+offset_right = 150.0
+offset_bottom = 120.0
+theme_override_colors/font_color = Color(0, 0, 0, 0)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 0)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 0)
+flat = true
+script = ExtResource("1_papers")
+metadata/tooltip_text = "Translation Workspace"
+
+[node name="Paper1" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 10.0
+offset_right = 70.0
+offset_bottom = 90.0
+rotation = -0.12
+mouse_filter = 2
+
+[node name="Paper2" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 20.0
+offset_right = 110.0
+offset_bottom = 100.0
+rotation = 0.08
+mouse_filter = 2
+
+[node name="Paper3" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 5.0
+offset_right = 130.0
+offset_bottom = 85.0
+rotation = -0.06
+mouse_filter = 2
+
+[node name="Paper4" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 40.0
+offset_right = 60.0
+offset_bottom = 120.0
+rotation = 0.15
+mouse_filter = 2
+
+[node name="Tooltip" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 0.0
+offset_top = -60.0
+offset_right = 150.0
+offset_bottom = 0.0
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Tooltip"]
+layout_mode = 2
+text = "Translation Workspace"
+horizontal_alignment = 1

@@ -1,0 +1,1026 @@
+# PHASE 3A: DIEGETIC UI SYSTEM - Feature Specifications
+
+**Game:** Glyphic - Translation Shop Prototype  
+**Phase Goal:** Replace modal reference panels with immersive diegetic bookshelf system where books physically slide from shelf to desk, enabling simultaneous viewing of translation work and research materials.  
+**Estimated Time:** 10 hours (Hours 10-20 of development, after Phase 2B Reference Content System)  
+**Features in Phase:** 9 features (3A.1 through 3A.9)
+
+**Context:** Phase 2B created reference content (Grimoire, Prior Translations, etc.) displayed in modal panels. Phase 3A transforms the UX into a physical desk metaphor where books slide from shelf to workspace, stack behind each other with tabs, and return to shelf when closed. This tests whether the "scholar surrounded by books" fantasy enhances or clutters the puzzle-solving experience.
+
+---
+
+## Feature 3A.1: Interactive Bookshelf
+
+**Priority:** CRITICAL - Foundation for entire diegetic system
+
+**Tests Critical Question:** Q3 (Engaging texture) - Does physical book manipulation feel more immersive than menu navigation?
+
+**Estimated Time:** 90 minutes
+
+**Dependencies:**
+- None - foundation feature
+- Replaces Feature 2B.1 (Reference Library Shelf) with enhanced version
+
+---
+
+### Overview
+
+The Interactive Bookshelf displays 4 distinct book spines at the top of the screen that physically pull out when clicked and push back when books close. Books slide down from shelf to desk workspace. This establishes the spatial metaphor: shelf = storage, desk = active work area.
+
+**Critical Design Constraint:** Shelf must always be visible (never obscured) so player can grab books at any time. Maximum 4 books to maintain visual clarity.
+
+---
+
+### What Player Sees
+
+**Screen Layout:**
+- **Position:** Top of screen, spanning full width (0, 0) to (1920, 120)
+- **Size:** Full-width bar, 120px tall
+- **Book Spines:** 4 spines, each 280×80px, centered horizontally with 40px spacing
+
+**Visual Appearance:**
+
+**Bookshelf Background:**
+- Dark wood texture: #3A2518 (dark brown)
+- Subtle horizontal grain lines (optional, using Line2D at 5% opacity)
+- Slight shadow under shelf: 3px black drop shadow at 20% opacity
+
+**Book Spines (Vertical Orientation):**
+```
+Grimoire Index:     #8B0000 (deep red), gold text #FFD700
+Prior Translations: #2D5016 (forest green), cream text #F4E8D8  
+Customer Context:   #CC6600 (burnt orange), dark brown text #2A1F1A
+Working Notes:      #A0826D (tan brown), black text #1A1A1A
+```
+
+**Spine Details:**
+- Width: 280px, Height: 80px
+- Text: Vertical orientation, 18pt serif font
+- Left edge: 8px darker shade (leather binding effect)
+- Small decorative symbol at bottom (∆ for Grimoire, ⊕ for Translations, etc.)
+
+**Visual States:**
+
+**Default State (book on shelf):**
+```gdscript
+position.y = 0  # Flush with shelf
+modulate = Color(1, 1, 1)  # Normal brightness
+```
+
+**Hover State:**
+```gdscript
+position.y = -5  # Lifts 5px
+modulate = Color(1.15, 1.15, 1.05)  # Slight glow
+# Tooltip appears: "Consult [Book Name]"
+```
+
+**Pulled Out State (book open on desk):**
+```gdscript
+position.y = -12  # Pulled 12px forward
+rotation_degrees = 3  # Tilts slightly
+# Shadow increases to 6px
+```
+
+**Visual Feedback:**
+- Hover → Lift animation (0.1s)
+- Click → Pull animation (0.2s)
+- Book closes → Push animation (0.2s)
+
+---
+
+### What Player Does
+
+**Input Methods:**
+
+**Mouse:**
+- Hover spine → Spine lifts 5px, tooltip appears
+- Click spine → Book pulls out, slides down to desk
+- Click spine again (when book open) → Book returns to shelf
+
+**Keyboard:**
+- 1-4 keys → Quick-open corresponding book
+- ESC → Close currently active book
+
+**Immediate Response:**
+- Hover → Lift within 16ms (single frame)
+- Click → Pull animation starts within 50ms
+- Tooltip appears on hover after 0.3s delay
+
+**Feedback Loop:**
+
+**Example: Opening Grimoire**
+1. **Player action:** Mouse over red Grimoire spine
+2. **Visual change:** Spine lifts 5px, glows slightly brighter
+3. **System response:** Tooltip appears "Consult Grimoire Index"
+4. **Player action:** Click spine
+5. **Visual change:** Spine pulls out 12px, tilts 3°
+6. **System response:** Grimoire book slides down from spine position (Feature 3A.2)
+7. **Next decision:** Read Grimoire OR open another book OR continue translating
+
+---
+
+### Underlying Behavior
+
+**GDScript Structure:**
+
+```gdscript
+# res://scripts/ui/InteractiveBookshelf.gd
+extends Control
+
+# Book spine nodes
+@onready var grimoire_spine = $Spines/GrimoireSpine
+@onready var translations_spine = $Spines/TranslationsSpine
+@onready var context_spine = $Spines/ContextSpine
+@onready var notes_spine = $Spines/NotesSpine
+
+var spine_default_y: Dictionary = {}  # Store original Y positions
+var active_books: Dictionary = {}  # Track which books are open
+
+signal book_clicked(book_name: String)  # Emit when spine clicked
+
+func _ready():
+    # Store default positions
+    for spine in [grimoire_spine, translations_spine, context_spine, notes_spine]:
+        spine_default_y[spine] = spine.position.y
+    
+    # Connect signals
+    grimoire_spine.pressed.connect(_on_spine_clicked.bind("grimoire"))
+    translations_spine.pressed.connect(_on_spine_clicked.bind("translations"))
+    context_spine.pressed.connect(_on_spine_clicked.bind("context"))
+    notes_spine.pressed.connect(_on_spine_clicked.bind("notes"))
+    
+    # Hover effects
+    grimoire_spine.mouse_entered.connect(_on_spine_hover.bind(grimoire_spine))
+    grimoire_spine.mouse_exited.connect(_on_spine_unhover.bind(grimoire_spine))
+    # ... repeat for other spines
+
+func _on_spine_clicked(book_name: String):
+    """Handle spine click - pull out or push back"""
+    var spine = get_spine_node(book_name)
+    
+    if active_books.get(book_name, false):
+        # Book is open, close it
+        push_spine_back(spine)
+        active_books[book_name] = false
+    else:
+        # Book is closed, open it
+        pull_spine_out(spine)
+        active_books[book_name] = true
+    
+    # Notify DiegeticReferenceManager (Feature 3A.4)
+    book_clicked.emit(book_name)
+
+func _on_spine_hover(spine: TextureButton):
+    """Lift spine on hover"""
+    if active_books.get(get_book_name(spine), false):
+        return  # Already pulled out, don't lift more
+    
+    var tween = create_tween()
+    tween.tween_property(spine, "position:y", 
+        spine_default_y[spine] - 5, 0.1)
+    tween.parallel().tween_property(spine, "modulate", 
+        Color(1.15, 1.15, 1.05), 0.1)
+
+func _on_spine_unhover(spine: TextureButton):
+    """Return spine to default on unhover"""
+    if active_books.get(get_book_name(spine), false):
+        return
+    
+    var tween = create_tween()
+    tween.tween_property(spine, "position:y", 
+        spine_default_y[spine], 0.1)
+    tween.parallel().tween_property(spine, "modulate", 
+        Color(1, 1, 1), 0.1)
+
+func pull_spine_out(spine: TextureButton):
+    """Animate spine pulling forward"""
+    var tween = create_tween()
+    tween.tween_property(spine, "position:y", 
+        spine_default_y[spine] - 12, 0.2)
+    tween.parallel().tween_property(spine, "rotation_degrees", 3, 0.2)
+
+func push_spine_back(spine: TextureButton):
+    """Animate spine returning to shelf"""
+    var tween = create_tween()
+    tween.tween_property(spine, "position:y", 
+        spine_default_y[spine], 0.2)
+    tween.parallel().tween_property(spine, "rotation_degrees", 0, 0.2)
+
+func get_spine_node(book_name: String) -> TextureButton:
+    match book_name:
+        "grimoire": return grimoire_spine
+        "translations": return translations_spine
+        "context": return context_spine
+        "notes": return notes_spine
+    return null
+
+func get_book_name(spine: TextureButton) -> String:
+    if spine == grimoire_spine: return "grimoire"
+    if spine == translations_spine: return "translations"
+    if spine == context_spine: return "context"
+    if spine == notes_spine: return "notes"
+    return ""
+
+func _input(event):
+    """Keyboard shortcuts"""
+    if event is InputEventKey and event.pressed:
+        match event.keycode:
+            KEY_1: _on_spine_clicked("grimoire")
+            KEY_2: _on_spine_clicked("translations")
+            KEY_3: _on_spine_clicked("context")
+            KEY_4: _on_spine_clicked("notes")
+```
+
+**Scene Structure:**
+```
+InteractiveBookshelf (Control) - Full width, 120px tall
+├── ShelfBackground (ColorRect) - #3A2518, full size
+├── Spines (HBoxContainer) - Centered, 40px spacing
+│   ├── GrimoireSpine (TextureButton) - 280×80px, #8B0000
+│   ├── TranslationsSpine (TextureButton) - 280×80px, #2D5016
+│   ├── ContextSpine (TextureButton) - 280×80px, #CC6600
+│   └── NotesSpine (TextureButton) - 280×80px, #A0826D
+└── ShelfShadow (ColorRect) - Black gradient, 3px tall
+```
+
+**Key Numbers:**
+- Shelf height: 120px
+- Spine size: 280×80px
+- Spine spacing: 40px
+- Default hover lift: 5px
+- Pulled out distance: 12px
+- Tilt angle: 3°
+- Hover animation: 0.1s
+- Pull/push animation: 0.2s
+
+---
+
+### Acceptance Criteria
+
+**Visual Checks:**
+- [ ] 4 book spines visible at top of screen
+- [ ] Spines are distinct colors: Red (#8B0000), Green (#2D5016), Orange (#CC6600), Brown (#A0826D)
+- [ ] Text readable on each spine (18pt, vertical orientation)
+- [ ] Shelf background is dark wood (#3A2518)
+- [ ] Spines have 40px spacing between them
+- [ ] Shelf shadow visible (3px black drop shadow at 20%)
+
+**Interaction Checks:**
+- [ ] Hover spine → Lifts 5px within 0.1s
+- [ ] Unhover spine → Returns to default within 0.1s
+- [ ] Click spine → Pulls out 12px + tilts 3° within 0.2s
+- [ ] Click spine again → Pushes back to default within 0.2s
+- [ ] Press 1-4 keys → Triggers corresponding spine
+- [ ] Tooltip appears on hover after 0.3s delay
+- [ ] Tooltip shows correct book name
+
+**Functional Checks:**
+- [ ] book_clicked signal emits with correct book name
+- [ ] active_books dictionary tracks open/closed state
+- [ ] Multiple rapid clicks don't break animation
+- [ ] Keyboard shortcuts work (1=Grimoire, 2=Translations, 3=Context, 4=Notes)
+- [ ] Hover state doesn't override pulled-out state
+
+**Integration Checks:**
+- [ ] Connects to DiegeticReferenceManager (Feature 3A.4)
+- [ ] Pulled spine state persists while book open
+- [ ] Spine returns when book closes (triggered by Feature 3A.4)
+
+**Edge Case Checks:**
+- [ ] Hover during pull animation completes gracefully
+- [ ] Click during pull animation queues next action
+- [ ] All 4 books can be opened/closed independently
+- [ ] Rapid keyboard inputs (1-2-3-4) handle correctly
+
+---
+
+### Manual Test Script
+
+1. **Verify initial state:**
+   ```
+   - Launch game, load workspace scene
+   - Verify 4 spines visible at top
+   - Verify colors: Red, Green, Orange, Brown (left to right)
+   - Verify all text readable
+   ```
+
+2. **Test hover interaction:**
+   ```
+   - Hover over Grimoire (red) spine
+   - Observe: Lifts 5px, brightens slightly
+   - Verify: Tooltip "Consult Grimoire Index" appears after 0.3s
+   - Move mouse away
+   - Observe: Spine returns to default
+   ```
+
+3. **Test click to open:**
+   ```
+   - Click Grimoire spine
+   - Observe: Spine pulls out 12px, tilts 3°
+   - Time animation: Should complete in ~0.2s
+   - Verify: book_clicked signal emits "grimoire"
+   ```
+
+4. **Test click to close:**
+   ```
+   - Click Grimoire spine again (already pulled out)
+   - Observe: Spine pushes back to default, rotation returns to 0
+   - Time animation: ~0.2s
+   ```
+
+5. **Test multiple books:**
+   ```
+   - Click Grimoire (red)
+   - Click Translations (green)
+   - Verify: Both spines pulled out simultaneously
+   - Click Context (orange)
+   - Verify: 3 spines pulled out
+   - Click Notes (brown)
+   - Verify: All 4 spines pulled out
+   ```
+
+6. **Test keyboard shortcuts:**
+   ```
+   - Press "1" → Grimoire spine pulls out
+   - Press "2" → Translations spine pulls out
+   - Press "1" again → Grimoire spine pushes back
+   ```
+
+7. **Test edge cases:**
+   ```
+   - Rapidly click Grimoire 5 times
+   - Verify: Toggles correctly (open→close→open→close→open)
+   - Hover during pull animation
+   - Verify: Animation completes, no jittering
+   ```
+
+8. **Pass criteria:** All 4 spines clickable, animations smooth, signals emit correctly
+
+---
+
+### Known Simplifications
+
+**Phase 3A shortcuts:**
+- No book spine texture (solid colors only)
+- No decorative symbols on spines (just text)
+- No dust particles when pulling books
+- Fixed spine positions (not responsive to window resize)
+
+**Technical debt:**
+- Spine nodes hardcoded (grimoire_spine, translations_spine, etc.)
+  - **Impact:** Adding 5th book requires code changes, refactor for data-driven approach
+- Hover detection uses mouse_entered/exited (not raycasting)
+  - **Impact:** Fine for 2D UI, acceptable performance
+- No animation queuing (rapid clicks interrupt tweens)
+  - **Impact:** Minor visual glitch, add queue system if becomes problem
+
+---
+
+## Feature 3A.2: Workspace Zones
+
+**Priority:** CRITICAL - Defines spatial layout for entire diegetic system
+
+**Tests Critical Question:** Q3 (Engaging texture) - Does spatial organization prevent clutter while maintaining immersion?
+
+**Estimated Time:** 45 minutes
+
+**Dependencies:**
+- None - foundation feature
+- Must be implemented before 3A.3 (Reference Book Sliding)
+
+---
+
+### Overview
+
+Workspace Zones define three non-overlapping areas on the desk: Work Area (left, for active translation), Reference Area (right, for stacked books), and Persistent UI (bottom, for dictionary + customer card). This prevents visual clutter by constraining where each element can appear.
+
+**Critical Design Constraint:** Zones must never overlap. Work Area and Reference Area are mutually exclusive to maintain focus on primary task.
+
+---
+
+### What Player Sees
+
+**Screen Layout:**
+
+```
+Full Screen: 1920×1080
+
+┌─────────────────────────────────────────────┐
+│ BOOKSHELF (0, 0, 1920, 120)                 │
+├─────────────────────────────────────────────┤
+│                                             │
+│ WORK AREA              REFERENCE AREA       │
+│ (200,150,800,700)      (1100,150,800,880)   │
+│                                             │
+│                                             │
+├──────────────┬──────────────────────────────┤
+│ DICTIONARY   │ CUSTOMER CARD                │
+│ (20,900,     │ (1200,900,700,160)           │
+│  300,160)    │                              │
+└──────────────┴──────────────────────────────┘
+```
+
+**Zone Specifications:**
+
+**Work Area (Left Side):**
+- Position: (200, 150)
+- Size: 800×700px
+- Purpose: Active translation book, input field
+- Background: Lighter desk area (#4A3428), subtle vignette toward center
+
+**Reference Area (Right Side):**
+- Position: (1100, 150)
+- Size: 800×880px
+- Purpose: Stacked reference books from shelf
+- Background: Slightly darker (#3A2518), recedes visually
+- Note: Taller than Work Area (goes to bottom of screen)
+
+**Dictionary Zone (Bottom-Left):**
+- Position: (20, 900)
+- Size: 300×160px
+- Purpose: Persistent working dictionary
+- Background: Light parchment (#E8DCC8)
+- Always visible
+
+**Customer Card Zone (Bottom-Right):**
+- Position: (1200, 900)
+- Size: 700×160px
+- Purpose: Current customer info
+- Background: Cream paper (#F4E8D8)
+- Always visible
+
+**Visual Appearance:**
+
+**Zone Boundaries (Debug Mode Only):**
+```gdscript
+# Red outlines during development
+Line2D.new() with default_color = Color(1, 0, 0, 0.3)
+```
+
+**Desk Surface Gradients:**
+- Work Area: Lighter center (lamp focused here)
+- Reference Area: Darker edges (further from lamp)
+- Transition: Smooth gradient across desk
+
+**Visual Feedback:**
+- Elements snap to zone boundaries (can't drag outside)
+- Reference books auto-position within Reference Area
+- Work book auto-centers in Work Area
+
+---
+
+### What Player Does
+
+**Input Methods:**
+- None directly - zones are invisible constraints
+- Player interacts with elements WITHIN zones
+
+**Immediate Response:**
+- Book slides to desk → Auto-positions in Reference Area
+- Customer arrives → Book slides to Work Area
+- Never manual positioning needed
+
+**Feedback Loop:**
+- System ensures: Work never overlaps Reference
+- Visual clarity: Always know what's active vs. reference
+
+---
+
+### Underlying Behavior
+
+**GDScript Structure:**
+
+```gdscript
+# res://scripts/workspace/WorkspaceZones.gd
+extends Node
+class_name WorkspaceZones
+
+# Zone definitions (Rect2: x, y, width, height)
+const WORK_AREA = Rect2(200, 150, 800, 700)
+const REFERENCE_AREA = Rect2(1100, 150, 800, 880)
+const DICTIONARY_ZONE = Rect2(20, 900, 300, 160)
+const CUSTOMER_ZONE = Rect2(1200, 900, 700, 160)
+
+# Visual constants
+const WORK_AREA_COLOR = Color("#4A3428")
+const REFERENCE_AREA_COLOR = Color("#3A2518")
+const DICTIONARY_BG = Color("#E8DCC8")
+const CUSTOMER_BG = Color("#F4E8D8")
+
+func get_work_area_center() -> Vector2:
+    return WORK_AREA.position + (WORK_AREA.size / 2)
+
+func get_reference_area_position() -> Vector2:
+    """Get top-left position for new reference book"""
+    return REFERENCE_AREA.position
+
+func get_dictionary_position() -> Vector2:
+    return DICTIONARY_ZONE.position
+
+func get_customer_card_position() -> Vector2:
+    return CUSTOMER_ZONE.position
+
+func is_in_work_area(pos: Vector2) -> bool:
+    return WORK_AREA.has_point(pos)
+
+func is_in_reference_area(pos: Vector2) -> bool:
+    return REFERENCE_AREA.has_point(pos)
+
+func clamp_to_work_area(pos: Vector2, object_size: Vector2) -> Vector2:
+    """Ensure object stays within work area bounds"""
+    return Vector2(
+        clamp(pos.x, WORK_AREA.position.x, 
+              WORK_AREA.position.x + WORK_AREA.size.x - object_size.x),
+        clamp(pos.y, WORK_AREA.position.y,
+              WORK_AREA.position.y + WORK_AREA.size.y - object_size.y)
+    )
+
+func clamp_to_reference_area(pos: Vector2, object_size: Vector2) -> Vector2:
+    """Ensure object stays within reference area bounds"""
+    return Vector2(
+        clamp(pos.x, REFERENCE_AREA.position.x,
+              REFERENCE_AREA.position.x + REFERENCE_AREA.size.x - object_size.x),
+        clamp(pos.y, REFERENCE_AREA.position.y,
+              REFERENCE_AREA.position.y + REFERENCE_AREA.size.y - object_size.y)
+    )
+```
+
+**Scene Setup:**
+
+```gdscript
+# In main workspace scene _ready():
+func _ready():
+    # Create zone backgrounds
+    create_work_area_background()
+    create_reference_area_background()
+    create_dictionary_background()
+    create_customer_card_background()
+
+func create_work_area_background():
+    var bg = ColorRect.new()
+    bg.name = "WorkAreaBG"
+    bg.color = WorkspaceZones.WORK_AREA_COLOR
+    bg.rect_position = WorkspaceZones.WORK_AREA.position
+    bg.rect_size = WorkspaceZones.WORK_AREA.size
+    bg.z_index = -10
+    add_child(bg)
+```
+
+**Key Numbers:**
+- Work Area: 800×700px (left)
+- Reference Area: 800×880px (right)
+- Dictionary: 300×160px (bottom-left)
+- Customer Card: 700×160px (bottom-right)
+- Gap between Work and Reference: 100px
+- Gap from screen edge: 20px (left), 20px (right)
+
+---
+
+### Acceptance Criteria
+
+**Visual Checks:**
+- [ ] Work Area background visible at (200,150), size 800×700
+- [ ] Reference Area background visible at (1100,150), size 800×880
+- [ ] Dictionary zone visible at (20,900), size 300×160
+- [ ] Customer zone visible at (1200,900), size 700×160
+- [ ] No visual overlap between Work and Reference areas
+- [ ] Color distinction: Work lighter than Reference
+
+**Functional Checks:**
+- [ ] WorkspaceZones.get_work_area_center() returns (600, 500)
+- [ ] WorkspaceZones.get_reference_area_position() returns (1100, 150)
+- [ ] is_in_work_area() correctly identifies points
+- [ ] is_in_reference_area() correctly identifies points
+- [ ] clamp_to_work_area() prevents overflow
+- [ ] clamp_to_reference_area() prevents overflow
+
+**Integration Checks:**
+- [ ] Feature 3A.3 uses get_reference_area_position()
+- [ ] Feature 3A.5 uses get_work_area_center()
+- [ ] Feature 3A.6 uses get_dictionary_position()
+- [ ] Feature 3A.7 uses get_customer_card_position()
+
+**Edge Case Checks:**
+- [ ] Objects larger than zone are clamped correctly
+- [ ] Negative positions clamped to zone start
+- [ ] Positions beyond zone end clamped to zone end
+
+---
+
+### Manual Test Script
+
+1. **Verify zone visibility:**
+   ```
+   - Launch workspace scene
+   - Verify Work Area background visible (lighter brown)
+   - Verify Reference Area background visible (darker brown)
+   - Verify Dictionary zone bottom-left (cream color)
+   - Verify Customer zone bottom-right (lighter cream)
+   ```
+
+2. **Test zone queries:**
+   ```gdscript
+   # In debug console or test script
+   print(WorkspaceZones.get_work_area_center())
+   # Expected: (600, 500)
+   
+   print(WorkspaceZones.is_in_work_area(Vector2(400, 400)))
+   # Expected: true
+   
+   print(WorkspaceZones.is_in_reference_area(Vector2(400, 400)))
+   # Expected: false
+   ```
+
+3. **Test clamping:**
+   ```gdscript
+   var clamped = WorkspaceZones.clamp_to_work_area(
+       Vector2(50, 50),  # Too far left
+       Vector2(100, 100)  # Object size
+   )
+   print(clamped)
+   # Expected: x >= 200 (Work Area start)
+   ```
+
+4. **Pass criteria:** All zones visible, no overlap, queries return correct values
+
+---
+
+### Known Simplifications
+
+**Phase 3A shortcuts:**
+- Fixed zones (not responsive to window resize)
+- No animated zone transitions
+- Simple ColorRect backgrounds (no gradients yet)
+
+**Technical debt:**
+- Hardcoded zone positions
+  - **Impact:** Requires manual adjustment for different resolutions
+  - **Solution:** Calculate zones as percentages of screen size
+- No dynamic zone resizing
+  - **Impact:** Can't adjust Work Area if player needs more space
+  - **Acceptable:** Fixed layout is fine for prototype
+
+---
+
+## Feature 3A.3: Reference Book Sliding System
+
+**Priority:** CRITICAL - Core mechanic of diegetic UI
+
+**Tests Critical Question:** Q3 (Engaging texture) - Does physical book movement enhance immersion vs. instant panel pop-in?
+
+**Estimated Time:** 120 minutes
+
+**Dependencies:**
+- Feature 3A.1 (Interactive Bookshelf) must be complete
+- Feature 3A.2 (Workspace Zones) must be complete
+
+---
+
+### Overview
+
+When player clicks a book spine, the book slides down from shelf position to Reference Area on desk with smooth animation. Book appears to physically move through space, creating spatial continuity. This is the core "magic moment" of the diegetic system - books feel real, not like UI panels.
+
+**Critical Design Constraint:** Animation must be smooth (60fps), fast enough (< 0.5s) to not feel sluggish, and clearly communicate source (shelf) → destination (desk).
+
+---
+
+### What Player Sees
+
+**Screen Layout:**
+- Book starts at spine position: (spine.global_position)
+- Book ends at Reference Area: (1100, 150) + stack offset
+
+**Visual Appearance:**
+
+**Book Panel Design:**
+- Size: 700×800px
+- Background: Aged paper #F0E8D8
+- Border: 8px dark brown #2A1F1A (simulates book cover edge)
+- Close button: Top-right, × symbol, 30×30px, red on hover
+- Content: Scrollable text area (see Phase 2B content)
+
+**Animation Sequence:**
+
+**Frame 1 (t=0.0s):** Book at spine position
+```
+opacity: 0
+scale: 0.3 (small, on shelf)
+position: spine.global_position
+```
+
+**Frame 2 (t=0.1s):** Book fades in
+```
+opacity: 0.5
+scale: 0.5
+position: Lerp toward Reference Area
+```
+
+**Frame 3 (t=0.3s):** Book reaches desk
+```
+opacity: 1.0
+scale: 1.0
+position: Reference Area + stack offset
+```
+
+**Visual States:**
+
+**Sliding State:**
+- Book visible but translucent (opacity 0 → 1)
+- Book scaling up (0.3 → 1.0)
+- Smooth curved path (not straight line)
+
+**Settled State:**
+- Book fully opaque
+- Book at final position in Reference Area
+- Shadows appear under book
+- Close button interactive
+
+**Visual Feedback:**
+- Spine pulls out (Feature 3A.1) THEN book starts sliding
+- Book follows bezier curve (feels natural, not robotic)
+- Slight "settle" bounce at end (overshoots 5px, bounces back)
+
+---
+
+### What Player Does
+
+**Input Methods:**
+- Click book spine (Feature 3A.1) triggers this automatically
+- No direct interaction during animation
+- Can click close button after animation completes
+
+**Immediate Response:**
+- Click spine → Animation starts within 50ms
+- Book visible and moving by frame 1
+- Animation completes in 0.4s total
+
+**Feedback Loop:**
+
+**Example: Opening Grimoire**
+1. **Player clicks:** Grimoire spine
+2. **Spine animates:** Pulls out 12px (Feature 3A.1)
+3. **Book appears:** At spine position, small (scale 0.3), transparent
+4. **Book slides:** Curves down to Reference Area over 0.4s
+5. **Book settles:** Slight bounce, becomes fully opaque
+6. **Player sees:** Grimoire content, ready to read
+7. **Next action:** Scroll Grimoire OR open another book
+
+---
+
+### Underlying Behavior
+
+**GDScript Structure:**
+
+```gdscript
+# res://scripts/ui/ReferenceBook.gd
+extends Panel
+class_name ReferenceBook
+
+@export var book_name: String = "grimoire"
+@export var book_color: Color = Color("#8B0000")
+
+var is_sliding: bool = false
+
+@onready var close_button = $CloseButton
+@onready var content_scroll = $ContentScroll
+
+signal book_closed(book_name: String)
+
+func _ready():
+    custom_minimum_size = Vector2(700, 800)
+    modulate.a = 0  # Start invisible
+    scale = Vector2(0.3, 0.3)
+    
+    # Style
+    var style = StyleBoxFlat.new()
+    style.bg_color = Color("#F0E8D8")
+    style.border_width_left = 8
+    style.border_width_right = 8
+    style.border_width_top = 8
+    style.border_width_bottom = 8
+    style.border_color = Color("#2A1F1A")
+    add_theme_stylebox_override("panel", style)
+    
+    # Close button
+    close_button.pressed.connect(_on_close_pressed)
+
+func slide_from_shelf(spine_position: Vector2, target_position: Vector2):
+    """Animate book sliding from shelf to desk"""
+    is_sliding = true
+    visible = true
+    position = spine_position
+    
+    # Create curved path (bezier)
+    var control_point = Vector2(
+        (spine_position.x + target_position.x) / 2,
+        spine_position.y + 200  # Dips down slightly
+    )
+    
+    var tween = create_tween()
+    tween.set_trans(Tween.TRANS_CUBIC)
+    tween.set_ease(Tween.EASE_OUT)
+    
+    # Fade in
+    tween.tween_property(self, "modulate:a", 1.0, 0.4)
+    
+    # Scale up
+    tween.parallel().tween_property(self, "scale", Vector2(1, 1), 0.4)
+    
+    # Move along bezier curve
+    tween.parallel().tween_method(
+        move_along_bezier.bind(spine_position, control_point, target_position),
+        0.0, 1.0, 0.4
+    )
+    
+    # Settle bounce at end
+    await tween.finished
+    var bounce = create_tween()
+    bounce.tween_property(self, "position:y", position.y + 5, 0.1)
+    bounce.tween_property(self, "position:y", position.y, 0.1)
+    
+    await bounce.finished
+    is_sliding = false
+
+func move_along_bezier(t: float, start: Vector2, control: Vector2, end: Vector2):
+    """Quadratic bezier curve interpolation"""
+    var q0 = start.lerp(control, t)
+    var q1 = control.lerp(end, t)
+    position = q0.lerp(q1, t)
+
+func slide_to_shelf(spine_position: Vector2):
+    """Animate book returning to shelf"""
+    is_sliding = true
+    
+    var tween = create_tween()
+    tween.set_trans(Tween.TRANS_CUBIC)
+    tween.set_ease(Tween.EASE_IN)
+    
+    # Fade out
+    tween.tween_property(self, "modulate:a", 0, 0.4)
+    
+    # Scale down
+    tween.parallel().tween_property(self, "scale", Vector2(0.3, 0.3), 0.4)
+    
+    # Move to spine
+    tween.parallel().tween_property(self, "position", spine_position, 0.4)
+    
+    await tween.finished
+    is_sliding = false
+    visible = false
+    queue_free()
+
+func _on_close_pressed():
+    """User clicked close button"""
+    book_closed.emit(book_name)
+
+func populate_content(content_data: Dictionary):
+    """Fill book with actual content (from Phase 2B)"""
+    # Implementation depends on book type
+    # Grimoire = symbol entries
+    # Translations = completed texts
+    # etc.
+    pass
+```
+
+**Scene Structure:**
+```
+ReferenceBook (Panel) - 700×800px
+├── CloseButton (Button) - Top-right, × symbol
+├── BookTitle (Label) - Top, centered
+├── ContentScroll (ScrollContainer)
+│   └── ContentVBox (VBoxContainer) - Dynamic content
+└── Shadow (ColorRect) - Black, offset, z_index -1
+```
+
+**Key Numbers:**
+- Book size: 700×800px
+- Initial scale: 0.3 (30% size)
+- Final scale: 1.0 (100% size)
+- Animation duration: 0.4s
+- Settle bounce: ±5px over 0.2s
+- Bezier control point offset: +200px down
+- Close button: 30×30px, top-right corner
+
+---
+
+### Acceptance Criteria
+
+**Visual Checks:**
+- [ ] Book starts at spine position (global_position of spine)
+- [ ] Book ends at Reference Area (1100, 150)
+- [ ] Book is 700×800px when fully scaled
+- [ ] Book has aged paper background (#F0E8D8)
+- [ ] Book has 8px dark brown border (#2A1F1A)
+- [ ] Close button (×) visible in top-right
+- [ ] Animation is smooth (no jittering)
+
+**Interaction Checks:**
+- [ ] Click spine → Book slides down within 0.5s
+- [ ] Animation completes in 0.4s
+- [ ] Settle bounce adds 0.2s (total 0.6s)
+- [ ] Click close button → Book slides back to shelf
+- [ ] Return animation takes 0.4s
+
+**Functional Checks:**
+- [ ] Book starts invisible (modulate.a = 0)
+- [ ] Book fades to visible during slide (modulate.a = 1.0)
+- [ ] Book scales from 0.3 to 1.0 during slide
+- [ ] Bezier curve creates smooth arc (not straight line)
+- [ ] book_closed signal emits on close
+- [ ] Book removes self (queue_free) after return animation
+
+**Integration Checks:**
+- [ ] Uses WorkspaceZones.get_reference_area_position()
+- [ ] Connects to InteractiveBookshelf.book_clicked signal
+- [ ] Emits book_closed back to DiegeticReferenceManager
+
+**Animation Checks:**
+- [ ] No lag at animation start (<50ms)
+- [ ] Tween runs at 60fps (smooth motion)
+- [ ] Bezier curve feels natural (not robotic)
+- [ ] Settle bounce feels satisfying (not jarring)
+- [ ] Return animation mirrors slide-down (symmetry)
+
+**Edge Case Checks:**
+- [ ] Clicking spine during slide doesn't break animation
+- [ ] Multiple books sliding simultaneously work correctly
+- [ ] Closing during slide completes gracefully
+- [ ] Book doesn't slide off-screen (clamped to Reference Area)
+
+---
+
+### Manual Test Script
+
+1. **Verify slide-down animation:**
+   ```
+   - Click Grimoire spine
+   - Observe: Book appears at spine position (small, transparent)
+   - Observe: Book slides down to Reference Area
+   - Time animation: Should complete in ~0.4s
+   - Observe: Slight bounce at end (~0.2s)
+   - Total time: ~0.6s
+   ```
+
+2. **Verify visual quality:**
+   ```
+   - During slide, check for:
+     - Smooth motion (no stuttering)
+     - Curved path (bezier, not straight)
+     - Fade-in (opacity 0 → 1)
+     - Scale-up (small → full size)
+   ```
+
+3. **Verify close animation:**
+   ```
+   - Click close button (× in top-right)
+   - Observe: Book slides back to spine position
+   - Observe: Book fades out
+   - Observe: Book scales down
+   - Time: ~0.4s
+   - Verify: Book disappears after animation
+   ```
+
+4. **Test multiple books:**
+   ```
+   - Click Grimoire spine (slides down)
+   - Immediately click Translations spine (slides down)
+   - Verify: Both books slide simultaneously
+   - Verify: No collision or overlap during animation
+   ```
+
+5. **Test edge cases:**
+   ```
+   - Click Grimoire spine
+   - During slide animation, click spine again
+   - Verify: Animation completes, then reverses (closes)
+   - No visual glitches or stuck states
+   ```
+
+6. **Pass criteria:** Animations smooth, timing correct, no visual artifacts
+
+---
+
+### Known Simplifications
+
+**Phase 3A shortcuts:**
+- Linear bezier (2 points), not cubic (4 points)
+- No rotation during slide (stays upright)
+- No page-flip animation at start
+- Simple fade, no particle effects (dust, etc.)
+
+**Technical debt:**
+- Bezier curve hardcoded control point (+200px)
+  - **Impact:** Doesn't adapt to different screen sizes
+  - **Solution:** Calculate as percentage of distance
+- No animation cancellation (can't interrupt)
+  - **Impact:** Player must wait for animation to complete
+  - **Acceptable:** 0.4s is fast enough
+- Shadow added as separate node (not integrated)
+  - **Impact:** Shadow position must be manually updated
+  - **Solution:** Use CanvasItem's built-in shadow properties
+
+---
+
+(Continuing with features 3A.4 through 3A.9...)
+
+Would you like me to continue with the remaining 6 features (3A.4: Diegetic Reference Manager, 3A.5: Main Book Workspace, 3A.6: Working Dictionary Panel, 3A.7: Customer Context Card, 3A.8: Tab Stacking System, 3A.9: Hover & Interaction Polish)?

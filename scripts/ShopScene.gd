@@ -12,6 +12,13 @@ extends Control
 @onready var open_book = $Desk/OpenBook
 @onready var doorway = $Doorway
 
+# Interactive navigation buttons (now scene instances with built-in visuals and tooltips)
+@onready var diary_button = $Desk/DiaryButton
+@onready var dictionary_button = $Desk/DictionaryButton
+@onready var papers_button = $Desk/PapersButton
+@onready var magnifying_glass_button = $Desk/MagnifyingGlassButton
+@onready var bell_button = $Desk/BellButton
+
 # Preload book scene
 var book_scene = preload("res://scenes/ui/Book.tscn")
 
@@ -42,7 +49,7 @@ func _ready():
 	add_book_details()
 	add_shadows()
 	add_dust_particles()
-	add_interactive_objects()
+	setup_interactive_buttons()
 
 func add_top_bar():
 	"""Add top bar with day and money information"""
@@ -547,170 +554,14 @@ func create_circle_polygon(center: Vector2, radius: float) -> Polygon2D:
 	polygon.polygon = points
 	return polygon
 
-func add_interactive_objects():
-	"""Add clickable interactive objects that navigate to game screens"""
-	# Diary/Agenda - Customer Queue (left desk area)
-	create_interactive_object(
-		"Diary",
-		Vector2(350, 50),  # Relative to desk
-		Vector2(80, 100),
-		Color(0.35, 0.25, 0.15, 1),
-		"Customer Queue",
-		func(): SceneManager.goto_queue_screen()
-	)
-
-	# Reference Book - Dictionary (on right desk near open book)
-	create_interactive_object(
-		"Dictionary",
-		Vector2(1600, 100),  # Relative to desk
-		Vector2(120, 90),
-		Color(0.4, 0.3, 0.2, 1),
-		"Glyph Dictionary",
-		func(): SceneManager.goto_dictionary_screen()
-	)
-
-	# Translation Papers - Translation Screen (near scattered papers)
-	create_interactive_object(
-		"Papers",
-		Vector2(550, 80),  # Relative to desk
-		Vector2(150, 120),
-		Color(0.85, 0.8, 0.7, 1),
-		"Translation Workspace",
-		func(): SceneManager.goto_translation_screen()
-	)
-
-	# Magnifying Glass - Examination Screen (center desk)
-	create_interactive_object(
-		"MagnifyingGlass",
-		Vector2(950, 120),  # Relative to desk
-		Vector2(70, 70),
-		Color(0.8, 0.8, 0.9, 1),
-		"Examine Books",
-		func(): SceneManager.goto_examination_screen()
-	)
-
-	# Desk Bell - Work Interface (center-right desk)
-	create_interactive_object(
-		"Bell",
-		Vector2(1100, 100),  # Relative to desk
-		Vector2(60, 70),
-		Color(0.7, 0.6, 0.4, 1),
-		"Start Working",
-		func(): SceneManager.goto_work_screen()
-	)
-
-func create_interactive_object(obj_name: String, pos: Vector2, size: Vector2, color: Color, tooltip_text: String, click_callback: Callable):
-	"""Create a clickable interactive object with hover effects"""
-	# Button as the main interactive element
-	var button = Button.new()
-	button.name = obj_name + "Interactive"
-	button.position = pos
-	button.size = size
-	button.z_index = 50
-	button.flat = false  # Show the button
-	button.text = ""  # No text, we'll style it
-	$Desk.add_child(button)
-
-	# Style the button to look like our object
-	var normal_style = StyleBoxFlat.new()
-	normal_style.bg_color = color
-	normal_style.corner_radius_top_left = 4
-	normal_style.corner_radius_top_right = 4
-	normal_style.corner_radius_bottom_right = 4
-	normal_style.corner_radius_bottom_left = 4
-	normal_style.shadow_size = 6
-	normal_style.shadow_offset = Vector2(2, 3)
-	normal_style.shadow_color = Color(0, 0, 0, 0.4)
-	button.add_theme_stylebox_override("normal", normal_style)
-
-	# Hover style (brighter)
-	var hover_style = StyleBoxFlat.new()
-	hover_style.bg_color = Color(color.r * 1.3, color.g * 1.3, color.b * 1.3, color.a)
-	hover_style.corner_radius_top_left = 4
-	hover_style.corner_radius_top_right = 4
-	hover_style.corner_radius_bottom_right = 4
-	hover_style.corner_radius_bottom_left = 4
-	hover_style.shadow_size = 8
-	hover_style.shadow_offset = Vector2(2, 3)
-	hover_style.shadow_color = Color(0, 0, 0, 0.5)
-	button.add_theme_stylebox_override("hover", hover_style)
-
-	# Pressed style
-	var pressed_style = StyleBoxFlat.new()
-	pressed_style.bg_color = Color(color.r * 0.8, color.g * 0.8, color.b * 0.8, color.a)
-	pressed_style.corner_radius_top_left = 4
-	pressed_style.corner_radius_top_right = 4
-	pressed_style.corner_radius_bottom_right = 4
-	pressed_style.corner_radius_bottom_left = 4
-	pressed_style.shadow_size = 4
-	pressed_style.shadow_offset = Vector2(1, 2)
-	pressed_style.shadow_color = Color(0, 0, 0, 0.4)
-	button.add_theme_stylebox_override("pressed", pressed_style)
-
-	# Tooltip background - add to main scene, not button (so it's not affected by button scaling)
-	var tooltip_bg = PanelContainer.new()
-	tooltip_bg.name = obj_name + "Tooltip"
-	tooltip_bg.position = pos + Vector2(size.x / 2 - 75, -60)  # Above button
-	tooltip_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	tooltip_bg.z_index = 200  # Very high to be above everything
-	var tooltip_style = StyleBoxFlat.new()
-	tooltip_style.bg_color = Color(0.05, 0.05, 0.05, 0.95)
-	tooltip_style.content_margin_left = 16
-	tooltip_style.content_margin_right = 16
-	tooltip_style.content_margin_top = 10
-	tooltip_style.content_margin_bottom = 10
-	tooltip_style.corner_radius_top_left = 6
-	tooltip_style.corner_radius_top_right = 6
-	tooltip_style.corner_radius_bottom_right = 6
-	tooltip_style.corner_radius_bottom_left = 6
-	tooltip_style.border_width_left = 2
-	tooltip_style.border_width_top = 2
-	tooltip_style.border_width_right = 2
-	tooltip_style.border_width_bottom = 2
-	tooltip_style.border_color = Color(0.3, 0.3, 0.3, 1)
-	tooltip_bg.add_theme_stylebox_override("panel", tooltip_style)
-	tooltip_bg.visible = false
-
-	# Tooltip label
-	var tooltip = Label.new()
-	tooltip.text = tooltip_text
-	tooltip.add_theme_color_override("font_color", Color(1, 1, 1, 1))
-	tooltip.add_theme_font_size_override("font_size", 20)
-	tooltip.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	tooltip_bg.add_child(tooltip)
-
-	$Desk.add_child(tooltip_bg)
-
-	# Store tooltip reference on button for easy access
-	button.set_meta("tooltip", tooltip_bg)
-
-	# Connect button signals
-	button.mouse_entered.connect(func(): _on_button_hover(button, true))
-	button.mouse_exited.connect(func(): _on_button_hover(button, false))
-	button.pressed.connect(func(): _on_button_pressed(click_callback))
-
-func _on_button_hover(button: Button, is_hovering: bool):
-	"""Handle hover state for interactive button objects"""
-	var tooltip_bg = button.get_meta("tooltip")
-
-	if is_hovering:
-		# Show tooltip
-		tooltip_bg.visible = true
-
-		# Slight scale animation
-		var tween = create_tween()
-		tween.tween_property(button, "scale", Vector2(1.05, 1.05), 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	else:
-		# Hide tooltip
-		tooltip_bg.visible = false
-
-		# Scale back
-		var tween = create_tween()
-		tween.tween_property(button, "scale", Vector2(1, 1), 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
-
-func _on_button_pressed(callback: Callable):
-	"""Handle click on interactive button"""
-	callback.call()
+func setup_interactive_buttons():
+	"""Connect navigation signals for interactive buttons (visual/hover logic is now in each button scene)"""
+	# Connect pressed signals to navigation
+	diary_button.pressed.connect(SceneManager.goto_queue_screen)
+	dictionary_button.pressed.connect(SceneManager.goto_dictionary_screen)
+	papers_button.pressed.connect(SceneManager.goto_translation_screen)
+	magnifying_glass_button.pressed.connect(SceneManager.goto_examination_screen)
+	bell_button.pressed.connect(SceneManager.goto_work_screen)
 
 func _input(event):
 	"""Handle input"""
