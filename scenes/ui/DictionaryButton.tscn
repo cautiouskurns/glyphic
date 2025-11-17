@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://dictionary_button_001"]
+[gd_scene load_steps=2 format=3 uid="uid://dekwi7eu718rh"]
 
-[ext_resource type="Script" path="res://scripts/ui/DictionaryButton.gd" id="1_dictionary"]
+[ext_resource type="Script" uid="uid://gc4fn6lqfra1" path="res://scripts/ui/DictionaryButton.gd" id="1_dictionary"]
 
 [node name="DictionaryButton" type="Button"]
 offset_right = 120.0
@@ -53,7 +53,6 @@ layout_mode = 0
 offset_left = -15.0
 offset_top = -60.0
 offset_right = 135.0
-offset_bottom = 0.0
 mouse_filter = 2
 
 [node name="Label" type="Label" parent="Tooltip"]

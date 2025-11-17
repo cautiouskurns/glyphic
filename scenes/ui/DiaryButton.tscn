@@ -5,6 +5,7 @@
 [node name="DiaryButton" type="Button"]
 offset_right = 80.0
 offset_bottom = 100.0
+scale = Vector2(2.8265777, 2.8265777)
 theme_override_colors/font_color = Color(0, 0, 0, 0)
 theme_override_colors/font_pressed_color = Color(0, 0, 0, 0)
 theme_override_colors/font_hover_color = Color(0, 0, 0, 0)
@@ -32,28 +33,31 @@ color = Color(0.4, 0.28, 0.16, 1)
 
 [node name="DiaryPages" type="ColorRect" parent="."]
 layout_mode = 0
-offset_left = 72.0
-offset_top = 15.0
-offset_right = 75.0
-offset_bottom = 85.0
+offset_left = 68.63423
+offset_top = 10.967326
+offset_right = 69.341805
+offset_bottom = 88.799965
 mouse_filter = 2
 color = Color(0.95, 0.92, 0.88, 1)
 
 [node name="DiaryBinding" type="ColorRect" parent="."]
 layout_mode = 0
-offset_left = 15.0
-offset_top = 40.0
-offset_right = 20.0
-offset_bottom = 60.0
+offset_left = 9.198402
+offset_top = 10.259754
+offset_right = 13.090035
+offset_bottom = 49.893116
+scale = Vector2(1, 1.9905958)
 mouse_filter = 2
 color = Color(0.2, 0.15, 0.1, 1)
 
 [node name="Tooltip" type="PanelContainer" parent="."]
 visible = false
 layout_mode = 0
-offset_left = -35.0
-offset_top = -60.0
-offset_right = 115.0
+offset_left = 18.750591
+offset_top = -12.028679
+offset_right = 168.7506
+offset_bottom = 47.97132
+scale = Vector2(0.2883613, 0.2883613)
 mouse_filter = 2
 
 [node name="Label" type="Label" parent="Tooltip"]

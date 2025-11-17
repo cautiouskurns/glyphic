@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cmx7r8vb2yjqm"]
+
+[ext_resource type="Script" path="res://scripts/ui/DiegeticPanel.gd" id="1_panel"]
+
+[node name="DiegeticPanel" type="PanelContainer"]
+offset_right = 1100.0
+offset_bottom = 850.0
+script = ExtResource("1_panel")

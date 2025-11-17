@@ -35,18 +35,45 @@ var background_dim: ColorRect  # Overlay for dimming bookshelves
 var is_focused_mode: bool = false
 var focus_tween: Tween
 
+# Feature 3A.3: Panel management
+var active_panels: Dictionary = {}  # {panel_type: DiegeticPanel}
+var panel_stack: Array[String] = []  # Stack of panel types (for z-order)
+const MAX_PANELS = 3
+
 # Camera positions and zoom levels
 var default_camera_position: Vector2 = Vector2(960, 540)  # Center of 1920×1080
-var focused_camera_position: Vector2 = Vector2(960, 870)  # Shifted down to desk focus
+var focused_camera_position: Vector2 = Vector2(960, 970)  # Shifted down to desk focus
 var default_zoom: Vector2 = Vector2(1.0, 1.0)
 var focused_zoom: Vector2 = Vector2(1.0, 1.0)  # Keep same zoom, just shift perspective
 
-# Panel zone configuration
-const DESK_ZONE_WIDTH = 768  # Left 40%
-const PANEL_ZONE_X = 800
-const PANEL_ZONE_Y = 115
-const PANEL_ZONE_WIDTH = 1100
-const PANEL_ZONE_HEIGHT = 850
+# Panel zone configuration (Feature 3A.3)
+# Different zones for different panel types - spatial mapping to desk objects
+const PANEL_ZONES = {
+	"queue": Vector2(200, 700),           # Left zone - near diary
+	"translation": Vector2(500, 720),     # Center-left - near papers
+	"dictionary": Vector2(1400, 680),     # Right zone - near dictionary/book
+	"examination": Vector2(850, 740),     # Center - near magnifying glass
+	"work": Vector2(1050, 700)            # Center-right - near bell
+}
+const PANEL_WIDTH = 600
+const PANEL_HEIGHT = 700
+
+# Panel type to color/title mapping (Feature 3A.3)
+const PANEL_COLORS = {
+	"queue": Color("#A0826D"),       # Brown
+	"translation": Color("#F4E8D8"),  # Cream
+	"dictionary": Color("#2D5016"),   # Green
+	"examination": Color("#3498DB"),  # Blue
+	"work": Color("#FFD700")          # Gold
+}
+
+const PANEL_TITLES = {
+	"queue": "Customer Queue",
+	"translation": "Translation Workspace",
+	"dictionary": "Glyph Dictionary",
+	"examination": "Book Examination",
+	"work": "Current Work"
+}
 
 func _ready():
 	"""Initialize shop scene (only runs once now that scene persists)"""
@@ -667,12 +694,15 @@ func connect_desk_objects():
 	bell_button.object_clicked.connect(_on_desk_object_clicked)
 
 func _on_desk_object_clicked(screen_type: String):
-	"""Handle desk object click - enter focus mode if not already"""
+	"""Handle desk object click - open or focus panel (Feature 3A.3)"""
 	if not is_focused_mode:
 		enter_focus_mode()
 
-	# Signal will be handled by DiegeticScreenManager in Feature 3A.4
-	# For now, just enter focus mode
+	# Check if panel already open
+	if active_panels.has(screen_type):
+		bring_panel_to_front(screen_type)
+	else:
+		open_panel(screen_type)
 
 func enter_focus_mode():
 	"""Shift perspective to focus on desk workspace"""
@@ -718,6 +748,9 @@ func exit_focus_mode():
 		return  # Already in default mode
 
 	is_focused_mode = false
+
+	# Feature 3A.3: Close all panels when exiting focus mode
+	close_all_panels()
 
 	# Kill existing tween if any
 	if focus_tween:
@@ -765,11 +798,131 @@ func _on_background_clicked(event: InputEvent):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		exit_focus_mode()
 
+# Feature 3A.3: Panel Management Functions
+
+func open_panel(panel_type: String):
+	"""Create and slide in new panel"""
+	if active_panels.size() >= MAX_PANELS:
+		print("Maximum panels open (%d)" % MAX_PANELS)
+		return
+
+	# Create panel instance
+	var panel_scene = load("res://scenes/ui/DiegeticPanel.tscn")
+	var panel = panel_scene.instantiate()
+	panel.panel_type = panel_type
+	panel.panel_title = PANEL_TITLES[panel_type]
+	panel.panel_color = PANEL_COLORS[panel_type]
+
+	# Set panel size and position zone
+	panel.panel_width = PANEL_WIDTH
+	panel.panel_height = PANEL_HEIGHT
+	panel.target_position = PANEL_ZONES[panel_type]
+
+	# Connect signals
+	panel.panel_closed.connect(_on_panel_closed)
+	panel.panel_focused.connect(bring_panel_to_front)
+
+	# Add to scene
+	add_child(panel)
+	active_panels[panel_type] = panel
+	panel_stack.append(panel_type)
+
+	# Slide in animation
+	panel.slide_in()
+	panel.set_active(true)
+
+	# Update desk object glows
+	update_desk_object_glows()
+
+func bring_panel_to_front(panel_type: String):
+	"""Bring existing panel to front"""
+	if not active_panels.has(panel_type):
+		return
+
+	# Remove from stack and re-add to top
+	panel_stack.erase(panel_type)
+	panel_stack.append(panel_type)
+
+	# Update z-index for all panels
+	for i in range(panel_stack.size()):
+		var type = panel_stack[i]
+		var panel = active_panels[type]
+		panel.set_active(i == panel_stack.size() - 1)  # Last is active
+
+	# Update desk object glows
+	update_desk_object_glows()
+
+func _on_panel_closed(panel_type: String):
+	"""Handle panel close"""
+	if not active_panels.has(panel_type):
+		return
+
+	var panel = active_panels[panel_type]
+
+	# Slide out animation
+	panel.slide_out()
+
+	# Remove from tracking
+	active_panels.erase(panel_type)
+	panel_stack.erase(panel_type)
+
+	# If no panels left, exit focus mode
+	if active_panels.size() == 0:
+		exit_focus_mode()
+	else:
+		# Bring next panel to front
+		var next_type = panel_stack[panel_stack.size() - 1]
+		bring_panel_to_front(next_type)
+
+	# Update desk object glows
+	update_desk_object_glows()
+
+func update_desk_object_glows():
+	"""Update desk object glows based on open panels"""
+	# Clear all glows first
+	diary_button.set_panel_open(false)
+	papers_button.set_panel_open(false)
+	dictionary_button.set_panel_open(false)
+	magnifying_glass_button.set_panel_open(false)
+	bell_button.set_panel_open(false)
+
+	# Set glows for open panels
+	for panel_type in active_panels.keys():
+		match panel_type:
+			"queue":
+				diary_button.set_panel_open(true)
+			"translation":
+				papers_button.set_panel_open(true)
+			"dictionary":
+				dictionary_button.set_panel_open(true)
+			"examination":
+				magnifying_glass_button.set_panel_open(true)
+			"work":
+				bell_button.set_panel_open(true)
+
+func close_all_panels():
+	"""Close all open panels (called when exiting focus mode)"""
+	# Create a copy of active panel types to avoid modification during iteration
+	var panel_types_to_close = active_panels.keys().duplicate()
+
+	for panel_type in panel_types_to_close:
+		if active_panels.has(panel_type):
+			var panel = active_panels[panel_type]
+			panel.queue_free()  # Immediate cleanup without animation
+
+	# Clear tracking
+	active_panels.clear()
+	panel_stack.clear()
+
+	# Clear all glows
+	update_desk_object_glows()
+
 # Public API for DiegeticScreenManager (Feature 3A.4)
 
-func get_panel_zone_rect() -> Rect2:
-	"""Returns the panel display zone in global coordinates"""
-	return Rect2(PANEL_ZONE_X, PANEL_ZONE_Y, PANEL_ZONE_WIDTH, PANEL_ZONE_HEIGHT)
+func get_panel_zone_rect(panel_type: String) -> Rect2:
+	"""Returns the panel display zone for a specific panel type in global coordinates"""
+	var pos = PANEL_ZONES[panel_type]
+	return Rect2(pos.x, pos.y, PANEL_WIDTH, PANEL_HEIGHT)
 
 func is_in_focus_mode() -> bool:
 	"""Check if shop is currently in focused desk mode"""
