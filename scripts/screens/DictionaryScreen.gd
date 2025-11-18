@@ -6,6 +6,10 @@ extends Control
 # Panel mode flag
 var panel_mode: bool = false
 
+# Panel content area dimensions (set by DiegeticScreenManager)
+var content_width: int = 480
+var content_height: int = 700
+
 # UI References
 @onready var subtitle_label = $VBoxContainer/Header/SubtitleLabel
 @onready var search_box = $VBoxContainer/Header/SearchBox
@@ -39,10 +43,17 @@ func _ready():
 	print("DictionaryScreen: About to call initialize()")
 	initialize()
 
+func set_panel_content_size(width: int, height: int):
+	"""Set content dimensions from panel (called by DiegeticScreenManager)"""
+	content_width = width
+	content_height = height
+
 func setup_panel_layout():
-	"""Configure for panel display"""
+	"""Configure for panel display using dynamic dimensions"""
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
+	# Dictionary uses .tscn layout, so size flags handle most sizing
+	# content_width/height available if custom sizing needed later
 
 func initialize():
 	"""Called when panel opens - load dictionary"""

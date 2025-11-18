@@ -72,7 +72,7 @@ var focused_zoom: Vector2 = Vector2(1.0, 1.0)  # Keep same zoom, just shift pers
 # }
 
 const PANEL_ZONES = {
-	"queue": Vector2(75, 700),
+	"queue": Vector2(56, 700),
 	"translation": Vector2(403, 726),
 	"dictionary": Vector2(1448, 701),
 	"examination": Vector2(880, 708),
@@ -80,17 +80,30 @@ const PANEL_ZONES = {
 }
 
 
-const PANEL_WIDTH = 350
-const PANEL_HEIGHT = 650
-# Dictionary panel gets special larger size
-const DICTIONARY_PANEL_WIDTH = 520
+# const PANEL_WIDTH = 350
+# const PANEL_HEIGHT = 650
+# # Dictionary panel gets special larger size
+# const DICTIONARY_PANEL_WIDTH = 520
+# const DICTIONARY_PANEL_HEIGHT = 750
+# # Translation panel gets special width
+# const TRANSLATION_PANEL_WIDTH = 500
+# const TRANSLATION_PANEL_HEIGHT = 650
+# # Examination panel gets special larger size
+# const EXAMINATION_PANEL_WIDTH = 520
+# const EXAMINATION_PANEL_HEIGHT = 650
+
+const PANEL_WIDTH = 309
+const PANEL_HEIGHT = 684
+
+const TRANSLATION_PANEL_WIDTH = 451
+const TRANSLATION_PANEL_HEIGHT = 596
+
+const DICTIONARY_PANEL_WIDTH = 426
 const DICTIONARY_PANEL_HEIGHT = 750
-# Translation panel gets special width
-const TRANSLATION_PANEL_WIDTH = 500
-const TRANSLATION_PANEL_HEIGHT = 650
-# Examination panel gets special larger size
+
 const EXAMINATION_PANEL_WIDTH = 520
 const EXAMINATION_PANEL_HEIGHT = 650
+
 
 # Panel type to color/title mapping (Feature 3A.3)
 const PANEL_COLORS = {
@@ -1017,7 +1030,7 @@ func hide_panel_zone_markers():
 		$PanelZones.visible = false
 
 func sync_panel_zones_from_scene():
-	"""Development helper: Print panel positions from scene nodes
+	"""Development helper: Print panel positions AND sizes from scene nodes
 	   Call this from debugger or add a button in editor to sync positions"""
 	if not has_node("PanelZones"):
 		print("No PanelZones node found in scene")
@@ -1036,6 +1049,9 @@ func sync_panel_zones_from_scene():
 		"WorkZone": "work"
 	}
 
+	# Track sizes for later output
+	var zone_sizes = {}
+
 	for zone_node_name in zone_data.keys():
 		if zones_node.has_node(zone_node_name):
 			var zone = zones_node.get_node(zone_node_name)
@@ -1043,5 +1059,40 @@ func sync_panel_zones_from_scene():
 			var panel_type = zone_data[zone_node_name]
 			print("\t\"%s\": Vector2(%d, %d)," % [panel_type, pos.x, pos.y])
 
+			# Store size for this zone
+			if zone is ColorRect:
+				zone_sizes[panel_type] = zone.size
+
 	print("}\n")
-	print("Positions synced from scene nodes!")
+
+	# Print panel sizes
+	print("=== SYNCED PANEL SIZES ===")
+	print("If you resized zones, update these constants:")
+	print("NOTE: Screen content will automatically resize to fit the new panel dimensions.\n")
+
+	for panel_type in ["queue", "translation", "dictionary", "examination", "work"]:
+		if zone_sizes.has(panel_type):
+			var size = zone_sizes[panel_type]
+			var width = int(size.x)
+			var height = int(size.y)
+
+			# Generate appropriate constant name
+			match panel_type:
+				"queue":
+					print("const PANEL_WIDTH = %d" % width)
+					print("const PANEL_HEIGHT = %d" % height)
+				"translation":
+					print("const TRANSLATION_PANEL_WIDTH = %d" % width)
+					print("const TRANSLATION_PANEL_HEIGHT = %d" % height)
+				"dictionary":
+					print("const DICTIONARY_PANEL_WIDTH = %d" % width)
+					print("const DICTIONARY_PANEL_HEIGHT = %d" % height)
+				"examination":
+					print("const EXAMINATION_PANEL_WIDTH = %d" % width)
+					print("const EXAMINATION_PANEL_HEIGHT = %d" % height)
+				"work":
+					# Work uses default PANEL_WIDTH/HEIGHT, so skip
+					pass
+			print("")
+
+	print("Positions and sizes synced from scene nodes!")

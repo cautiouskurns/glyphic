@@ -338,9 +338,9 @@ z_index = 1
 metadata/_edit_lock_ = true
 
 [node name="QueueZone" type="ColorRect" parent="PanelZones"]
-offset_left = 75.0
+offset_left = 56.0
 offset_top = 700.0
-offset_right = 349.0
+offset_right = 365.0
 offset_bottom = 1384.0
 color = Color(0.628906, 0.509277, 0.429199, 0.25098)
 
@@ -421,3 +421,5 @@ text = "Current Work (350x650)"
 [node name="DebugConsole" parent="." instance=ExtResource("7_debug")]
 visible = false
 z_index = 1000
+layout_mode = 0
+anchors_preset = 0

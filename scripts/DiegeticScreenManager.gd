@@ -38,6 +38,12 @@ func load_screen_into_panel(panel_type: String, panel: Control):
 	screen_instance.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	screen_instance.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
+	# Pass panel content area dimensions to screen
+	var content_width = panel.panel_width - 40  # 20px padding on each side
+	var content_height = panel.panel_height - 75  # 55px for header + 20px bottom padding
+	if screen_instance.has_method("set_panel_content_size"):
+		screen_instance.set_panel_content_size(content_width, content_height)
+
 	# Add to panel's content area
 	var content_area = panel.content_area
 	# Clear placeholder content

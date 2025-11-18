@@ -6,6 +6,10 @@ extends Control
 # Panel mode flag
 var panel_mode: bool = false
 
+# Panel content area dimensions (set by DiegeticScreenManager)
+var content_width: int = 310
+var content_height: int = 590
+
 # UI References
 var card_container: GridContainer
 var scroll_container: ScrollContainer
@@ -30,12 +34,16 @@ func _ready():
 	await get_tree().process_frame  # Wait two frames to ensure layout is done
 	initialize()
 
+func set_panel_content_size(width: int, height: int):
+	"""Set content dimensions from panel (called by DiegeticScreenManager)"""
+	content_width = width
+	content_height = height
+
 func setup_panel_layout():
-	"""Create compact layout for panel display (350×650px panel)"""
+	"""Create compact layout for panel display using dynamic dimensions"""
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
-	# CRITICAL: Set explicit minimum size to match panel content area (350 - 40 margins = 310)
-	custom_minimum_size = Vector2(310, 590)
+	custom_minimum_size = Vector2(content_width, content_height)
 
 	# Margin container for top spacing
 	var margin = MarginContainer.new()
@@ -48,7 +56,7 @@ func setup_panel_layout():
 	scroll_container = ScrollContainer.new()
 	scroll_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll_container.custom_minimum_size = Vector2(310, 575)
+	scroll_container.custom_minimum_size = Vector2(content_width, content_height - 15)
 	margin.add_child(scroll_container)
 
 	# Grid container for cards (1 column in panel mode)
