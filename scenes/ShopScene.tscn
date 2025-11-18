@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://bmulqlda6e6dp"]
+[gd_scene load_steps=8 format=3 uid="uid://bmulqlda6e6dp"]
 
 [ext_resource type="Script" uid="uid://ps14xqgmeo40" path="res://scripts/ShopScene.gd" id="1_shop"]
 [ext_resource type="PackedScene" uid="uid://d1dajjqaswbc5" path="res://scenes/ui/DiaryButton.tscn" id="2_diary"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://c3flqqfogxuvj" path="res://scenes/ui/PapersButton.tscn" id="4_papers"]
 [ext_resource type="PackedScene" path="res://scenes/ui/MagnifyingGlassButton.tscn" id="5_magnifying"]
 [ext_resource type="PackedScene" uid="uid://3qyykl75d1ax" path="res://scenes/ui/BellButton.tscn" id="6_bell"]
+[ext_resource type="PackedScene" uid="uid://c8vqm8yvwknfb" path="res://scenes/ui/DebugConsole.tscn" id="7_debug"]
 
 [node name="ShopScene" type="Control"]
 layout_mode = 3
@@ -331,3 +332,92 @@ offset_left = 1100.0
 offset_top = 100.0
 offset_right = 1160.0
 offset_bottom = 170.0
+
+[node name="PanelZones" type="Node2D" parent="."]
+z_index = 1
+metadata/_edit_lock_ = true
+
+[node name="QueueZone" type="ColorRect" parent="PanelZones"]
+offset_left = 75.0
+offset_top = 700.0
+offset_right = 349.0
+offset_bottom = 1384.0
+color = Color(0.628906, 0.509277, 0.429199, 0.25098)
+
+[node name="Label" type="Label" parent="PanelZones/QueueZone"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 340.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 18
+text = "Customer Queue (350x650)"
+
+[node name="TranslationZone" type="ColorRect" parent="PanelZones"]
+offset_left = 403.0
+offset_top = 726.0
+offset_right = 854.0
+offset_bottom = 1322.0
+color = Color(0.956863, 0.909804, 0.847059, 0.25098)
+
+[node name="Label" type="Label" parent="PanelZones/TranslationZone"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 490.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 18
+text = "Translation Workspace (500x650)"
+
+[node name="DictionaryZone" type="ColorRect" parent="PanelZones"]
+offset_left = 1448.0
+offset_top = 701.0
+offset_right = 1874.0
+offset_bottom = 1451.0
+color = Color(0.628906, 0.509277, 0.429199, 0.25098)
+
+[node name="Label" type="Label" parent="PanelZones/DictionaryZone"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 510.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 18
+text = "Glyph Dictionary (520x750)"
+
+[node name="ExaminationZone" type="ColorRect" parent="PanelZones"]
+offset_left = 880.0
+offset_top = 708.0
+offset_right = 1400.0
+offset_bottom = 1358.0
+color = Color(0.628906, 0.509277, 0.429199, 0.25098)
+
+[node name="Label" type="Label" parent="PanelZones/ExaminationZone"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 510.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 18
+text = "Book Examination (520x650)"
+
+[node name="WorkZone" type="ColorRect" parent="PanelZones"]
+offset_left = 1050.0
+offset_top = 700.0
+offset_right = 1400.0
+offset_bottom = 1350.0
+color = Color(1, 0.843137, 0, 0.25098)
+metadata/_edit_lock_ = true
+
+[node name="Label" type="Label" parent="PanelZones/WorkZone"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 340.0
+offset_bottom = 40.0
+theme_override_font_sizes/font_size = 18
+text = "Current Work (350x650)"
+
+[node name="DebugConsole" parent="." instance=ExtResource("7_debug")]
+visible = false
+z_index = 1000

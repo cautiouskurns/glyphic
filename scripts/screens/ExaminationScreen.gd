@@ -39,10 +39,10 @@ func _ready():
 	initialize()
 
 func setup_panel_layout():
-	"""Create panel-compatible layout (460×590px)"""
+	"""Create panel-compatible layout (480×590px for 520px panel)"""
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
-	custom_minimum_size = Vector2(460, 590)
+	custom_minimum_size = Vector2(480, 590)
 
 	# Main container
 	var margin = MarginContainer.new()
@@ -70,7 +70,7 @@ func setup_panel_layout():
 
 	# Book cover panel
 	book_cover_panel = PanelContainer.new()
-	book_cover_panel.custom_minimum_size = Vector2(430, 300)
+	book_cover_panel.custom_minimum_size = Vector2(450, 300)
 	book_cover_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	book_cover_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 
@@ -101,7 +101,7 @@ func setup_panel_layout():
 	book_title_label.add_theme_color_override("font_color", Color(0.4, 0.35, 0.3))
 	book_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	book_title_label.position = Vector2(15, 15)
-	book_title_label.size = Vector2(400, 30)
+	book_title_label.size = Vector2(420, 30)
 	book_content.add_child(book_title_label)
 
 	# Symbol pattern (center)
@@ -112,7 +112,7 @@ func setup_panel_layout():
 	book_pattern_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	book_pattern_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	book_pattern_label.position = Vector2(15, 70)
-	book_pattern_label.size = Vector2(400, 150)
+	book_pattern_label.size = Vector2(420, 150)
 	book_content.add_child(book_pattern_label)
 
 	# UV overlay (hidden by default)
@@ -123,14 +123,14 @@ func setup_panel_layout():
 	uv_overlay_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	uv_overlay_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	uv_overlay_label.position = Vector2(15, 50)
-	uv_overlay_label.size = Vector2(400, 220)
+	uv_overlay_label.size = Vector2(420, 220)
 	uv_overlay_label.visible = false
 	book_content.add_child(uv_overlay_label)
 
 	# Crosshairs (hidden by default)
 	crosshair_h = ColorRect.new()
 	crosshair_h.color = Color(1.0, 0.843, 0.0, 0.5)  # Gold
-	crosshair_h.size = Vector2(430, 2)
+	crosshair_h.size = Vector2(450, 2)
 	crosshair_h.position = Vector2(0, 150)
 	crosshair_h.visible = false
 	book_content.add_child(crosshair_h)
@@ -138,14 +138,14 @@ func setup_panel_layout():
 	crosshair_v = ColorRect.new()
 	crosshair_v.color = Color(1.0, 0.843, 0.0, 0.5)  # Gold
 	crosshair_v.size = Vector2(2, 300)
-	crosshair_v.position = Vector2(215, 0)
+	crosshair_v.position = Vector2(225, 0)
 	crosshair_v.visible = false
 	book_content.add_child(crosshair_v)
 
 	# Zoom panel (inset)
 	zoom_panel = PanelContainer.new()
 	zoom_panel.custom_minimum_size = Vector2(150, 150)
-	zoom_panel.position = Vector2(280, 135)  # Bottom right
+	zoom_panel.position = Vector2(290, 135)  # Bottom right
 
 	var zoom_style = StyleBoxFlat.new()
 	zoom_style.bg_color = Color(0, 0, 0)

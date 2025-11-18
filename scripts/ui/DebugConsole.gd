@@ -1175,3 +1175,37 @@ func _on_test_uv_light_pressed():
 
 	_print("\nCurrent state:")
 	_print("  has_uv_light: %s" % str(GameState.has_uv_light))
+
+func _on_sync_panel_zones_pressed():
+	_print_header("Panel Zones: Sync From Scene Editor")
+
+	# Try to find ShopScene in scene tree
+	var shop_scene = get_node_or_null("/root/ShopScene")
+
+	if not shop_scene:
+		_print("⚠️ ShopScene not found in scene tree")
+		_print("\nTroubleshooting:")
+		_print("  1. Make sure you're in ShopScene (not MainMenu or Main)")
+		_print("  2. Check if game loaded ShopScene correctly")
+		_print("  3. ShopScene should be at /root/ShopScene")
+		return
+
+	if not shop_scene.has_method("sync_panel_zones_from_scene"):
+		_print("⚠️ ShopScene found but sync_panel_zones_from_scene() method missing")
+		_print("\nThis might be an older version of ShopScene.gd")
+		return
+
+	_print("✅ ShopScene found! Syncing panel zones...")
+	_print("\n--- INSTRUCTIONS ---")
+	_print("1. Open ShopScene.tscn in the editor")
+	_print("2. Expand 'PanelZones' node in the scene tree")
+	_print("3. Select and drag zones (QueueZone, TranslationZone, etc.)")
+	_print("4. Come back here and click this button again")
+	_print("5. Copy the output below to ShopScene.gd PANEL_ZONES constant")
+	_print("\n--- OUTPUT ---\n")
+
+	# Call the sync function
+	shop_scene.sync_panel_zones_from_scene()
+
+	_print("\n✅ Panel positions synced from scene nodes!")
+	_print("✅ Copy the PANEL_ZONES output from console to ShopScene.gd")

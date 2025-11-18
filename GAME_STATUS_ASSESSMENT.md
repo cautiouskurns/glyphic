@@ -370,3 +370,365 @@
 You have a **gorgeous, functional single-day prototype** that needs ~3-5 hours to become a **complete 7-day playthrough**. The hardest systems (translation validation, panel management, customer queuing) are already solved. The remaining work is mostly connecting existing pieces and adding the examination phase.
 
 The diegetic UI approach (clicking desk objects → panels slide in) is **significantly more immersive** than the original tabbed Main.tscn design. This was a great creative pivot.
+
+
+  You're describing something much richer than the current design -
+  more like Return of the Obra Dinn meets Chants of Sennaar. Let me
+  paint the picture:
+
+  ---
+  The Ideal Loop (Deep Scholar Fantasy)
+
+  1. Morning: The Queue
+
+  - 7-10 customers arrive with books
+  - Each book has provenance metadata:
+    - Origin (estate sale, family heirloom, excavation site)
+    - Age markers (publication date, binding style)
+    - Claim (customer says "It's from my grandmother" or "Found in a
+   library")
+
+  2. Triage: Authentication Phase 🆕
+
+  Goal: Determine if the book is genuine before accepting the job.
+
+  Your Desk:
+  - Magnifying Glass - Examine binding, paper quality, ink fading
+  - UV Light ($500 upgrade) - Reveal hidden ownership marks, detect
+  modern forgeries
+  - Reference Shelf - Access your library of authenticated texts for
+   comparison
+  - Ledger - Check known forgery patterns
+
+  Mechanic:
+  Examine Book → Check 3-4 authenticity markers:
+    ✓ Paper age matches claimed date? (look for anachronisms)
+    ✓ Binding style consistent with era?
+    ✓ Ownership marks traceable? (UV light reveals "Property of...")
+    ✓ Symbol style matches known corpus?
+
+  Result:
+    → Authentic: Accept job (translate it)
+    → Forgery: Refuse OR expose customer (risk/reward choice)
+    → Uncertain: Accept with caution (might learn it's fake
+  mid-translation)
+
+  Why This Works:
+  - Gives purpose to examination tools
+  - Creates tension ("Is this customer lying?")
+  - Builds expertise over time (you get better at spotting fakes)
+  - Some forgeries are "good forgeries" (teach you about symbols
+  anyway)
+
+  ---
+  3. Examination Phase: Deep Context Building
+
+  Once authenticated, you place the book on your desk permanently
+  (until translated).
+
+  What You See:
+  ┌─────────────────────────────────────┐
+  │  Mrs. Kowalski's Family History     │
+  │  ════════════════════════════════   │
+  │                                     │
+  │  Origin: Warsaw, 1924               │
+  │  Symbols: ∆ ◊≈ ⊕⊗◈                  │
+  │                                     │
+  │  [Magnify] [Compare] [Add Note]     │
+  └─────────────────────────────────────┘
+
+  Tools:
+  - Magnify - Zoom in, see individual symbols in detail
+  - Compare - Open a split-view with your Reference Library
+  - Add Note - Jot down observations (saved to book's file)
+
+  Compare Feature (This is the key insight system):
+  Split Screen:
+  ┌──────────────────┬──────────────────┐
+  │ CURRENT BOOK     │ REFERENCE LIBRARY│
+  │                  │                  │
+  │ ∆ ◊≈ ⊕⊗◈         │ [Search: ∆]      │
+  │                  │                  │
+  │ (hover symbols   │ Results:         │
+  │  to highlight)   │ • Text 2: ∆ = the│
+  │                  │ • Dr Chen's Book:│
+  │                  │   ∆ confirmed    │
+  │                  │ • Your Notes:    │
+  │                  │   "Gateway rune" │
+  └──────────────────┴──────────────────┘
+
+  Reference Library Contents:
+  1. Translated Texts (your completed jobs, searchable)
+  2. Dictionary (symbol → confirmed meanings)
+  3. Your Notes (tagged observations)
+  4. Customer Books (books you've accepted, cross-reference)
+
+  ---
+  4. Translation Phase: Context-Aware Solving
+
+  Now you switch to Papers to translate.
+
+  UI Enhancement:
+  ┌─────────────────────────────────────┐
+  │ Translating: Mrs. Kowalski          │
+  ├─────────────────────────────────────┤
+  │ Symbols:  ∆    ◊≈    ⊕⊗◈            │
+  │           [?]  [old] [way]          │
+  │                                     │
+  │ Known:  ◊≈ = "old" (High confidence)│
+  │         ⊕⊗◈ = "way" (High confidence)│
+  │         ∆ = ??? (Unknown - First use)│
+  │                                     │
+  │ Input: [the old way              ]  │
+  │                                     │
+  │ [Consult Library] [Submit]          │
+  └─────────────────────────────────────┘
+
+  "Consult Library" Button:
+  - Opens Reference Library in side panel
+  - Doesn't pause translation
+  - You manually cross-reference (no auto-hints)
+  - Encourages player-driven deduction
+
+  ---
+  5. Post-Translation: Knowledge Capture 🆕
+
+  After successful translation:
+
+  ┌─────────────────────────────────────┐
+  │ Translation Complete! +$50          │
+  │                                     │
+  │ "the old way"                       │
+  │                                     │
+  │ NEW SYMBOLS DOCUMENTED:             │
+  │ ∆ → "the" (added to dictionary)    │
+  │                                     │
+  │ Add a note about this text?         │
+  │ [___________________________]       │
+  │                                     │
+  │ Tags: [Family] [History] [Warsaw]  │
+  │                                     │
+  │ [Save to Library] [Skip]            │
+  └─────────────────────────────────────┘
+
+  What Gets Saved:
+  - The book goes into Reference Library
+  - Symbols update Dictionary (with source attribution)
+  - Your note is searchable later
+  - Tags enable filtering ("Show me all Warsaw texts")
+
+  ---
+  The Reference Library: Your Growing Knowledge Base
+
+  Visual Concept: A cork board with index cards pinned up.
+
+  ┌─────────────────────────────────────────────┐
+  │ MY LIBRARY                                  │
+  ├─────────────────────────────────────────────┤
+  │ [Search: ___] [Filter: All ▼] [Sort: Date ▼]│
+  ├─────────────────────────────────────────────┤
+  │                                             │
+  │  📖 Text 1: Family History (Kowalski)       │
+  │     "the old way"                           │
+  │     Symbols: ∆ ◊≈ ⊕⊗◈                       │
+  │     Note: "First mention of 'old ways'"     │
+  │     Tags: [Warsaw] [Family] [1924]          │
+  │     ─────────────────────────────────────   │
+  │                                             │
+  │  📖 Text 2: Forgotten Ways (Scholar #412)   │
+  │     "the old way was forgotten"             │
+  │     Symbols: ∆ ◊≈ ⊕⊗◈ ⊕⊗⬡ ⬡∞◊⊩⊩≈⊩          │
+  │     Note: "Repeats symbols from Kowalski.   │
+  │            Building on previous knowledge?" │
+  │     Tags: [Mystery] [Loss] [Magic]          │
+  │     ─────────────────────────────────────   │
+  │                                             │
+  │  📖 Dr. Chen's Research Journal (Day 3)     │
+  │     "the old god sleeps"                    │
+  │     ⚠️ AUTHENTICATED (ownership mark found) │
+  │     Note: "Chen seems VERY worried about    │
+  │            this. Mentioned 'waking up'?"    │
+  │     Tags: [Deity] [Warning] [Chen]          │
+  │                                             │
+  └─────────────────────────────────────────────┘
+
+  Search/Filter:
+  - Search by symbol, keyword, customer, tag
+  - Filter by authenticity status, difficulty, date
+  - Cross-reference connections emerge naturally
+
+  ---
+  Deep Mechanics Without Overwhelm
+
+  How to Keep It Manageable:
+
+  1. Gradual Introduction
+  - Day 1: Just translate (no authentication, no notes)
+  - Day 2: UV Light appears in shop, tutorial on authentication
+  - Day 3: "Add Note" prompt appears after first repeat symbol
+  - Day 4: Reference Library becomes essential (harder texts require
+   cross-reference)
+
+  2. Optional Depth
+  - Speedrun Players: Skip notes, ignore library, brute-force
+  translations
+  - Scholar Players: Take notes, build connections, discover hidden
+  lore
+  - Both playstyles succeed, but scholars get richer narrative
+
+  3. Visual Shortcuts
+  - Symbol Tagging: Hover over symbol → shows where it appeared
+  before
+  - Quick Compare: Right-click symbol → "Find in Library"
+  - Auto-Indexing: Library auto-creates entries, you just add
+  notes/tags
+
+  4. Feedback Loops
+  - Authentication successes → Unlock "Expert Eye" achievement
+  - Complete library → Unlock hidden texts
+  - Note-taking → Customers reference your insights ("You studied
+  the Kowalski text, right?")
+
+  ---
+  Forgery System: The Risk/Reward Layer
+
+  Forgery Types:
+
+  1. Obvious Forgeries (Easy to spot)
+    - Modern paper (UV shows brighteners)
+    - Anachronistic symbols (uses symbols from later texts)
+    - Inconsistent binding
+    - Refuse → Customer embarrassed, small payment for effort
+  2. Good Forgeries (Hard to spot)
+    - Authentic-looking materials
+    - Consistent symbol usage
+    - BUT: Translation reveals nonsense OR modern references
+    - Risk: Waste time translating gibberish
+    - Reward: Learn authentication skills
+  3. Intentional Fakes (Malicious)
+    - Customer KNOWS it's fake, trying to launder it
+    - Spot it early → Refuse + report → Reputation boost
+    - Miss it → Translate → Discover lie → Confront customer OR let
+  it slide
+    - Moral Choice: Expose (lose customer, gain integrity) vs.
+  Ignore (keep cash, lose self-respect)
+
+  The Stranger's Twist:
+  - Day 7: The Stranger brings a book
+  - Appears fake (too perfect, suspicious provenance)
+  - BUT: It's genuine - it's THE source text all others reference
+  - If you refuse it (thinking it's fake), you miss the story climax
+  - Trust your expertise vs. Trust your instincts
+
+  ---
+  Technical Implementation (Simplified)
+
+  Data Structures:
+
+  # GameState.gd
+  var library: Array = []  # Completed/authenticated texts
+
+  var current_book: Dictionary = {
+      "customer": "Mrs. Kowalski",
+      "text_id": 1,
+      "authenticated": false,
+      "authenticity_markers": {
+          "paper_age": "unknown",
+          "binding_style": "unknown",
+          "ownership_marks": "unknown",
+          "symbol_consistency": "unknown"
+      },
+      "player_notes": "",
+      "tags": []
+  }
+
+  UI Components:
+
+  1. AuthenticationPanel (new)
+    - Shows 3-4 examination prompts
+    - Tools: Magnify, UV, Compare
+    - Verdict: Authentic/Fake/Uncertain
+  2. ReferenceLibraryPanel (new)
+    - List of completed books
+    - Search/filter interface
+    - Click to open side-by-side compare
+  3. NoteEditor (new)
+    - Text area for observations
+    - Tag selector (auto-suggests based on content)
+    - Save to current book
+  4. ExaminationScreen (enhanced from current)
+    - Keeps existing zoom/UV mechanics
+    - Adds "Compare with Library" split-view
+    - Adds "Add Note" button
+
+  ---
+  Narrative Payoff
+
+  The Library as Story Delivery:
+  - Texts 1-2: Mundane family histories
+  - Texts 3-4: First hints of "old god" and "magic"
+  - Customer notes pile up: "Chen mentioned something 'waking'"
+  - Your library reveals the pattern: All texts from same region,
+  same era
+  - Day 7: The Stranger's book ties everything together
+  - You realize: These aren't random jobs - they're pieces of a
+  ritual
+
+  Player Agency:
+  - Diligent note-takers see it coming (Day 5-6)
+  - Casual players get hit with revelation (Day 7)
+  - Post-game: Re-read library with new context (everything makes
+  sense now)
+
+  ---
+  What This Loop Feels Like
+
+  Session Flow:
+  1. Morning coffee, queue appears
+  2. Pick interesting-looking book
+  3. Examine: UV light reveals hidden mark - it's authentic!
+  4. Translate: Get stuck on new symbol
+  5. Consult Library: Find similar symbol in Dr. Chen's book from
+  Day 3
+  6. Insight: "This is the same word family! It's related to 'god'!"
+  7. Solve: Successfully deduce meaning
+  8. Reflect: Add note: "Connection between Chen's 'god' and
+  Kowalski's 'old way'?"
+  9. Satisfaction: Both puzzle-solving AND narrative discovery
+
+  It feels like:
+  - Playing Obra Dinn (piecing together evidence)
+  - Reading a mystery novel (clues accumulate)
+  - Doing real scholarship (cross-referencing, note-taking)
+  - Being a detective (authentication, provenance checking)
+
+  ---
+  Implementation Phases (If You Want This)
+
+  Phase 4A: Authentication (3-5 hours)
+  - Add authenticity markers to CustomerData
+  - Build AuthenticationPanel with 3 checks
+  - Implement "Authentic/Fake" branching
+
+  Phase 4B: Reference Library (5-7 hours)
+  - Create Library screen (cork board layout)
+  - Save completed books with metadata
+  - Search/filter interface
+
+  Phase 4C: Note-Taking (2-3 hours)
+  - Add NoteEditor component
+  - Save notes per book
+  - Display in library entries
+
+  Phase 4D: Compare Feature (4-6 hours)
+  - Split-screen layout
+  - Symbol highlighting
+  - Cross-reference UI
+
+  Total: 15-20 hours for full depth system
+
+  ---
+  Does this vision match what you're imagining? The key is making
+  the Library your second brain - a living document of everything
+  you've learned, searchable and cross-referenceable, that grows
+  organically as you work.

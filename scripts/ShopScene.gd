@@ -1,5 +1,6 @@
 # ShopScene.gd
 # Main diegetic shop interface - atmospheric library/study aesthetic
+@tool
 extends Control
 
 @onready var left_bookshelf = $LeftBookshelf
@@ -38,7 +39,7 @@ var focus_tween: Tween
 # Feature 3A.3: Panel management
 var active_panels: Dictionary = {}  # {panel_type: DiegeticPanel}
 var panel_stack: Array[String] = []  # Stack of panel types (for z-order)
-const MAX_PANELS = 3
+const MAX_PANELS = 4
 
 # Feature 3A.4: Customer popup
 var customer_popup: Control
@@ -51,13 +52,34 @@ var focused_zoom: Vector2 = Vector2(1.0, 1.0)  # Keep same zoom, just shift pers
 
 # Panel zone configuration (Feature 3A.3)
 # Different zones for different panel types - spatial mapping to desk objects
+#
+# HOW TO EDIT PANEL POSITIONS:
+# 1. Open ShopScene.tscn in the editor
+# 2. Expand PanelZones node in the scene tree
+# 3. Select a zone (e.g., QueueZone, TranslationZone)
+# 4. Use the 2D transform tools to drag/resize the zone
+# 5. The semi-transparent colored rectangles show where panels will appear
+# 6. When happy with layout, run game and open debugger console
+# 7. Call: get_node("/root/ShopScene").sync_panel_zones_from_scene()
+# 8. Copy the output from console and paste it below
+#
+# const PANEL_ZONES = {
+# 	"queue": Vector2(75, 700),           # Left zone - near diary
+# 	"translation": Vector2(500, 720),     # Center-left - near papers
+# 	"dictionary": Vector2(1300, 720),     # Right zone - near dictionary/book (larger, more visible)
+# 	"examination": Vector2(850, 740),     # Center - near magnifying glass
+# 	"work": Vector2(1050, 700)            # Center-right - near bell
+# }
+
 const PANEL_ZONES = {
-	"queue": Vector2(75, 700),           # Left zone - near diary
-	"translation": Vector2(500, 720),     # Center-left - near papers
-	"dictionary": Vector2(1300, 720),     # Right zone - near dictionary/book (larger, more visible)
-	"examination": Vector2(850, 740),     # Center - near magnifying glass
-	"work": Vector2(1050, 700)            # Center-right - near bell
+	"queue": Vector2(75, 700),
+	"translation": Vector2(403, 726),
+	"dictionary": Vector2(1448, 701),
+	"examination": Vector2(880, 708),
+	"work": Vector2(1050, 700),
 }
+
+
 const PANEL_WIDTH = 350
 const PANEL_HEIGHT = 650
 # Dictionary panel gets special larger size
@@ -66,13 +88,16 @@ const DICTIONARY_PANEL_HEIGHT = 750
 # Translation panel gets special width
 const TRANSLATION_PANEL_WIDTH = 500
 const TRANSLATION_PANEL_HEIGHT = 650
+# Examination panel gets special larger size
+const EXAMINATION_PANEL_WIDTH = 520
+const EXAMINATION_PANEL_HEIGHT = 650
 
 # Panel type to color/title mapping (Feature 3A.3)
 const PANEL_COLORS = {
 	"queue": Color("#A0826D"),       # Brown
 	"translation": Color("#F4E8D8"),  # Cream
 	"dictionary": Color("#A0826D"),   # Brown (matches queue)
-	"examination": Color("#3498DB"),  # Blue
+	"examination": Color("#A0826D"),  # Brown (matches queue/dictionary)
 	"work": Color("#FFD700")          # Gold
 }
 
@@ -86,6 +111,10 @@ const PANEL_TITLES = {
 
 func _ready():
 	"""Initialize shop scene (only runs once now that scene persists)"""
+	# Skip initialization in editor
+	if Engine.is_editor_hint():
+		return
+
 	# Feature 3A.4: Add to group so DiegeticScreenManager can find this scene
 	add_to_group("shop_scene")
 
@@ -119,6 +148,9 @@ func _ready():
 
 	# Feature 3A.4: Setup customer popup
 	setup_customer_popup()
+
+	# Hide panel zone markers at runtime
+	hide_panel_zone_markers()
 
 func add_top_bar():
 	"""Add top bar with day and money information"""
@@ -815,13 +847,16 @@ func open_panel(panel_type: String):
 	panel.panel_title = PANEL_TITLES[panel_type]
 	panel.panel_color = PANEL_COLORS[panel_type]
 
-	# Set panel size and position zone (dictionary and translation get special sizes)
+	# Set panel size and position zone (dictionary, translation, and examination get special sizes)
 	if panel_type == "dictionary":
 		panel.panel_width = DICTIONARY_PANEL_WIDTH
 		panel.panel_height = DICTIONARY_PANEL_HEIGHT
 	elif panel_type == "translation":
 		panel.panel_width = TRANSLATION_PANEL_WIDTH
 		panel.panel_height = TRANSLATION_PANEL_HEIGHT
+	elif panel_type == "examination":
+		panel.panel_width = EXAMINATION_PANEL_WIDTH
+		panel.panel_height = EXAMINATION_PANEL_HEIGHT
 	else:
 		panel.panel_width = PANEL_WIDTH
 		panel.panel_height = PANEL_HEIGHT
@@ -975,3 +1010,38 @@ func get_panel_zone_rect(panel_type: String) -> Rect2:
 func is_in_focus_mode() -> bool:
 	"""Check if shop is currently in focused desk mode"""
 	return is_focused_mode
+
+func hide_panel_zone_markers():
+	"""Hide panel zone markers at runtime (they're only for editor visualization)"""
+	if has_node("PanelZones"):
+		$PanelZones.visible = false
+
+func sync_panel_zones_from_scene():
+	"""Development helper: Print panel positions from scene nodes
+	   Call this from debugger or add a button in editor to sync positions"""
+	if not has_node("PanelZones"):
+		print("No PanelZones node found in scene")
+		return
+
+	print("\n=== SYNCED PANEL POSITIONS ===")
+	print("Copy this into ShopScene.gd PANEL_ZONES constant:")
+	print("const PANEL_ZONES = {")
+
+	var zones_node = $PanelZones
+	var zone_data = {
+		"QueueZone": "queue",
+		"TranslationZone": "translation",
+		"DictionaryZone": "dictionary",
+		"ExaminationZone": "examination",
+		"WorkZone": "work"
+	}
+
+	for zone_node_name in zone_data.keys():
+		if zones_node.has_node(zone_node_name):
+			var zone = zones_node.get_node(zone_node_name)
+			var pos = zone.position
+			var panel_type = zone_data[zone_node_name]
+			print("\t\"%s\": Vector2(%d, %d)," % [panel_type, pos.x, pos.y])
+
+	print("}\n")
+	print("Positions synced from scene nodes!")
