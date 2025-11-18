@@ -70,9 +70,10 @@ offset_bottom = 930.0
 [node name="RightBookshelf" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 0
-offset_left = 1427.0001
-offset_right = 1847.0001
-offset_bottom = 1080.0
+offset_left = 1401.0
+offset_top = 2.0
+offset_right = 1821.0
+offset_bottom = 1082.0
 scale = Vector2(1.1599951, 1)
 
 [node name="ShelfPanel" type="Panel" parent="RightBookshelf"]

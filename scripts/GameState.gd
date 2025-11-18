@@ -24,6 +24,8 @@ var customer_queue: Array = []  # Feature 3A.4: Waiting customers
 
 # Current customer being served
 var current_customer: Dictionary = {}
+# Current book on desk for examination/translation
+var current_book: Dictionary = {}
 
 # Constants
 const DAILY_UTILITIES: int = 30
@@ -48,6 +50,7 @@ func reset_game_state():
 	refused_customers = []
 	customer_queue = []
 	current_customer = {}
+	current_book = {}
 
 	# Feature 3A.4: Add some test customers to queue
 	add_test_customers()
@@ -101,13 +104,27 @@ func get_cash_color() -> Color:
 
 # Feature 3.3: Accept/Refuse Logic
 func accept_customer(customer_data: Dictionary):
-	"""Add customer to accepted list and increment capacity"""
+	"""Add customer to accepted list, place book on desk, and increment capacity"""
 	# Safety check: prevent accepting beyond capacity (Feature 3.4)
 	if is_capacity_full():
 		push_warning("Cannot accept customer - capacity full (%d/%d)" % [capacity_used, max_capacity])
 		return
 
 	accepted_customers.append(customer_data)
+
+	# Place the customer's book on desk for examination/translation
+	current_book = customer_data.duplicate()
+
+	# Assign text ID based on difficulty
+	var difficulty = customer_data.get("difficulty", "easy")
+	current_book["text_id"] = get_text_id_for_difficulty(difficulty)
+
+	# Add book appearance data if not present
+	if not current_book.has("book_cover_color"):
+		current_book["book_cover_color"] = Color("#F4E8D8")  # Default cream
+	if not current_book.has("uv_hidden_text"):
+		current_book["uv_hidden_text"] = ""
+
 	increment_capacity()
 
 func refuse_customer(customer_data: Dictionary):

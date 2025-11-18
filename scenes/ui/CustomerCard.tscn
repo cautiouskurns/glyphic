@@ -31,14 +31,18 @@ border_width_bottom = 2
 border_color = Color(1, 0.2, 0.2, 1)
 
 [node name="CustomerCard" type="PanelContainer"]
-custom_minimum_size = Vector2(300, 150)
+custom_minimum_size = Vector2(200, 150)
 offset_top = 47.0
 offset_right = 300.0
 offset_bottom = 197.0
 script = ExtResource("1_card")
 
 [node name="Pin" type="Panel" parent="."]
-layout_mode = 2
+layout_mode = 0
+offset_left = 88.0
+offset_top = -8.0
+offset_right = 112.0
+offset_bottom = 16.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_pin")
 
 [node name="PinCenter" type="Panel" parent="Pin"]

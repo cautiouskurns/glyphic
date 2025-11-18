@@ -58,11 +58,14 @@ const PANEL_ZONES = {
 	"examination": Vector2(850, 740),     # Center - near magnifying glass
 	"work": Vector2(1050, 700)            # Center-right - near bell
 }
-const PANEL_WIDTH = 450
+const PANEL_WIDTH = 350
 const PANEL_HEIGHT = 650
 # Dictionary panel gets special larger size
 const DICTIONARY_PANEL_WIDTH = 520
 const DICTIONARY_PANEL_HEIGHT = 750
+# Translation panel gets special width
+const TRANSLATION_PANEL_WIDTH = 500
+const TRANSLATION_PANEL_HEIGHT = 650
 
 # Panel type to color/title mapping (Feature 3A.3)
 const PANEL_COLORS = {
@@ -634,7 +637,7 @@ func setup_interactive_buttons():
 	# bell_button.pressed.connect(SceneManager.goto_work_screen)
 
 func _input(event):
-	"""Handle keyboard shortcuts for desk objects - Feature 3A.1 + ESC for focus mode - Feature 3A.2"""
+	"""Handle ESC key for focus mode - Feature 3A.2"""
 	if event is InputEventKey and event.pressed and not event.echo:
 		# Feature 3A.2: ESC to exit focus mode
 		if event.keycode == KEY_ESCAPE:
@@ -642,19 +645,6 @@ func _input(event):
 				exit_focus_mode()
 				get_viewport().set_input_as_handled()  # Don't propagate ESC
 				return
-
-		# Feature 3A.1: Keyboard shortcuts for desk objects
-		match event.keycode:
-			KEY_Q:  # Queue (Diary)
-				diary_button._on_clicked()
-			KEY_T:  # Translation (Papers)
-				papers_button._on_clicked()
-			KEY_D:  # Dictionary
-				dictionary_button._on_clicked()
-			KEY_E:  # Examination (Magnifying Glass)
-				magnifying_glass_button._on_clicked()
-			KEY_W:  # Work (Bell)
-				bell_button._on_clicked()
 
 func hide_shop():
 	"""Hide shop UI when navigating to game screens"""
@@ -825,10 +815,13 @@ func open_panel(panel_type: String):
 	panel.panel_title = PANEL_TITLES[panel_type]
 	panel.panel_color = PANEL_COLORS[panel_type]
 
-	# Set panel size and position zone (dictionary gets special larger size)
+	# Set panel size and position zone (dictionary and translation get special sizes)
 	if panel_type == "dictionary":
 		panel.panel_width = DICTIONARY_PANEL_WIDTH
 		panel.panel_height = DICTIONARY_PANEL_HEIGHT
+	elif panel_type == "translation":
+		panel.panel_width = TRANSLATION_PANEL_WIDTH
+		panel.panel_height = TRANSLATION_PANEL_HEIGHT
 	else:
 		panel.panel_width = PANEL_WIDTH
 		panel.panel_height = PANEL_HEIGHT

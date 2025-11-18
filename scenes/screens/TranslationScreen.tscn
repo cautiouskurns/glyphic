@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/screens/TranslationScreen.gd" id="1_trans"]
 
 [node name="TranslationScreen" type="Control"]
+custom_minimum_size = Vector2(460, 590)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -10,3 +11,116 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_trans")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 35
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.25, 0.2, 1)
+theme_override_font_sizes/font_size = 16
+text = "Translation Exercise"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
+theme_override_font_sizes/font_size = 10
+text = "Found in temple entrance inscriptions"
+horizontal_alignment = 1
+
+[node name="GlyphPaper" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+
+[node name="GlyphContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GlyphPaper"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Arrow" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.55, 0.5, 1)
+theme_override_font_sizes/font_size = 24
+text = "↓"
+horizontal_alignment = 1
+
+[node name="TranslationPaper" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+
+[node name="TranslationContent" type="VBoxContainer" parent="MarginContainer/VBoxContainer/TranslationPaper"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TranslationLabel" type="Label" parent="MarginContainer/VBoxContainer/TranslationPaper/TranslationContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.25, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+text = "Translation:"
+
+[node name="InputField" type="LineEdit" parent="MarginContainer/VBoxContainer/TranslationPaper/TranslationContent"]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+placeholder_text = "Type your translation here..."
+
+[node name="ButtonRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HintButton" type="Button" parent="MarginContainer/VBoxContainer/ButtonRow"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "💡 Show Hint"
+
+[node name="SubmitButton" type="Button" parent="MarginContainer/VBoxContainer/ButtonRow"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+disabled = true
+text = "Submit Translation"
+
+[node name="Footer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Pagination" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Footer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="DifficultyBadge" type="Label" parent="MarginContainer/VBoxContainer/Footer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.176471, 0.501961, 0.0862745, 1)
+theme_override_font_sizes/font_size = 10
+text = "EASY DIFFICULTY"
+horizontal_alignment = 1
+
+[node name="InstructionLabel" type="Label" parent="MarginContainer/VBoxContainer/Footer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
+theme_override_font_sizes/font_size = 9
+text = "Translate the glyphs into English. Press Enter or click Submit when ready."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[connection signal="text_submitted" from="MarginContainer/VBoxContainer/TranslationPaper/TranslationContent/InputField" to="." method="_on_input_submitted"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonRow/HintButton" to="." method="_on_hint_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/ButtonRow/SubmitButton" to="." method="_on_submit_pressed"]

@@ -63,7 +63,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [node name="DictionaryEntry" type="PanelContainer"]
-custom_minimum_size = Vector2(470, 130)
+custom_minimum_size = Vector2(460, 130)
 theme_override_styles/panel = SubResource("StyleBoxFlat_main")
 script = ExtResource("1_entry")
 

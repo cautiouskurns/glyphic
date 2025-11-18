@@ -72,6 +72,10 @@ func connect_screen_signals(panel_type: String, screen: Control):
 			if screen.has_signal("customer_selected"):
 				screen.customer_selected.connect(_on_customer_selected)
 
+		"examination":
+			if screen.has_signal("begin_translation"):
+				screen.begin_translation.connect(_on_begin_translation)
+
 		"translation":
 			if screen.has_signal("translation_submitted"):
 				screen.translation_submitted.connect(_on_translation_submitted)
@@ -92,6 +96,10 @@ func disconnect_screen_signals(panel_type: String, screen: Control):
 		"queue":
 			if screen.has_signal("customer_selected"):
 				screen.customer_selected.disconnect(_on_customer_selected)
+
+		"examination":
+			if screen.has_signal("begin_translation"):
+				screen.begin_translation.disconnect(_on_begin_translation)
 
 		"translation":
 			if screen.has_signal("translation_submitted"):
@@ -116,6 +124,14 @@ func _on_customer_selected(customer_data: Dictionary):
 	var shop_scene = get_tree().get_first_node_in_group("shop_scene")
 	if shop_scene and shop_scene.has_method("show_customer_popup"):
 		shop_scene.show_customer_popup(customer_data)
+
+func _on_begin_translation():
+	"""Handle 'Begin Translation' from examination screen - open translation panel"""
+	print("Beginning translation for: %s" % GameState.current_book.get("name", "Unknown"))
+	# Open translation panel via ShopScene
+	var shop_scene = get_tree().get_first_node_in_group("shop_scene")
+	if shop_scene:
+		shop_scene._on_desk_object_clicked("translation")
 
 func _on_translation_submitted(translation: String, correct: bool):
 	"""Handle translation submission"""

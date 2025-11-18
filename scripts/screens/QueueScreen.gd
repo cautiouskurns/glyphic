@@ -31,11 +31,11 @@ func _ready():
 	initialize()
 
 func setup_panel_layout():
-	"""Create compact layout for panel display (450×650px panel)"""
+	"""Create compact layout for panel display (350×650px panel)"""
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
-	# CRITICAL: Set explicit minimum size to match panel content area
-	custom_minimum_size = Vector2(420, 590)
+	# CRITICAL: Set explicit minimum size to match panel content area (350 - 40 margins = 310)
+	custom_minimum_size = Vector2(310, 590)
 
 	# Margin container for top spacing
 	var margin = MarginContainer.new()
@@ -48,7 +48,7 @@ func setup_panel_layout():
 	scroll_container = ScrollContainer.new()
 	scroll_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll_container.custom_minimum_size = Vector2(420, 575)
+	scroll_container.custom_minimum_size = Vector2(310, 575)
 	margin.add_child(scroll_container)
 
 	# Grid container for cards (1 column in panel mode)
@@ -90,9 +90,9 @@ func populate_queue():
 	# Create card for each customer
 	var card_index = 0
 	for customer in current_queue:
-		# Single column - cards are now 300×150, use at full scale
+		# Single column - cards are now 200×150, use at full scale
 		var card_wrapper = CenterContainer.new()
-		card_wrapper.custom_minimum_size = Vector2(420, 150)
+		card_wrapper.custom_minimum_size = Vector2(310, 150)
 		card_wrapper.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		card_container.add_child(card_wrapper)
 
