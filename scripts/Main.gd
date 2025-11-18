@@ -112,6 +112,9 @@ func _input(event):
 
 func _on_tab_selected(tab: int):
 	"""Handle tab change"""
+	# Play page turn sound when switching tabs
+	AudioManager.play_panel_open()
+
 	current_tab = tab
 	apply_tab_layout(tab)
 

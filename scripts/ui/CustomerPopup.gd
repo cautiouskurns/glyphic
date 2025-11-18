@@ -108,6 +108,9 @@ func show_popup(customer_data: Dictionary):
 	if is_animating:
 		return
 
+	# Play page turn sound when opening popup
+	AudioManager.play_page_turn_light()
+
 	current_customer = customer_data
 	populate_customer_info()
 	check_capacity()
@@ -120,6 +123,9 @@ func hide_popup():
 	"""Close popup with animation"""
 	if is_animating:
 		return
+
+	# Play page turn sound when closing popup
+	AudioManager.play_page_turn_light()
 
 	animate_close()
 
@@ -227,39 +233,42 @@ func get_translation_text_name(difficulty: String) -> String:
 			return "Unknown Text"
 
 func animate_open():
-	"""Scale-in animation for popup open"""
+	"""Slide-in animation from left for popup open"""
 	is_animating = true
+
+	# Store original position
+	var original_position = popup_panel.position
 
 	# Start states
 	modulate.a = 0.0
-	popup_panel.scale = Vector2(0.8, 0.8)
+	popup_panel.position.x = -popup_panel.size.x - 100  # Start off-screen to the left
 
 	# Animate overlay fade-in
 	var overlay_tween = create_tween()
 	overlay_tween.tween_property(self, "modulate:a", 1.0, 0.2)
 
-	# Animate popup scale-in
+	# Animate popup slide-in from left
 	var popup_tween = create_tween()
-	popup_tween.set_trans(Tween.TRANS_BACK)
+	popup_tween.set_trans(Tween.TRANS_CUBIC)
 	popup_tween.set_ease(Tween.EASE_OUT)
-	popup_tween.tween_property(popup_panel, "scale", Vector2(1.0, 1.0), 0.2)
+	popup_tween.tween_property(popup_panel, "position", original_position, 0.3)
 
 	await popup_tween.finished
 	is_animating = false
 
 func animate_close():
-	"""Scale-out animation for popup close"""
+	"""Slide-out animation to left for popup close"""
 	is_animating = true
 
-	# Animate popup scale-out
+	# Animate popup slide-out to left
 	var popup_tween = create_tween()
-	popup_tween.set_trans(Tween.TRANS_BACK)
+	popup_tween.set_trans(Tween.TRANS_CUBIC)
 	popup_tween.set_ease(Tween.EASE_IN)
-	popup_tween.tween_property(popup_panel, "scale", Vector2(0.8, 0.8), 0.15)
+	popup_tween.tween_property(popup_panel, "position:x", -popup_panel.size.x - 100, 0.25)
 
 	# Animate overlay fade-out
 	var overlay_tween = create_tween()
-	overlay_tween.tween_property(self, "modulate:a", 0.0, 0.15)
+	overlay_tween.tween_property(self, "modulate:a", 0.0, 0.25)
 
 	await popup_tween.finished
 	visible = false

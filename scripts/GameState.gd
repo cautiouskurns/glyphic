@@ -20,6 +20,10 @@ var has_uv_light: bool = false  # Reveals hidden text on book covers (Feature 4.
 # Customer tracking (Feature 3.3)
 var accepted_customers: Array = []  # Array of customer data dictionaries
 var refused_customers: Array = []  # Array of customer names (for relationship tracking)
+var customer_queue: Array = []  # Feature 3A.4: Waiting customers
+
+# Current customer being served
+var current_customer: Dictionary = {}
 
 # Constants
 const DAILY_UTILITIES: int = 30
@@ -42,6 +46,11 @@ func reset_game_state():
 	has_uv_light = false
 	accepted_customers = []
 	refused_customers = []
+	customer_queue = []
+	current_customer = {}
+
+	# Feature 3A.4: Add some test customers to queue
+	add_test_customers()
 
 func advance_day():
 	"""Advance to next day, deduct utilities, reset capacity"""
@@ -137,3 +146,45 @@ func get_day_name(day: int) -> String:
 		return DAY_NAMES[day - 1]
 	else:
 		return "Day %d" % day  # For days beyond the week
+
+func add_test_customers():
+	"""Feature 3A.4: Add test customers to queue for development/testing"""
+	customer_queue = [
+		{
+			"name": "Madame Leclair",
+			"book_title": "Ancient Glyphs Vol 3",
+			"difficulty": "easy",
+			"payment": 50,
+			"time": "2:00 PM",
+			"description": "Sweet elderly woman. Always brings cookies.",
+			"signature": "",
+			"is_recurring": true,
+			"is_priority": false
+		},
+		{
+			"name": "Professor Thornwood",
+			"book_title": "Tome of Mysteries",
+			"difficulty": "medium",
+			"payment": 75,
+			"time": "2:00 PM",
+			"description": "Grumpy academic. Very particular about translations.",
+			"signature": "",
+			"is_recurring": false,
+			"is_priority": false
+		},
+		{
+			"name": "Dr. Nakamura",
+			"book_title": "Celestial Scripts",
+			"difficulty": "hard",
+			"payment": 100,
+			"time": "2:00 PM",
+			"description": "Mysterious scholar. Pays well for difficult work.",
+			"signature": "",
+			"is_recurring": true,
+			"is_priority": true
+		}
+	]
+
+func end_day():
+	"""End the current day"""
+	advance_day()

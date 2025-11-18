@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" uid="uid://ps14xqgmeo40" path="res://scripts/ShopScene.gd" id="1_shop"]
 [ext_resource type="PackedScene" uid="uid://d1dajjqaswbc5" path="res://scenes/ui/DiaryButton.tscn" id="2_diary"]
-[ext_resource type="PackedScene" path="res://scenes/ui/DictionaryButton.tscn" id="3_dictionary"]
-[ext_resource type="PackedScene" path="res://scenes/ui/PapersButton.tscn" id="4_papers"]
+[ext_resource type="PackedScene" uid="uid://dekwi7eu718rh" path="res://scenes/ui/DictionaryButton.tscn" id="3_dictionary"]
+[ext_resource type="PackedScene" uid="uid://c3flqqfogxuvj" path="res://scenes/ui/PapersButton.tscn" id="4_papers"]
 [ext_resource type="PackedScene" path="res://scenes/ui/MagnifyingGlassButton.tscn" id="5_magnifying"]
-[ext_resource type="PackedScene" path="res://scenes/ui/BellButton.tscn" id="6_bell"]
+[ext_resource type="PackedScene" uid="uid://3qyykl75d1ax" path="res://scenes/ui/BellButton.tscn" id="6_bell"]
 
 [node name="ShopScene" type="Control"]
 layout_mode = 3

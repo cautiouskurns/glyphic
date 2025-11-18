@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://gnlwyj20x3mc"
+path="res://.godot/imported/ES_Directory, Telephone Book, Page Turn 01 - Epidemic Sound.mp3-d545ddbdca257e4d3ef570eac9e16119.mp3str"
+
+[deps]
+
+source_file="res://assets/audio/sfx/ES_Directory, Telephone Book, Page Turn 01 - Epidemic Sound.mp3"
+dest_files=["res://.godot/imported/ES_Directory, Telephone Book, Page Turn 01 - Epidemic Sound.mp3-d545ddbdca257e4d3ef570eac9e16119.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

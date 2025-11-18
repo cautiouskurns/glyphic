@@ -34,6 +34,10 @@ func _ready():
 	setup_header()
 	setup_content_area()
 
+func load_content(panel_type: String):
+	"""Load screen content via DiegeticScreenManager"""
+	DiegeticScreenManager.load_screen_into_panel(panel_type, self)
+
 func setup_panel_style():
 	"""Style panel as desk object (paper/folder)"""
 	# Panel container styling
@@ -61,8 +65,8 @@ func setup_panel_style():
 func setup_header():
 	"""Create header bar with tab and close button"""
 	header_bar = Panel.new()
-	header_bar.custom_minimum_size = Vector2(panel_width, 40)
-	header_bar.size = Vector2(panel_width, 40)
+	header_bar.custom_minimum_size = Vector2(panel_width, 35)
+	header_bar.size = Vector2(panel_width, 35)
 	header_bar.position = Vector2(0, 0)
 
 	# Header color matches panel type (desk object color)
@@ -77,20 +81,21 @@ func setup_header():
 	# Tab label (panel name)
 	tab_label = Label.new()
 	tab_label.text = panel_title
-	tab_label.position = Vector2(15, 10)
+	tab_label.position = Vector2(12, 9)
 	tab_label.add_theme_color_override("font_color", Color(1, 1, 1))
-	tab_label.add_theme_font_size_override("font_size", 16)
+	tab_label.add_theme_font_size_override("font_size", 13)
+	tab_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	header_bar.add_child(tab_label)
 
 	# Close button [X]
 	close_button = Button.new()
 	close_button.text = "X"
-	close_button.custom_minimum_size = Vector2(30, 30)
-	close_button.size = Vector2(30, 30)
-	close_button.position = Vector2(panel_width - 45, 5)  # 45px from right edge
+	close_button.custom_minimum_size = Vector2(28, 28)
+	close_button.size = Vector2(28, 28)
+	close_button.position = Vector2(panel_width - 38, 4)  # Near right edge
 	close_button.flat = true
 	close_button.add_theme_color_override("font_color", Color(0.3, 0.3, 0.3))
-	close_button.add_theme_font_size_override("font_size", 18)
+	close_button.add_theme_font_size_override("font_size", 16)
 	close_button.pressed.connect(_on_close_pressed)
 	close_button.mouse_entered.connect(_on_close_hover)
 	close_button.mouse_exited.connect(_on_close_unhover)
@@ -99,9 +104,9 @@ func setup_header():
 func setup_content_area():
 	"""Create scrollable content area"""
 	content_container = ScrollContainer.new()
-	content_container.custom_minimum_size = Vector2(panel_width - 40, panel_height - 80)
-	content_container.size = Vector2(panel_width - 40, panel_height - 80)
-	content_container.position = Vector2(20, 60)
+	content_container.custom_minimum_size = Vector2(panel_width - 40, panel_height - 75)
+	content_container.size = Vector2(panel_width - 40, panel_height - 75)
+	content_container.position = Vector2(20, 55)
 	add_child(content_container)
 
 	content_area = VBoxContainer.new()
@@ -127,6 +132,9 @@ func slide_in():
 
 func slide_out():
 	"""Animate panel sliding out to right"""
+	# Clean up screen content first (Feature 3A.4)
+	DiegeticScreenManager.unload_screen(panel_type)
+
 	if slide_tween:
 		slide_tween.kill()
 

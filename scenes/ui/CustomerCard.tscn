@@ -10,8 +10,6 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 shadow_color = Color(0, 0, 0, 0)
-shadow_size = 0
-shadow_offset = Vector2(0, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_difficulty"]
 content_margin_left = 0.0
@@ -33,15 +31,14 @@ border_width_bottom = 2
 border_color = Color(1, 0.2, 0.2, 1)
 
 [node name="CustomerCard" type="PanelContainer"]
-custom_minimum_size = Vector2(520, 220)
+custom_minimum_size = Vector2(300, 150)
+offset_top = 47.0
+offset_right = 300.0
+offset_bottom = 197.0
 script = ExtResource("1_card")
 
 [node name="Pin" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 248.0
-offset_top = -8.0
-offset_right = 272.0
-offset_bottom = 16.0
+layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_pin")
 
 [node name="PinCenter" type="Panel" parent="Pin"]
@@ -54,19 +51,19 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_pin")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 5
 
 [node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.164706, 0.121569, 0.101961, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 17
 text = "Customer Name"
 
 [node name="DifficultyRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
@@ -132,10 +129,10 @@ text = "45"
 [node name="DescriptionLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.25, 0.2, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 11
 text = "Sweet elderly woman. Always brings cookies."
 autowrap_mode = 3
-max_lines_visible = 3
+max_lines_visible = 2
 
 [node name="SignatureLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2

@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://bell_button_001"]
+[gd_scene load_steps=2 format=3 uid="uid://3qyykl75d1ax"]
 
-[ext_resource type="Script" path="res://scripts/ui/BellButton.gd" id="1_bell"]
+[ext_resource type="Script" uid="uid://dncaa2g3i6se2" path="res://scripts/ui/BellButton.gd" id="1_bell"]
 
 [node name="BellButton" type="Button"]
 offset_right = 60.0
@@ -54,7 +54,6 @@ layout_mode = 0
 offset_left = -30.0
 offset_top = -60.0
 offset_right = 90.0
-offset_bottom = 0.0
 mouse_filter = 2
 
 [node name="Label" type="Label" parent="Tooltip"]

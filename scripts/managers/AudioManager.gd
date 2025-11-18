@@ -66,15 +66,36 @@ func fade_in_music(duration: float = 1.0):
 	var tween = create_tween()
 	tween.tween_property(music_player, "volume_db", linear_to_db(music_volume), duration)
 
-func play_sfx(sfx_path: String):
+func play_sfx(sfx_path: String, volume_modifier: float = 1.0):
 	"""Play a one-shot sound effect"""
 	var sfx = load(sfx_path)
 	if sfx:
 		var sfx_player = AudioStreamPlayer.new()
 		add_child(sfx_player)
 		sfx_player.stream = sfx
-		sfx_player.volume_db = linear_to_db(sfx_volume)
+		sfx_player.volume_db = linear_to_db(sfx_volume * volume_modifier)
 		sfx_player.finished.connect(sfx_player.queue_free)
 		sfx_player.play()
 	else:
 		push_error("AudioManager: Failed to load SFX - " + sfx_path)
+
+# Convenience methods for common SFX
+func play_page_turn_light():
+	"""Play light page turn sound (for small books/panels)"""
+	play_sfx("res://assets/audio/sfx/ES_Address Book, Small, Pages Turn - Epidemic Sound.mp3", 0.7)
+
+func play_page_turn_heavy():
+	"""Play heavy page turn sound (for large books/panels)"""
+	play_sfx("res://assets/audio/sfx/ES_Directory, Telephone Book, Page Turn 01 - Epidemic Sound.mp3", 0.8)
+
+func play_panel_open():
+	"""Play sound when opening a UI panel"""
+	play_page_turn_light()
+
+func play_panel_close():
+	"""Play sound when closing a UI panel"""
+	play_page_turn_light()
+
+func set_sfx_volume(volume: float):
+	"""Set SFX volume (0.0 - 1.0)"""
+	sfx_volume = clamp(volume, 0.0, 1.0)

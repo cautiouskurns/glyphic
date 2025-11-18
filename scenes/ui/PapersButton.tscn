@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://papers_button_001"]
+[gd_scene load_steps=2 format=3 uid="uid://c3flqqfogxuvj"]
 
-[ext_resource type="Script" path="res://scripts/ui/PapersButton.gd" id="1_papers"]
+[ext_resource type="Script" uid="uid://dqx18i4sa3sel" path="res://scripts/ui/PapersButton.gd" id="1_papers"]
 
 [node name="PapersButton" type="Button"]
 offset_right = 150.0
@@ -51,10 +51,8 @@ mouse_filter = 2
 [node name="Tooltip" type="PanelContainer" parent="."]
 visible = false
 layout_mode = 0
-offset_left = 0.0
 offset_top = -60.0
 offset_right = 150.0
-offset_bottom = 0.0
 mouse_filter = 2
 
 [node name="Label" type="Label" parent="Tooltip"]

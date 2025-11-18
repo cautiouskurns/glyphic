@@ -40,6 +40,9 @@ var active_panels: Dictionary = {}  # {panel_type: DiegeticPanel}
 var panel_stack: Array[String] = []  # Stack of panel types (for z-order)
 const MAX_PANELS = 3
 
+# Feature 3A.4: Customer popup
+var customer_popup: Control
+
 # Camera positions and zoom levels
 var default_camera_position: Vector2 = Vector2(960, 540)  # Center of 1920×1080
 var focused_camera_position: Vector2 = Vector2(960, 970)  # Shifted down to desk focus
@@ -49,20 +52,23 @@ var focused_zoom: Vector2 = Vector2(1.0, 1.0)  # Keep same zoom, just shift pers
 # Panel zone configuration (Feature 3A.3)
 # Different zones for different panel types - spatial mapping to desk objects
 const PANEL_ZONES = {
-	"queue": Vector2(200, 700),           # Left zone - near diary
+	"queue": Vector2(75, 700),           # Left zone - near diary
 	"translation": Vector2(500, 720),     # Center-left - near papers
-	"dictionary": Vector2(1400, 680),     # Right zone - near dictionary/book
+	"dictionary": Vector2(1300, 720),     # Right zone - near dictionary/book (larger, more visible)
 	"examination": Vector2(850, 740),     # Center - near magnifying glass
 	"work": Vector2(1050, 700)            # Center-right - near bell
 }
-const PANEL_WIDTH = 600
-const PANEL_HEIGHT = 700
+const PANEL_WIDTH = 450
+const PANEL_HEIGHT = 650
+# Dictionary panel gets special larger size
+const DICTIONARY_PANEL_WIDTH = 520
+const DICTIONARY_PANEL_HEIGHT = 750
 
 # Panel type to color/title mapping (Feature 3A.3)
 const PANEL_COLORS = {
 	"queue": Color("#A0826D"),       # Brown
 	"translation": Color("#F4E8D8"),  # Cream
-	"dictionary": Color("#2D5016"),   # Green
+	"dictionary": Color("#A0826D"),   # Brown (matches queue)
 	"examination": Color("#3498DB"),  # Blue
 	"work": Color("#FFD700")          # Gold
 }
@@ -77,6 +83,9 @@ const PANEL_TITLES = {
 
 func _ready():
 	"""Initialize shop scene (only runs once now that scene persists)"""
+	# Feature 3A.4: Add to group so DiegeticScreenManager can find this scene
+	add_to_group("shop_scene")
+
 	add_top_bar()
 	setup_lighting()
 	setup_wood_paneling()
@@ -104,6 +113,9 @@ func _ready():
 	setup_camera()
 	setup_background_dim()
 	connect_desk_objects()
+
+	# Feature 3A.4: Setup customer popup
+	setup_customer_popup()
 
 func add_top_bar():
 	"""Add top bar with day and money information"""
@@ -813,9 +825,13 @@ func open_panel(panel_type: String):
 	panel.panel_title = PANEL_TITLES[panel_type]
 	panel.panel_color = PANEL_COLORS[panel_type]
 
-	# Set panel size and position zone
-	panel.panel_width = PANEL_WIDTH
-	panel.panel_height = PANEL_HEIGHT
+	# Set panel size and position zone (dictionary gets special larger size)
+	if panel_type == "dictionary":
+		panel.panel_width = DICTIONARY_PANEL_WIDTH
+		panel.panel_height = DICTIONARY_PANEL_HEIGHT
+	else:
+		panel.panel_width = PANEL_WIDTH
+		panel.panel_height = PANEL_HEIGHT
 	panel.target_position = PANEL_ZONES[panel_type]
 
 	# Connect signals
@@ -826,6 +842,9 @@ func open_panel(panel_type: String):
 	add_child(panel)
 	active_panels[panel_type] = panel
 	panel_stack.append(panel_type)
+
+	# Load screen content (Feature 3A.4)
+	panel.load_content(panel_type)
 
 	# Slide in animation
 	panel.slide_in()
@@ -916,6 +935,42 @@ func close_all_panels():
 
 	# Clear all glows
 	update_desk_object_glows()
+
+# Feature 3A.4: Customer Popup
+
+func setup_customer_popup():
+	"""Create and configure customer popup"""
+	var popup_scene = load("res://scenes/ui/CustomerPopup.tscn")
+	customer_popup = popup_scene.instantiate()
+	add_child(customer_popup)
+	customer_popup.z_index = 200  # Above everything
+
+	# Connect popup signals
+	customer_popup.customer_accepted.connect(_on_customer_accepted)
+	customer_popup.customer_refused.connect(_on_customer_refused)
+
+func show_customer_popup(customer_data: Dictionary):
+	"""Show popup with customer details"""
+	if customer_popup:
+		customer_popup.show_popup(customer_data)
+
+func _on_customer_accepted(customer_data: Dictionary):
+	"""Handle customer acceptance from popup"""
+	print("Customer accepted: %s" % customer_data.get("name", "Unknown"))
+	GameState.accept_customer(customer_data)
+	# Refresh the queue screen
+	if active_panels.has("queue"):
+		var queue_panel = active_panels["queue"]
+		DiegeticScreenManager.refresh_screen("queue")
+
+func _on_customer_refused(customer_data: Dictionary):
+	"""Handle customer refusal from popup"""
+	print("Customer refused: %s" % customer_data.get("name", "Unknown"))
+	GameState.refuse_customer(customer_data)
+	# Refresh the queue screen
+	if active_panels.has("queue"):
+		var queue_panel = active_panels["queue"]
+		DiegeticScreenManager.refresh_screen("queue")
 
 # Public API for DiegeticScreenManager (Feature 3A.4)
 
