@@ -52,8 +52,8 @@ func reset_game_state():
 	current_customer = {}
 	current_book = {}
 
-	# Feature 3A.4: Add some test customers to queue
-	add_test_customers()
+	# Generate queue for Day 1
+	generate_customer_queue()
 
 func advance_day():
 	"""Advance to next day, deduct utilities, reset capacity"""
@@ -64,9 +64,15 @@ func advance_day():
 	capacity_used = 0
 	accepted_customers = []  # Reset for new day
 
+	# Regenerate queue for new day
+	generate_customer_queue()
+
 	# Check if rent is due (Friday = day 5)
 	if current_day == RENT_DUE_DAY:
 		check_rent_payment()
+
+	# Emit signal for UI refresh
+	day_advanced.emit()
 
 func check_rent_payment():
 	"""Check if player can pay rent, deduct if possible"""
@@ -164,43 +170,10 @@ func get_day_name(day: int) -> String:
 	else:
 		return "Day %d" % day  # For days beyond the week
 
-func add_test_customers():
-	"""Feature 3A.4: Add test customers to queue for development/testing"""
-	customer_queue = [
-		{
-			"name": "Madame Leclair",
-			"book_title": "Ancient Glyphs Vol 3",
-			"difficulty": "easy",
-			"payment": 50,
-			"time": "2:00 PM",
-			"description": "Sweet elderly woman. Always brings cookies.",
-			"signature": "",
-			"is_recurring": true,
-			"is_priority": false
-		},
-		{
-			"name": "Professor Thornwood",
-			"book_title": "Tome of Mysteries",
-			"difficulty": "medium",
-			"payment": 75,
-			"time": "2:00 PM",
-			"description": "Grumpy academic. Very particular about translations.",
-			"signature": "",
-			"is_recurring": false,
-			"is_priority": false
-		},
-		{
-			"name": "Dr. Nakamura",
-			"book_title": "Celestial Scripts",
-			"difficulty": "hard",
-			"payment": 100,
-			"time": "2:00 PM",
-			"description": "Mysterious scholar. Pays well for difficult work.",
-			"signature": "",
-			"is_recurring": true,
-			"is_priority": true
-		}
-	]
+func generate_customer_queue():
+	"""Generate daily customer queue from CustomerData"""
+	customer_queue = CustomerData.generate_daily_queue(current_day)
+	print("Generated %d customers for Day %d (%s)" % [customer_queue.size(), current_day, day_name])
 
 func end_day():
 	"""End the current day"""

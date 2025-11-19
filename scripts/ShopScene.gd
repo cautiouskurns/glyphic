@@ -875,6 +875,9 @@ func open_panel(panel_type: String):
 		panel.panel_height = PANEL_HEIGHT
 	panel.target_position = PANEL_ZONES[panel_type]
 
+	# Update layout with new dimensions
+	panel.update_layout()
+
 	# Connect signals
 	panel.panel_closed.connect(_on_panel_closed)
 	panel.panel_focused.connect(bring_panel_to_front)

@@ -1,7 +1,7 @@
 # DiegeticPanel.gd
 # Feature 3A.3: Screen Panel Sliding
 # Individual panel that slides onto desk workspace
-extends PanelContainer
+extends Control
 
 # Panel configuration
 var panel_type: String  # "queue", "translation", "dictionary", "examination", "work"
@@ -18,6 +18,7 @@ const SLIDE_DURATION = 0.4
 const OFF_SCREEN_X = 2100
 
 # UI References
+var background_panel: Panel  # Background panel for styling
 var header_bar: Panel
 var tab_label: Label
 var close_button: Button
@@ -33,6 +34,7 @@ func _ready():
 	setup_panel_style()
 	setup_header()
 	setup_content_area()
+	setup_close_button()  # Add button LAST so it's on top
 
 func load_content(panel_type: String):
 	"""Load screen content via DiegeticScreenManager"""
@@ -40,10 +42,21 @@ func load_content(panel_type: String):
 
 func setup_panel_style():
 	"""Style panel as desk object (paper/folder)"""
-	# Panel container styling
+	# Control sizing and positioning
 	custom_minimum_size = Vector2(panel_width, panel_height)
 	size = Vector2(panel_width, panel_height)
 	position = Vector2(OFF_SCREEN_X, target_position.y)  # Start off-screen, at target Y position
+	mouse_filter = Control.MOUSE_FILTER_STOP  # Catch clicks for focus handling
+
+	# CRITICAL: Disable automatic child layout
+	clip_contents = false
+
+	# Create background panel for styling
+	background_panel = Panel.new()
+	background_panel.position = Vector2(0, 0)
+	background_panel.size = Vector2(panel_width, panel_height)
+	background_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Critical: don't block clicks
+	background_panel.z_index = -10  # Behind everything
 
 	var panel_style = StyleBoxFlat.new()
 	panel_style.bg_color = Color(0.95, 0.92, 0.88)  # Cream paper
@@ -60,14 +73,42 @@ func setup_panel_style():
 	panel_style.shadow_offset = Vector2(6, 6)
 	panel_style.shadow_color = Color(0, 0, 0, 0.5)
 
-	add_theme_stylebox_override("panel", panel_style)
+	background_panel.add_theme_stylebox_override("panel", panel_style)
+	add_child(background_panel)
+
+func update_layout():
+	"""Update panel layout when dimensions change (called after panel_width/height are set)"""
+	# Update control size
+	custom_minimum_size = Vector2(panel_width, panel_height)
+	size = Vector2(panel_width, panel_height)
+
+	# Update background panel size
+	if background_panel:
+		background_panel.size = Vector2(panel_width, panel_height)
+
+	# Update header size
+	if header_bar:
+		header_bar.size = Vector2(panel_width, 35)
+
+	# Update title label size
+	if tab_label:
+		tab_label.size = Vector2(panel_width - 60, 20)
+
+	# Update close button position (top right)
+	if close_button:
+		close_button.position = Vector2(panel_width - 38, 4)
+		close_button.size = Vector2(28, 28)
+
+	# Update content area size
+	if content_container:
+		content_container.custom_minimum_size = Vector2(panel_width - 40, panel_height - 75)
+		content_container.size = Vector2(panel_width - 40, panel_height - 75)
 
 func setup_header():
 	"""Create header bar with tab and close button"""
+	# Header bar with absolute positioning
 	header_bar = Panel.new()
-	header_bar.custom_minimum_size = Vector2(panel_width, 35)
-	header_bar.size = Vector2(panel_width, 35)
-	header_bar.position = Vector2(0, 0)
+	header_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE  # IGNORE so it doesn't block button
 
 	# Header color matches panel type (desk object color)
 	var header_style = StyleBoxFlat.new()
@@ -78,28 +119,49 @@ func setup_header():
 
 	add_child(header_bar)
 
-	# Tab label (panel name)
+	# Set position AFTER adding to tree
+	header_bar.position = Vector2(0, 0)
+	header_bar.size = Vector2(panel_width, 35)
+
+	# Tab label (panel name) - left aligned in header
 	tab_label = Label.new()
 	tab_label.text = panel_title
-	tab_label.position = Vector2(12, 9)
 	tab_label.add_theme_color_override("font_color", Color(1, 1, 1))
 	tab_label.add_theme_font_size_override("font_size", 13)
 	tab_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	tab_label.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block clicks
 	header_bar.add_child(tab_label)
 
-	# Close button [X]
+	# Set position AFTER adding to tree
+	tab_label.position = Vector2(12, 8)
+	tab_label.size = Vector2(panel_width - 60, 20)  # Leave space for close button
+
+func setup_close_button():
+	"""Setup close button - called LAST so it's drawn on top"""
 	close_button = Button.new()
 	close_button.text = "X"
+
+	# Prevent button from expanding to fill parent
+	close_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	close_button.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+
+	# Set fixed size
 	close_button.custom_minimum_size = Vector2(28, 28)
 	close_button.size = Vector2(28, 28)
-	close_button.position = Vector2(panel_width - 38, 4)  # Near right edge
-	close_button.flat = true
-	close_button.add_theme_color_override("font_color", Color(0.3, 0.3, 0.3))
-	close_button.add_theme_font_size_override("font_size", 16)
+
+	# Position will be set by update_layout() - just add it for now
+	close_button.position = Vector2(0, 4)
+
 	close_button.pressed.connect(_on_close_pressed)
-	close_button.mouse_entered.connect(_on_close_hover)
-	close_button.mouse_exited.connect(_on_close_unhover)
-	header_bar.add_child(close_button)
+	add_child(close_button)
+
+	# Force position update on next frame
+	call_deferred("_update_close_button_position")
+
+func _update_close_button_position():
+	"""Update close button position after layout is finalized"""
+	if close_button and is_instance_valid(close_button):
+		close_button.position = Vector2(panel_width - 38, 4)
 
 func setup_content_area():
 	"""Create scrollable content area"""
@@ -107,6 +169,7 @@ func setup_content_area():
 	content_container.custom_minimum_size = Vector2(panel_width - 40, panel_height - 75)
 	content_container.size = Vector2(panel_width - 40, panel_height - 75)
 	content_container.position = Vector2(20, 55)
+	content_container.mouse_filter = Control.MOUSE_FILTER_PASS  # Pass clicks to children
 	add_child(content_container)
 
 	content_area = VBoxContainer.new()
@@ -166,16 +229,9 @@ func _on_close_pressed():
 	"""Handle close button click"""
 	panel_closed.emit(panel_type)
 
-func _on_close_hover():
-	"""Red highlight on close button hover"""
-	close_button.add_theme_color_override("font_color", Color(0.8, 0.2, 0.2))
-
-func _on_close_unhover():
-	"""Remove hover highlight"""
-	close_button.add_theme_color_override("font_color", Color(0.3, 0.3, 0.3))
-
 func _gui_input(event):
 	"""Handle panel click to bring to front"""
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		# Bring panel to front if not active
 		if not is_active:
 			panel_focused.emit(panel_type)

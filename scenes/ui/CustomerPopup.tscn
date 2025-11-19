@@ -40,11 +40,11 @@ script = ExtResource("1_popup")
 
 [node name="CustomerPopup" type="PanelContainer" parent="."]
 layout_mode = 0
-offset_left = 660.0
-offset_top = 720.0
-offset_right = 1260.0
-offset_bottom = 1220.0
-pivot_offset = Vector2(300, 250)
+offset_left = 710.0
+offset_top = 240.0
+offset_right = 1210.0
+offset_bottom = 840.0
+pivot_offset = Vector2(250, 300)
 theme_override_styles/panel = SubResource("StyleBoxFlat_popup")
 
 [node name="MarginContainer" type="MarginContainer" parent="CustomerPopup"]

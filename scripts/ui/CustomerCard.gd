@@ -113,8 +113,10 @@ func set_customer_data(data: Dictionary):
 	"""Populate card with customer information"""
 	customer_data = data
 
-	# Set name
-	if data.has("name"):
+	# Set name with book title
+	if data.has("name") and data.has("book_title"):
+		name_label.text = "📖 %s - \"%s\"" % [data["name"], data["book_title"]]
+	elif data.has("name"):
 		name_label.text = data["name"]
 
 	# Set payment

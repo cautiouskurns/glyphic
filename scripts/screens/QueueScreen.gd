@@ -11,6 +11,7 @@ var content_width: int = 310
 var content_height: int = 590
 
 # UI References
+var capacity_label: Label
 var card_container: GridContainer
 var scroll_container: ScrollContainer
 
@@ -28,6 +29,12 @@ func _ready():
 		setup_panel_layout()
 	else:
 		setup_fullscreen_layout()
+
+	# Connect to capacity changes
+	GameState.capacity_changed.connect(_on_capacity_changed)
+
+	# Connect to day changes to refresh queue
+	GameState.day_advanced.connect(_on_day_advanced)
 
 	# Wait for layout to be calculated before populating
 	await get_tree().process_frame
@@ -50,14 +57,29 @@ func setup_panel_layout():
 	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	margin.add_theme_constant_override("margin_top", 35)
+	margin.add_theme_constant_override("margin_left", 8)
+	margin.add_theme_constant_override("margin_right", 8)
 	add_child(margin)
+
+	# Create VBox for capacity + scroll
+	var main_vbox = VBoxContainer.new()
+	main_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	main_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	main_vbox.add_theme_constant_override("separation", 10)
+	margin.add_child(main_vbox)
+
+	# Capacity counter
+	capacity_label = Label.new()
+	capacity_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	capacity_label.add_theme_font_size_override("font_size", 16)
+	main_vbox.add_child(capacity_label)
 
 	# Scroll container for customer cards
 	scroll_container = ScrollContainer.new()
 	scroll_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scroll_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll_container.custom_minimum_size = Vector2(content_width, content_height - 15)
-	margin.add_child(scroll_container)
+	scroll_container.custom_minimum_size = Vector2(content_width - 16, content_height - 60)
+	main_vbox.add_child(scroll_container)
 
 	# Grid container for cards (1 column in panel mode)
 	card_container = GridContainer.new()
@@ -75,6 +97,7 @@ func setup_fullscreen_layout():
 func initialize():
 	"""Called when panel opens - load current game state"""
 	populate_queue()
+	update_capacity_label()
 
 func populate_queue():
 	"""Generate and display customer cards from GameState"""
@@ -134,3 +157,31 @@ func _on_customer_card_clicked(customer_data: Dictionary):
 func refresh():
 	"""Refresh the queue display"""
 	populate_queue()
+	update_capacity_label()
+
+func update_capacity_label():
+	"""Update capacity display"""
+	if not capacity_label:
+		return
+
+	var used = GameState.capacity_used
+	var max_cap = GameState.max_capacity
+	var remaining = max_cap - used
+
+	capacity_label.text = "Capacity: %d/%d" % [used, max_cap]
+
+	# Color code based on usage
+	if used >= max_cap:
+		capacity_label.add_theme_color_override("font_color", Color("#2D5016"))  # Green - full
+	elif remaining <= 1:
+		capacity_label.add_theme_color_override("font_color", Color("#FF8C00"))  # Orange - almost full
+	else:
+		capacity_label.add_theme_color_override("font_color", Color("#888888"))  # Gray - plenty of room
+
+func _on_capacity_changed():
+	"""Handle capacity change"""
+	update_capacity_label()
+
+func _on_day_advanced():
+	"""Refresh queue when day advances"""
+	refresh()

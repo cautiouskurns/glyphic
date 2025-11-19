@@ -6,6 +6,7 @@ extends Node
 var recurring_customers: Dictionary = {
 	"Mrs. Kowalski": {
 		"type": "recurring",
+		"book_title": "Family History",
 		"appears_days": [1, 2, 3],  # Monday, Tuesday, Wednesday
 		"payment": 50,
 		"difficulty": "Easy",
@@ -27,6 +28,7 @@ var recurring_customers: Dictionary = {
 
 	"Dr. Chen": {
 		"type": "recurring",
+		"book_title": "Research Journal",
 		"appears_days": [2, 3, 4, 5, 6, 7],  # Tuesday through Sunday
 		"payment": 100,
 		"difficulty": "Medium",
@@ -48,6 +50,7 @@ var recurring_customers: Dictionary = {
 
 	"The Stranger": {
 		"type": "recurring",
+		"book_title": "Ancient Tome",
 		"appears_days": [5, 6, 7],  # Friday, Saturday, Sunday
 		"payment": 200,
 		"difficulty": "Hard",
@@ -72,6 +75,7 @@ var recurring_customers: Dictionary = {
 var random_customer_templates: Array = [
 	{
 		"name_prefix": "Scholar",
+		"book_title": "Ancient Text",
 		"difficulty": "Medium",
 		"payment_range": [80, 120],
 		"priorities": [["Fast", "Cheap"], ["Cheap", "Accurate"]],
@@ -83,6 +87,7 @@ var random_customer_templates: Array = [
 	},
 	{
 		"name_prefix": "Collector",
+		"book_title": "Estate Find",
 		"difficulty": "Hard",
 		"payment_range": [150, 180],
 		"priorities": [["Fast", "Accurate"]],
@@ -94,6 +99,7 @@ var random_customer_templates: Array = [
 	},
 	{
 		"name_prefix": "Student",
+		"book_title": "Homework Help",
 		"difficulty": "Easy",
 		"payment_range": [40, 60],
 		"priorities": [["Fast", "Cheap"]],
@@ -105,6 +111,7 @@ var random_customer_templates: Array = [
 	},
 	{
 		"name_prefix": "Merchant",
+		"book_title": "Mystery Book",
 		"difficulty": "Easy",
 		"payment_range": [50, 80],
 		"priorities": [["Fast", "Cheap"], ["Cheap", "Accurate"]],
@@ -144,6 +151,7 @@ func create_customer_instance(name: String, data: Dictionary) -> Dictionary:
 	"""Create a customer instance from recurring customer data"""
 	return {
 		"name": name,
+		"book_title": data.book_title,
 		"type": data.type,
 		"payment": data.payment,
 		"difficulty": data.difficulty,
@@ -171,6 +179,7 @@ func generate_random_customer() -> Dictionary:
 
 	return {
 		"name": "%s #%d" % [template.name_prefix, random_number],
+		"book_title": template.book_title,
 		"type": "one-time",
 		"payment": randi_range(template.payment_range[0], template.payment_range[1]),
 		"difficulty": template.difficulty,
