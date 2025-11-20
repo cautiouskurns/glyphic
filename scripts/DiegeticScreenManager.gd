@@ -38,9 +38,18 @@ func load_screen_into_panel(panel_type: String, panel: Control):
 	screen_instance.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	screen_instance.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
-	# Pass panel content area dimensions to screen
-	var content_width = panel.panel_width - 40  # 20px padding on each side
-	var content_height = panel.panel_height - 75  # 55px for header + 20px bottom padding
+	# Pass panel layout config to screen (screens can use it for layout calculations)
+	if panel.layout_config and screen_instance.has_method("set_panel_layout_config"):
+		screen_instance.set_panel_layout_config(panel.layout_config)
+
+	# Pass screen layout config to screen (for screen-specific layout parameters)
+	var screen_layout = LayoutManager.get_screen_layout(panel_type)
+	if screen_instance.has_method("set_screen_layout_config"):
+		screen_instance.set_screen_layout_config(screen_layout)
+
+	# Pass panel content area dimensions to screen (legacy compatibility)
+	var content_width = panel.layout_config.get_content_width() if panel.layout_config else panel.panel_width - 40
+	var content_height = panel.layout_config.get_content_height() if panel.layout_config else panel.panel_height - 75
 	if screen_instance.has_method("set_panel_content_size"):
 		screen_instance.set_panel_content_size(content_width, content_height)
 

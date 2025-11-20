@@ -856,26 +856,16 @@ func open_panel(panel_type: String):
 	# Create panel instance
 	var panel_scene = load("res://scenes/ui/DiegeticPanel.tscn")
 	var panel = panel_scene.instantiate()
+
 	panel.panel_type = panel_type
 	panel.panel_title = PANEL_TITLES[panel_type]
 	panel.panel_color = PANEL_COLORS[panel_type]
 
-	# Set panel size and position zone (dictionary, translation, and examination get special sizes)
-	if panel_type == "dictionary":
-		panel.panel_width = DICTIONARY_PANEL_WIDTH
-		panel.panel_height = DICTIONARY_PANEL_HEIGHT
-	elif panel_type == "translation":
-		panel.panel_width = TRANSLATION_PANEL_WIDTH
-		panel.panel_height = TRANSLATION_PANEL_HEIGHT
-	elif panel_type == "examination":
-		panel.panel_width = EXAMINATION_PANEL_WIDTH
-		panel.panel_height = EXAMINATION_PANEL_HEIGHT
-	else:
-		panel.panel_width = PANEL_WIDTH
-		panel.panel_height = PANEL_HEIGHT
+	# Load layout config from LayoutManager
+	panel.layout_config = LayoutManager.get_panel_layout(panel_type)
 	panel.target_position = PANEL_ZONES[panel_type]
 
-	# Update layout with new dimensions
+	# Update layout with config
 	panel.update_layout()
 
 	# Connect signals

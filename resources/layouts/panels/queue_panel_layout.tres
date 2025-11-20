@@ -1,0 +1,10 @@
+[gd_resource type="PanelLayoutConfig" script_class="PanelLayoutConfig" load_steps=2 format=3 uid="uid://6qmmkunompys"]
+
+[ext_resource type="Script" uid="uid://cl40sduh18c3s" path="res://scripts/resources/PanelLayoutConfig.gd" id="1"]
+
+[resource]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("1")
+panel_width = 1000
+panel_height = 684

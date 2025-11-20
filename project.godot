@@ -22,6 +22,7 @@ SymbolData="*res://scripts/SymbolData.gd"
 CustomerData="*res://scripts/CustomerData.gd"
 SceneManager="*res://scripts/SceneManager.gd"
 AudioManager="*res://scripts/managers/AudioManager.gd"
+LayoutManager="*res://scripts/managers/LayoutManager.gd"
 DiegeticScreenManager="*res://scripts/DiegeticScreenManager.gd"
 
 [display]

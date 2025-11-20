@@ -7,10 +7,15 @@ extends Control
 var panel_type: String  # "queue", "translation", "dictionary", "examination", "work"
 var panel_title: String
 var panel_color: Color
-var panel_width: int = 600  # Set by ShopScene
-var panel_height: int = 700  # Set by ShopScene
+var layout_config: PanelLayoutConfig  # Layout configuration (loaded from LayoutManager)
 var target_position: Vector2  # Final position on desk (set by ShopScene)
 var is_active: bool = false
+
+# Convenience accessors (delegate to layout_config)
+var panel_width: int:
+	get: return layout_config.panel_width if layout_config else 600
+var panel_height: int:
+	get: return layout_config.panel_height if layout_config else 700
 
 # Animation
 var slide_tween: Tween
@@ -77,7 +82,7 @@ func setup_panel_style():
 	add_child(background_panel)
 
 func update_layout():
-	"""Update panel layout when dimensions change (called after panel_width/height are set)"""
+	"""Update panel layout when dimensions change (called after layout_config is set)"""
 	# Update control size
 	custom_minimum_size = Vector2(panel_width, panel_height)
 	size = Vector2(panel_width, panel_height)
@@ -88,7 +93,8 @@ func update_layout():
 
 	# Update header size
 	if header_bar:
-		header_bar.size = Vector2(panel_width, 35)
+		var header_height = layout_config.header_height if layout_config else 35
+		header_bar.size = Vector2(panel_width, header_height)
 
 	# Update title label size
 	if tab_label:
@@ -96,13 +102,32 @@ func update_layout():
 
 	# Update close button position (top right)
 	if close_button:
-		close_button.position = Vector2(panel_width - 38, 4)
-		close_button.size = Vector2(28, 28)
+		if layout_config:
+			close_button.position = layout_config.get_close_button_position()
+			var btn_size = layout_config.close_button_size
+			close_button.size = Vector2(btn_size, btn_size)
+		else:
+			close_button.position = Vector2(panel_width - 38, 4)
+			close_button.size = Vector2(28, 28)
 
 	# Update content area size
 	if content_container:
-		content_container.custom_minimum_size = Vector2(panel_width - 40, panel_height - 75)
-		content_container.size = Vector2(panel_width - 40, panel_height - 75)
+		var content_width: int
+		var content_height: int
+		var content_pos: Vector2
+
+		if layout_config:
+			content_width = layout_config.get_content_width()
+			content_height = layout_config.get_content_height()
+			content_pos = layout_config.get_content_position()
+		else:
+			content_width = panel_width - 40
+			content_height = panel_height - 75
+			content_pos = Vector2(20, 55)
+
+		content_container.custom_minimum_size = Vector2(content_width, content_height)
+		content_container.size = Vector2(content_width, content_height)
+		content_container.position = content_pos
 
 func setup_header():
 	"""Create header bar with tab and close button"""
@@ -120,8 +145,9 @@ func setup_header():
 	add_child(header_bar)
 
 	# Set position AFTER adding to tree
+	var header_height = layout_config.header_height if layout_config else 35
 	header_bar.position = Vector2(0, 0)
-	header_bar.size = Vector2(panel_width, 35)
+	header_bar.size = Vector2(panel_width, header_height)
 
 	# Tab label (panel name) - left aligned in header
 	tab_label = Label.new()
@@ -133,7 +159,8 @@ func setup_header():
 	header_bar.add_child(tab_label)
 
 	# Set position AFTER adding to tree
-	tab_label.position = Vector2(12, 8)
+	var title_padding = layout_config.title_padding_left if layout_config else 12
+	tab_label.position = Vector2(title_padding, 8)
 	tab_label.size = Vector2(panel_width - 60, 20)  # Leave space for close button
 
 func setup_close_button():
@@ -146,8 +173,9 @@ func setup_close_button():
 	close_button.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 
 	# Set fixed size
-	close_button.custom_minimum_size = Vector2(28, 28)
-	close_button.size = Vector2(28, 28)
+	var btn_size = layout_config.close_button_size if layout_config else 28
+	close_button.custom_minimum_size = Vector2(btn_size, btn_size)
+	close_button.size = Vector2(btn_size, btn_size)
 
 	# Position will be set by update_layout() - just add it for now
 	close_button.position = Vector2(0, 4)
@@ -161,14 +189,34 @@ func setup_close_button():
 func _update_close_button_position():
 	"""Update close button position after layout is finalized"""
 	if close_button and is_instance_valid(close_button):
-		close_button.position = Vector2(panel_width - 38, 4)
+		if layout_config:
+			close_button.position = layout_config.get_close_button_position()
+		else:
+			# Fallback calculation: top-right corner with offset
+			close_button.position = Vector2(panel_width - 38, 4)
 
 func setup_content_area():
 	"""Create scrollable content area"""
 	content_container = ScrollContainer.new()
-	content_container.custom_minimum_size = Vector2(panel_width - 40, panel_height - 75)
-	content_container.size = Vector2(panel_width - 40, panel_height - 75)
-	content_container.position = Vector2(20, 55)
+
+	# Use layout config if available, otherwise fall back to hardcoded values
+	var content_width: int
+	var content_height: int
+	var content_pos: Vector2
+
+	if layout_config:
+		content_width = layout_config.get_content_width()
+		content_height = layout_config.get_content_height()
+		content_pos = layout_config.get_content_position()
+	else:
+		# Fallback calculations
+		content_width = panel_width - 40  # 20px padding on each side
+		content_height = panel_height - 75  # 55px for header + 20px bottom
+		content_pos = Vector2(20, 55)
+
+	content_container.custom_minimum_size = Vector2(content_width, content_height)
+	content_container.size = Vector2(content_width, content_height)
+	content_container.position = content_pos
 	content_container.mouse_filter = Control.MOUSE_FILTER_PASS  # Pass clicks to children
 	add_child(content_container)
 

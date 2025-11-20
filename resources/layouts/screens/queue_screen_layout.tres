@@ -1,0 +1,9 @@
+[gd_resource type="ScreenLayoutConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/ScreenLayoutConfig.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+customer_card_height = 120
+customer_card_spacing = 10
+queue_padding = 15

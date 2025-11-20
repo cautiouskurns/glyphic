@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://dh8m9k3x1p4y2"]
+[gd_scene load_steps=2 format=3 uid="uid://dh8nak3x1p4y2"]
 
-[ext_resource type="Script" path="res://scripts/screens/TranslationScreen.gd" id="1_trans"]
+[ext_resource type="Script" uid="uid://clygldn1t3afg" path="res://scripts/screens/TranslationScreen.gd" id="1_trans"]
 
 [node name="TranslationScreen" type="Control"]
 custom_minimum_size = Vector2(460, 590)

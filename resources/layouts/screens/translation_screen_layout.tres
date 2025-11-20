@@ -1,0 +1,11 @@
+[gd_resource type="ScreenLayoutConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/ScreenLayoutConfig.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+text_display_height = 150
+text_display_margin_bottom = 20
+input_field_height = 40
+button_row_height = 50
+element_spacing = 10

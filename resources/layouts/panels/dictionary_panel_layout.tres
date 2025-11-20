@@ -1,0 +1,15 @@
+[gd_resource type="PanelLayoutConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/PanelLayoutConfig.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+panel_width = 426
+panel_height = 750
+header_height = 35
+title_padding_left = 12
+close_button_offset_right = 38
+close_button_size = 28
+content_padding_horizontal = 20
+content_padding_vertical = 20
+content_top_offset = 55
