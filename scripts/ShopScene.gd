@@ -72,11 +72,11 @@ var focused_zoom: Vector2 = Vector2(1.0, 1.0)  # Keep same zoom, just shift pers
 # }
 
 const PANEL_ZONES = {
-	"queue": Vector2(56, 700),
-	"translation": Vector2(403, 726),
-	"dictionary": Vector2(1448, 701),
-	"examination": Vector2(880, 708),
-	"work": Vector2(1050, 700),
+	"queue": Vector2(20, 750),          # Left edge - archive area (on desk)
+	"translation": Vector2(310, 1300),  # Bottom - horizontal notebook (lower on desk)
+	"dictionary": Vector2(1200, 700),   # Right - reference area (on desk)
+	"examination": Vector2(100, 700),   # Left - work area (on desk)
+	"work": Vector2(1050, 700),         # Keep existing for now
 }
 
 
@@ -93,7 +93,7 @@ const PANEL_ZONES = {
 # const EXAMINATION_PANEL_HEIGHT = 650
 
 const PANEL_WIDTH = 309
-const PANEL_HEIGHT = 684
+const PANEL_HEIGHT = 483
 
 const TRANSLATION_PANEL_WIDTH = 451
 const TRANSLATION_PANEL_HEIGHT = 596
@@ -138,6 +138,7 @@ func _ready():
 	add_shelf_dividers(left_bookshelf)
 	add_shelf_dividers(left_bookshelf2)
 	add_shelf_dividers(right_bookshelf)
+	setup_interactive_bookshelf_spines()
 	setup_doorway_scene()
 
 	# Generate books (only happens once since scene persists)
@@ -153,6 +154,7 @@ func _ready():
 	add_shadows()
 	add_dust_particles()
 	setup_interactive_buttons()
+	setup_archive_access_button()
 
 	# Feature 3A.2: Setup workspace zones and camera
 	setup_camera()
@@ -231,6 +233,75 @@ func setup_bookshelves():
 	left_bookshelf.get_node("ShelfPanel").add_theme_stylebox_override("panel", shelf_style)
 	left_bookshelf2.get_node("ShelfPanel").add_theme_stylebox_override("panel", shelf_style)
 	right_bookshelf.get_node("ShelfPanel").add_theme_stylebox_override("panel", shelf_style)
+
+func setup_interactive_bookshelf_spines():
+	"""Add clickable reference book spines to right bookshelf"""
+	# Reference books data: {name, color, position_y, book_type}
+	var reference_books = [
+		{"name": "Grimoire", "color": Color(0.6, 0.1, 0.1), "y": 120, "type": "grimoire"},
+		{"name": "Grammar Guide", "color": Color(0.1, 0.5, 0.2), "y": 240, "type": "grammar"},
+		{"name": "Encyclopedia", "color": Color(0.8, 0.4, 0.1), "y": 360, "type": "encyclopedia"},
+		{"name": "Atlas", "color": Color(0.4, 0.3, 0.2), "y": 480, "type": "atlas"}
+	]
+
+	var shelf_panel = right_bookshelf.get_node("ShelfPanel")
+
+	for book_data in reference_books:
+		# Create book spine button
+		var book_button = Button.new()
+		book_button.custom_minimum_size = Vector2(35, 120)
+		book_button.size = Vector2(35, 120)
+		book_button.position = Vector2(15, book_data.y)  # Left edge of shelf
+		book_button.flat = false
+		book_button.tooltip_text = "Open %s" % book_data.name
+
+		# Style as book spine
+		var spine_style = StyleBoxFlat.new()
+		spine_style.bg_color = book_data.color
+		spine_style.border_width_left = 1
+		spine_style.border_width_top = 2
+		spine_style.border_width_right = 1
+		spine_style.border_width_bottom = 2
+		spine_style.border_color = book_data.color.darkened(0.3)
+		spine_style.corner_radius_top_left = 2
+		spine_style.corner_radius_bottom_left = 2
+		spine_style.shadow_size = 4
+		spine_style.shadow_offset = Vector2(2, 2)
+		spine_style.shadow_color = Color(0, 0, 0, 0.3)
+		book_button.add_theme_stylebox_override("normal", spine_style)
+		book_button.add_theme_stylebox_override("hover", spine_style.duplicate())
+		book_button.add_theme_stylebox_override("pressed", spine_style.duplicate())
+
+		# Add vertical text label (book title)
+		var title_label = Label.new()
+		title_label.text = book_data.name
+		title_label.rotation_degrees = -90
+		title_label.position = Vector2(17, 60)  # Centered on spine
+		title_label.add_theme_font_size_override("font_size", 10)
+		title_label.add_theme_color_override("font_color", Color(1, 1, 1))
+		title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		book_button.add_child(title_label)
+
+		# Connect click to open dictionary with book context
+		book_button.pressed.connect(_on_reference_book_clicked.bind(book_data.type))
+
+		shelf_panel.add_child(book_button)
+
+func _on_reference_book_clicked(book_type: String):
+	"""Handle reference book spine click - open dictionary panel"""
+	print("Reference book clicked: %s" % book_type)
+
+	if not is_focused_mode:
+		enter_focus_mode()
+
+	# Check if dictionary panel already open
+	if active_panels.has("dictionary"):
+		bring_panel_to_front("dictionary")
+	else:
+		open_panel("dictionary")
+
+	# TODO: Load book-specific content into dictionary
+	# This will be implemented when dictionary screen supports different book types
 
 func setup_wood_paneling():
 	"""Add wood paneling behind bookshelves"""
@@ -680,6 +751,58 @@ func setup_interactive_buttons():
 	# papers_button.pressed.connect(SceneManager.goto_translation_screen)
 	# magnifying_glass_button.pressed.connect(SceneManager.goto_examination_screen)
 	# bell_button.pressed.connect(SceneManager.goto_work_screen)
+
+func setup_archive_access_button():
+	"""Add archive access button to open queue panel"""
+	var archive_button = Button.new()
+	archive_button.text = "📁 Archive"
+	archive_button.custom_minimum_size = Vector2(100, 40)
+	archive_button.size = Vector2(100, 40)
+	archive_button.position = Vector2(20, 400)
+	archive_button.tooltip_text = "Open Customer Archive"
+
+	# Style the button
+	var button_style = StyleBoxFlat.new()
+	button_style.bg_color = Color(0.4, 0.35, 0.3)  # Dark brown
+	button_style.border_width_left = 2
+	button_style.border_width_top = 2
+	button_style.border_width_right = 2
+	button_style.border_width_bottom = 2
+	button_style.border_color = Color(0.3, 0.25, 0.2)
+	button_style.corner_radius_top_left = 4
+	button_style.corner_radius_top_right = 4
+	button_style.corner_radius_bottom_right = 4
+	button_style.corner_radius_bottom_left = 4
+	button_style.content_margin_left = 10
+	button_style.content_margin_right = 10
+	archive_button.add_theme_stylebox_override("normal", button_style)
+
+	var hover_style = button_style.duplicate()
+	hover_style.bg_color = Color(0.5, 0.45, 0.4)  # Lighter brown on hover
+	archive_button.add_theme_stylebox_override("hover", hover_style)
+
+	# Set text color
+	archive_button.add_theme_color_override("font_color", Color(0.9, 0.85, 0.8))
+
+	# Connect to open queue panel
+	archive_button.pressed.connect(_on_archive_button_pressed)
+
+	# Add to desk area
+	$Desk.add_child(archive_button)
+	archive_button.z_index = 10  # Above desk surface
+
+func _on_archive_button_pressed():
+	"""Handle archive button click - open queue panel"""
+	print("Archive button pressed")
+
+	if not is_focused_mode:
+		enter_focus_mode()
+
+	# Check if queue panel already open
+	if active_panels.has("queue"):
+		bring_panel_to_front("queue")
+	else:
+		open_panel("queue")
 
 func _input(event):
 	"""Handle ESC key for focus mode - Feature 3A.2"""

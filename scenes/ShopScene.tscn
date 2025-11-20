@@ -300,10 +300,10 @@ color = Color(0.2, 0.15, 0.1, 1)
 
 [node name="DiaryButton" parent="Desk" instance=ExtResource("2_diary")]
 layout_mode = 0
-offset_left = 337.0
-offset_top = -7.0
-offset_right = 417.0
-offset_bottom = 93.0
+offset_left = 116.0
+offset_top = 69.999985
+offset_right = 196.0
+offset_bottom = 169.99998
 
 [node name="DictionaryButton" parent="Desk" instance=ExtResource("3_dictionary")]
 layout_mode = 0
@@ -338,10 +338,10 @@ z_index = 1
 metadata/_edit_lock_ = true
 
 [node name="QueueZone" type="ColorRect" parent="PanelZones"]
-offset_left = 56.0
-offset_top = 700.0
-offset_right = 365.0
-offset_bottom = 1384.0
+offset_left = 55.0
+offset_top = 442.0
+offset_right = 364.0
+offset_bottom = 925.0
 color = Color(0.628906, 0.509277, 0.429199, 0.25098)
 
 [node name="Label" type="Label" parent="PanelZones/QueueZone"]

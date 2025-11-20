@@ -4,8 +4,9 @@ extends Control
 
 # Panel mode flag
 var panel_mode: bool = false
+var is_notebook_mode: bool = false  # Horizontal notebook layout (wide + short)
 
-# UI References
+# UI References (will be reassigned if notebook mode)
 @onready var subtitle_label = $MarginContainer/VBoxContainer/SubtitleLabel
 @onready var glyph_paper = $MarginContainer/VBoxContainer/GlyphPaper
 @onready var glyph_container = $MarginContainer/VBoxContainer/GlyphPaper/GlyphContainer
@@ -15,6 +16,9 @@ var panel_mode: bool = false
 @onready var submit_button = $MarginContainer/VBoxContainer/ButtonRow/SubmitButton
 @onready var pagination_container = $MarginContainer/VBoxContainer/Footer/Pagination
 @onready var difficulty_badge = $MarginContainer/VBoxContainer/Footer/DifficultyBadge
+
+# Additional UI for notebook mode
+var scratch_notes: TextEdit  # Right side notes area
 
 # Translation state
 var current_text_id: int = 0
@@ -27,7 +31,15 @@ signal translation_completed(success: bool, payment: int)
 
 func _ready():
 	"""Initialize translation screen"""
-	if panel_mode:
+	# Detect notebook mode (wide horizontal layout)
+	await get_tree().process_frame
+	var panel_width = size.x if size.x > 0 else custom_minimum_size.x
+	var panel_height = size.y if size.y > 0 else custom_minimum_size.y
+	is_notebook_mode = panel_width > 1000 and panel_height < 300
+
+	if is_notebook_mode:
+		setup_notebook_layout()
+	elif panel_mode:
 		setup_panel_layout()
 
 	# Style the paper panels
@@ -43,6 +55,86 @@ func setup_panel_layout():
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
 	custom_minimum_size = Vector2(460, 590)
+
+func setup_notebook_layout():
+	"""Configure horizontal notebook layout (1300×180 - wide and short)"""
+	# Get the existing VBoxContainer
+	var margin_container = $MarginContainer
+	var vbox = $MarginContainer/VBoxContainer
+
+	# Create new HBoxContainer for horizontal layout
+	var hbox = HBoxContainer.new()
+	hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
+	# Left side (60%) - translation work area
+	var left_side = VBoxContainer.new()
+	left_side.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	left_side.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	left_side.size_flags_stretch_ratio = 0.6
+
+	# Right side (40%) - scratch notes
+	var right_side = VBoxContainer.new()
+	right_side.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	right_side.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	right_side.size_flags_stretch_ratio = 0.4
+
+	# Move existing content to left side (compact vertical layout)
+	# Create compact top row: subtitle + difficulty badge
+	var top_row = HBoxContainer.new()
+	subtitle_label.reparent(top_row)
+	subtitle_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	difficulty_badge.reparent(top_row)
+	left_side.add_child(top_row)
+
+	# Glyphs (make horizontal and compact)
+	glyph_paper.reparent(left_side)
+	glyph_container.custom_minimum_size = Vector2(0, 60)  # Compact height
+
+	# Translation input area
+	translation_paper.reparent(left_side)
+
+	# Button row stays with left side
+	var button_row = $MarginContainer/VBoxContainer/ButtonRow
+	button_row.reparent(left_side)
+
+	# Create scratch notes area for right side
+	var notes_label = Label.new()
+	notes_label.text = "Scratch Notes"
+	notes_label.add_theme_font_size_override("font_size", 12)
+	notes_label.add_theme_color_override("font_color", Color(0.5, 0.45, 0.4))
+	right_side.add_child(notes_label)
+
+	scratch_notes = TextEdit.new()
+	scratch_notes.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scratch_notes.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scratch_notes.placeholder_text = "Use this space for notes, partial translations, patterns..."
+	scratch_notes.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+
+	# Style scratch notes
+	var notes_style = StyleBoxFlat.new()
+	notes_style.bg_color = Color(0.98, 0.96, 0.94)  # Slightly different paper color
+	notes_style.border_width_left = 2
+	notes_style.border_width_top = 2
+	notes_style.border_width_right = 2
+	notes_style.border_width_bottom = 2
+	notes_style.border_color = Color(0.3, 0.25, 0.2)
+	notes_style.content_margin_left = 10
+	notes_style.content_margin_top = 10
+	notes_style.content_margin_right = 10
+	notes_style.content_margin_bottom = 10
+	scratch_notes.add_theme_stylebox_override("normal", notes_style)
+	scratch_notes.add_theme_stylebox_override("focus", notes_style)
+
+	right_side.add_child(scratch_notes)
+
+	# Assemble horizontal layout
+	hbox.add_child(left_side)
+	hbox.add_child(right_side)
+
+	# Replace VBoxContainer with HBoxContainer
+	vbox.queue_free()
+	margin_container.add_child(hbox)
 
 func style_paper_panels():
 	"""Style glyph and translation paper panels"""

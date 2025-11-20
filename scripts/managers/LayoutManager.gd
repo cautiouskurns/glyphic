@@ -17,10 +17,10 @@ func load_panel_layouts():
 	"""Create panel layout configs directly in code"""
 	print("LayoutManager: Creating panel layouts...")
 
-	# Queue panel - compact size
+	# Queue panel - compact list (left edge/archive area)
 	var queue_config = PanelLayoutConfig.new()
 	queue_config.panel_width = 400
-	queue_config.panel_height = 684
+	queue_config.panel_height = 300
 	queue_config.header_height = 35
 	queue_config.title_padding_left = 12
 	queue_config.close_button_offset_right = 38
@@ -31,10 +31,10 @@ func load_panel_layouts():
 	panel_layouts["queue"] = queue_config
 	print("  Queue: %dx%d" % [queue_config.panel_width, queue_config.panel_height])
 
-	# Translation panel - medium width
+	# Translation panel - horizontal notebook (bottom)
 	var translation_config = PanelLayoutConfig.new()
-	translation_config.panel_width = 451
-	translation_config.panel_height = 596
+	translation_config.panel_width = 1300
+	translation_config.panel_height = 180
 	translation_config.header_height = 35
 	translation_config.title_padding_left = 12
 	translation_config.close_button_offset_right = 38
@@ -45,10 +45,10 @@ func load_panel_layouts():
 	panel_layouts["translation"] = translation_config
 	print("  Translation: %dx%d" % [translation_config.panel_width, translation_config.panel_height])
 
-	# Dictionary panel - tall and wide
+	# Dictionary panel - reference area (right)
 	var dictionary_config = PanelLayoutConfig.new()
-	dictionary_config.panel_width = 426
-	dictionary_config.panel_height = 750
+	dictionary_config.panel_width = 650
+	dictionary_config.panel_height = 600
 	dictionary_config.header_height = 35
 	dictionary_config.title_padding_left = 12
 	dictionary_config.close_button_offset_right = 38
@@ -59,10 +59,10 @@ func load_panel_layouts():
 	panel_layouts["dictionary"] = dictionary_config
 	print("  Dictionary: %dx%d" % [dictionary_config.panel_width, dictionary_config.panel_height])
 
-	# Examination panel - wide for book display
+	# Examination panel - work area (left)
 	var examination_config = PanelLayoutConfig.new()
-	examination_config.panel_width = 520
-	examination_config.panel_height = 650
+	examination_config.panel_width = 700
+	examination_config.panel_height = 600
 	examination_config.header_height = 35
 	examination_config.title_padding_left = 12
 	examination_config.close_button_offset_right = 38
