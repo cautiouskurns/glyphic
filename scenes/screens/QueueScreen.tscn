@@ -19,7 +19,7 @@ shadow_size = 12
 shadow_offset = Vector2(6, 6)
 
 [node name="QueueScreen" type="Control"]
-custom_minimum_size = Vector2(400, 300)
+custom_minimum_size = Vector2(400, 600)
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_queue")
@@ -67,7 +67,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 6
 theme_override_constants/v_separation = 10
-columns = 1
 
 [node name="PlaceholderCard" parent="MarginContainer/MainVBox/ScrollContainer/CardContainer" instance=ExtResource("2_card")]
 layout_mode = 2

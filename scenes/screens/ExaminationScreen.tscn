@@ -18,9 +18,11 @@ shadow_size = 12
 shadow_offset = Vector2(6, 6)
 
 [node name="ExaminationScreen" type="Control"]
-custom_minimum_size = Vector2(520, 650)
+custom_minimum_size = Vector2(600, 650)
 layout_mode = 3
 anchors_preset = 0
+offset_right = 600.0
+offset_bottom = 650.0
 script = ExtResource("1_exam")
 
 [node name="BackgroundPanel" type="Panel" parent="."]
