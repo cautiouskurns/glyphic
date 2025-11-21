@@ -27,11 +27,21 @@ var current_text_id: int = 0
 var is_uv_active: bool = false
 var is_mouse_over_book: bool = false
 
+# Slide animation
+var target_position: Vector2  # Final position on screen
+var slide_tween: Tween
+const SLIDE_DURATION = 0.4
+const OFF_SCREEN_X = -700  # Off-screen to the left
+
 # Signals
 signal begin_translation
 
 func _ready():
 	"""Initialize examination screen"""
+	# Store target position and start off-screen
+	target_position = position
+	position.x = OFF_SCREEN_X
+
 	# Connect button signals
 	uv_button.pressed.connect(_on_uv_button_pressed)
 	begin_button.pressed.connect(_on_begin_translation_pressed)
@@ -223,3 +233,29 @@ func _on_begin_translation_pressed():
 func refresh():
 	"""Update display when panel is refreshed"""
 	initialize()
+
+func slide_in():
+	"""Animate screen sliding in from left"""
+	if slide_tween:
+		slide_tween.kill()
+
+	visible = true
+	slide_tween = create_tween()
+	slide_tween.set_ease(Tween.EASE_OUT)
+	slide_tween.set_trans(Tween.TRANS_CUBIC)
+
+	slide_tween.tween_property(self, "position:x", target_position.x, SLIDE_DURATION)
+
+func slide_out():
+	"""Animate screen sliding out to left"""
+	if slide_tween:
+		slide_tween.kill()
+
+	slide_tween = create_tween()
+	slide_tween.set_ease(Tween.EASE_IN)
+	slide_tween.set_trans(Tween.TRANS_CUBIC)
+
+	slide_tween.tween_property(self, "position:x", OFF_SCREEN_X, SLIDE_DURATION * 0.75)
+
+	await slide_tween.finished
+	visible = false

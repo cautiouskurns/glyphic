@@ -804,10 +804,10 @@ func _on_archive_button_pressed():
 	if not is_focused_mode:
 		enter_focus_mode()
 
-	# Show the pre-existing queue screen
+	# Show the pre-existing queue screen with slide animation
 	if queue_screen:
-		queue_screen.visible = true
 		queue_screen.refresh()
+		queue_screen.slide_in()
 		update_desk_object_glows()
 
 func _input(event):
@@ -816,15 +816,15 @@ func _input(event):
 		# Feature 3A.2: ESC to exit focus mode
 		if event.keycode == KEY_ESCAPE:
 			if is_focused_mode:
-				# First hide any visible screens
+				# First hide any visible screens with slide animation
 				if queue_screen and queue_screen.visible:
-					queue_screen.visible = false
+					queue_screen.slide_out()
 				elif examination_screen and examination_screen.visible:
-					examination_screen.visible = false
+					examination_screen.slide_out()
 				elif translation_screen and translation_screen.visible:
-					translation_screen.visible = false
+					translation_screen.slide_out()
 				elif dictionary_screen and dictionary_screen.visible:
-					dictionary_screen.visible = false
+					dictionary_screen.slide_out()
 				else:
 					exit_focus_mode()
 				get_viewport().set_input_as_handled()  # Don't propagate ESC
@@ -887,32 +887,32 @@ func _on_desk_object_clicked(screen_type: String):
 	# Special case: queue uses pre-existing screen instead of panel
 	if screen_type == "queue":
 		if queue_screen:
-			queue_screen.visible = true
 			queue_screen.refresh()
+			queue_screen.slide_in()
 			update_desk_object_glows()
 		return
 
 	# Special case: examination uses pre-existing screen instead of panel
 	if screen_type == "examination":
 		if examination_screen:
-			examination_screen.visible = true
 			examination_screen.refresh()
+			examination_screen.slide_in()
 			update_desk_object_glows()
 		return
 
 	# Special case: translation uses pre-existing screen instead of panel
 	if screen_type == "translation":
 		if translation_screen:
-			translation_screen.visible = true
 			translation_screen.refresh()
+			translation_screen.slide_in()
 			update_desk_object_glows()
 		return
 
 	# Special case: dictionary uses pre-existing screen instead of panel
 	if screen_type == "dictionary":
 		if dictionary_screen:
-			dictionary_screen.visible = true
 			dictionary_screen.refresh()
+			dictionary_screen.slide_in()
 			update_desk_object_glows()
 		return
 
@@ -967,21 +967,18 @@ func exit_focus_mode():
 
 	is_focused_mode = false
 
-	# Hide queue screen if visible
-	if queue_screen:
-		queue_screen.visible = false
+	# Hide screens if visible (with slide animation)
+	if queue_screen and queue_screen.visible:
+		queue_screen.slide_out()
 
-	# Hide examination screen if visible
-	if examination_screen:
-		examination_screen.visible = false
+	if examination_screen and examination_screen.visible:
+		examination_screen.slide_out()
 
-	# Hide translation screen if visible
-	if translation_screen:
-		translation_screen.visible = false
+	if translation_screen and translation_screen.visible:
+		translation_screen.slide_out()
 
-	# Hide dictionary screen if visible
-	if dictionary_screen:
-		dictionary_screen.visible = false
+	if dictionary_screen and dictionary_screen.visible:
+		dictionary_screen.slide_out()
 
 	# Feature 3A.3: Close all panels when exiting focus mode
 	close_all_panels()

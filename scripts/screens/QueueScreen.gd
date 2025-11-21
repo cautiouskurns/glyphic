@@ -17,12 +17,22 @@ var panel_mode: bool = false
 var card_scene = preload("res://scenes/ui/CustomerCard.tscn")
 var current_queue: Array = []
 
+# Slide animation
+var target_position: Vector2  # Final position on screen
+var slide_tween: Tween
+const SLIDE_DURATION = 0.4
+const OFF_SCREEN_X = -700  # Off-screen to the left
+
 # Signals
 signal customer_selected(customer_data: Dictionary)
 signal accept_customer(customer_data: Dictionary)
 
 func _ready():
 	"""Initialize queue screen"""
+	# Store target position and start off-screen
+	target_position = position
+	position.x = OFF_SCREEN_X
+
 	# Hide placeholder card (used for editor visualization only)
 	if placeholder_card:
 		placeholder_card.visible = false
@@ -129,3 +139,29 @@ func _on_capacity_changed():
 func _on_day_advanced():
 	"""Refresh queue when day advances"""
 	refresh()
+
+func slide_in():
+	"""Animate screen sliding in from left"""
+	if slide_tween:
+		slide_tween.kill()
+
+	visible = true
+	slide_tween = create_tween()
+	slide_tween.set_ease(Tween.EASE_OUT)
+	slide_tween.set_trans(Tween.TRANS_CUBIC)
+
+	slide_tween.tween_property(self, "position:x", target_position.x, SLIDE_DURATION)
+
+func slide_out():
+	"""Animate screen sliding out to left"""
+	if slide_tween:
+		slide_tween.kill()
+
+	slide_tween = create_tween()
+	slide_tween.set_ease(Tween.EASE_IN)
+	slide_tween.set_trans(Tween.TRANS_CUBIC)
+
+	slide_tween.tween_property(self, "position:x", OFF_SCREEN_X, SLIDE_DURATION * 0.75)
+
+	await slide_tween.finished
+	visible = false

@@ -32,9 +32,19 @@ var all_entries: Array = []  # Store all entry nodes
 var current_search: String = ""
 var active_filters: Array = ["all"]  # Default: show all categories
 
+# Slide animation
+var target_position: Vector2  # Final position on screen
+var slide_tween: Tween
+const SLIDE_DURATION = 0.4
+const OFF_SCREEN_X = 2100  # Off-screen to the right
+
 func _ready():
 	"""Initialize dictionary screen"""
 	print("DictionaryScreen: _ready() called, panel_mode =", panel_mode)
+
+	# Store target position and start off-screen
+	target_position = position
+	position.x = OFF_SCREEN_X
 
 	if panel_mode:
 		setup_panel_layout()
@@ -229,3 +239,29 @@ func apply_filters():
 func refresh():
 	"""Public API: Refresh the dictionary display"""
 	update_dictionary()
+
+func slide_in():
+	"""Animate screen sliding in from right"""
+	if slide_tween:
+		slide_tween.kill()
+
+	visible = true
+	slide_tween = create_tween()
+	slide_tween.set_ease(Tween.EASE_OUT)
+	slide_tween.set_trans(Tween.TRANS_CUBIC)
+
+	slide_tween.tween_property(self, "position:x", target_position.x, SLIDE_DURATION)
+
+func slide_out():
+	"""Animate screen sliding out to right"""
+	if slide_tween:
+		slide_tween.kill()
+
+	slide_tween = create_tween()
+	slide_tween.set_ease(Tween.EASE_IN)
+	slide_tween.set_trans(Tween.TRANS_CUBIC)
+
+	slide_tween.tween_property(self, "position:x", OFF_SCREEN_X, SLIDE_DURATION * 0.75)
+
+	await slide_tween.finished
+	visible = false

@@ -27,11 +27,21 @@ var current_text_data: Dictionary = {}
 var is_validating: bool = false
 var hint_shown: bool = false
 
+# Slide animation
+var target_position: Vector2  # Final position on screen
+var slide_tween: Tween
+const SLIDE_DURATION = 0.4
+const OFF_SCREEN_Y = 1200  # Off-screen at bottom
+
 # Signals
 signal translation_completed(success: bool, payment: int)
 
 func _ready():
 	"""Initialize translation screen"""
+	# Store target position and start off-screen
+	target_position = position
+	position.y = OFF_SCREEN_Y
+
 	# Detect notebook mode (wide horizontal layout)
 	await get_tree().process_frame
 	var panel_width = size.x if size.x > 0 else custom_minimum_size.x
@@ -420,3 +430,29 @@ func reset_for_next_translation():
 func refresh():
 	"""Update display when panel is refreshed"""
 	initialize()
+
+func slide_in():
+	"""Animate screen sliding in from bottom"""
+	if slide_tween:
+		slide_tween.kill()
+
+	visible = true
+	slide_tween = create_tween()
+	slide_tween.set_ease(Tween.EASE_OUT)
+	slide_tween.set_trans(Tween.TRANS_CUBIC)
+
+	slide_tween.tween_property(self, "position:y", target_position.y, SLIDE_DURATION)
+
+func slide_out():
+	"""Animate screen sliding out to bottom"""
+	if slide_tween:
+		slide_tween.kill()
+
+	slide_tween = create_tween()
+	slide_tween.set_ease(Tween.EASE_IN)
+	slide_tween.set_trans(Tween.TRANS_CUBIC)
+
+	slide_tween.tween_property(self, "position:y", OFF_SCREEN_Y, SLIDE_DURATION * 0.75)
+
+	await slide_tween.finished
+	visible = false
