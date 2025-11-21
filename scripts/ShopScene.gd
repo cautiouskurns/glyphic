@@ -26,6 +26,9 @@ extends Control
 @onready var translation_screen = $TranslationScreen
 @onready var dictionary_screen = $DictionaryScreen
 
+# Pre-existing customer popup
+@onready var customer_popup = $CustomerPopup
+
 # Preload book scene
 var book_scene = preload("res://scenes/ui/Book.tscn")
 
@@ -46,9 +49,6 @@ var focus_tween: Tween
 var active_panels: Dictionary = {}  # {panel_type: DiegeticPanel}
 var panel_stack: Array[String] = []  # Stack of panel types (for z-order)
 const MAX_PANELS = 4
-
-# Feature 3A.4: Customer popup
-var customer_popup: Control
 
 # Camera positions and zoom levels
 var default_camera_position: Vector2 = Vector2(960, 540)  # Center of 1920×1080
@@ -167,8 +167,12 @@ func _ready():
 	setup_background_dim()
 	connect_desk_objects()
 
-	# Feature 3A.4: Setup customer popup
-	setup_customer_popup()
+	# Feature 3A.4: Connect customer popup signals
+	customer_popup.customer_accepted.connect(_on_customer_accepted)
+	customer_popup.customer_refused.connect(_on_customer_refused)
+
+	# Connect queue screen signals
+	queue_screen.customer_selected.connect(show_customer_popup)
 
 	# Hide panel zone markers at runtime
 	hide_panel_zone_markers()
@@ -1172,17 +1176,6 @@ func close_all_panels():
 
 # Feature 3A.4: Customer Popup
 
-func setup_customer_popup():
-	"""Create and configure customer popup"""
-	var popup_scene = load("res://scenes/ui/CustomerPopup.tscn")
-	customer_popup = popup_scene.instantiate()
-	add_child(customer_popup)
-	customer_popup.z_index = 200  # Above everything
-
-	# Connect popup signals
-	customer_popup.customer_accepted.connect(_on_customer_accepted)
-	customer_popup.customer_refused.connect(_on_customer_refused)
-
 func show_customer_popup(customer_data: Dictionary):
 	"""Show popup with customer details"""
 	if customer_popup:
@@ -1193,28 +1186,26 @@ func _on_customer_accepted(customer_data: Dictionary):
 	print("Customer accepted: %s" % customer_data.get("name", "Unknown"))
 	GameState.accept_customer(customer_data)
 
-	# Auto-open examination panel to show the book
+	# Auto-open examination screen to show the book
 	if not is_focused_mode:
 		enter_focus_mode()
 
-	if active_panels.has("examination"):
-		bring_panel_to_front("examination")
-	else:
-		open_panel("examination")
+	if examination_screen:
+		examination_screen.refresh()
+		examination_screen.slide_in()
 
-	# Refresh the queue screen
-	if active_panels.has("queue"):
-		var queue_panel = active_panels["queue"]
-		DiegeticScreenManager.refresh_screen("queue")
+	# Refresh the queue screen if visible
+	if queue_screen and queue_screen.visible:
+		queue_screen.refresh()
 
 func _on_customer_refused(customer_data: Dictionary):
 	"""Handle customer refusal from popup"""
 	print("Customer refused: %s" % customer_data.get("name", "Unknown"))
 	GameState.refuse_customer(customer_data)
-	# Refresh the queue screen
-	if active_panels.has("queue"):
-		var queue_panel = active_panels["queue"]
-		DiegeticScreenManager.refresh_screen("queue")
+
+	# Refresh the queue screen if visible
+	if queue_screen and queue_screen.visible:
+		queue_screen.refresh()
 
 # Public API for DiegeticScreenManager (Feature 3A.4)
 

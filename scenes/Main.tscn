@@ -415,12 +415,8 @@ offset_right = 0.0
 offset_bottom = 0.0
 
 [node name="CustomerPopup" parent="." instance=ExtResource("8_popup")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-grow_horizontal = 1
-grow_vertical = 1
+visible = false
+z_index = 200
 
 [node name="EndDayButton" parent="." instance=ExtResource("10_endday")]
 layout_mode = 0

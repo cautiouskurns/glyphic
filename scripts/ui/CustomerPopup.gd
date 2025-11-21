@@ -233,44 +233,39 @@ func get_translation_text_name(difficulty: String) -> String:
 			return "Unknown Text"
 
 func animate_open():
-	"""Slide-in animation from left for popup open"""
+	"""Fade-in animation for popup open"""
 	is_animating = true
 
-	# Store original position
-	var original_position = popup_panel.position
-
-	# Start states
+	# Start hidden
 	modulate.a = 0.0
-	popup_panel.position.x = -popup_panel.size.x - 100  # Start off-screen to the left
+	popup_panel.scale = Vector2(0.9, 0.9)
 
-	# Animate overlay fade-in
-	var overlay_tween = create_tween()
-	overlay_tween.tween_property(self, "modulate:a", 1.0, 0.2)
+	# Animate fade and scale in
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.set_ease(Tween.EASE_OUT)
 
-	# Animate popup slide-in from left
-	var popup_tween = create_tween()
-	popup_tween.set_trans(Tween.TRANS_CUBIC)
-	popup_tween.set_ease(Tween.EASE_OUT)
-	popup_tween.tween_property(popup_panel, "position", original_position, 0.3)
+	tween.tween_property(self, "modulate:a", 1.0, 0.2)
+	tween.tween_property(popup_panel, "scale", Vector2(1.0, 1.0), 0.3)
 
-	await popup_tween.finished
+	await tween.finished
 	is_animating = false
 
 func animate_close():
-	"""Slide-out animation to left for popup close"""
+	"""Fade-out animation for popup close"""
 	is_animating = true
 
-	# Animate popup slide-out to left
-	var popup_tween = create_tween()
-	popup_tween.set_trans(Tween.TRANS_CUBIC)
-	popup_tween.set_ease(Tween.EASE_IN)
-	popup_tween.tween_property(popup_panel, "position:x", -popup_panel.size.x - 100, 0.25)
+	# Animate fade and scale out
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	tween.set_ease(Tween.EASE_IN)
 
-	# Animate overlay fade-out
-	var overlay_tween = create_tween()
-	overlay_tween.tween_property(self, "modulate:a", 0.0, 0.25)
+	tween.tween_property(self, "modulate:a", 0.0, 0.2)
+	tween.tween_property(popup_panel, "scale", Vector2(0.9, 0.9), 0.2)
 
-	await popup_tween.finished
+	await tween.finished
 	visible = false
 	is_animating = false
 
