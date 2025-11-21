@@ -3,17 +3,15 @@
 # Adapted from CustomerQueuePanel.gd
 extends Control
 
-# Panel mode flag
+# Panel mode flag (kept for compatibility, but layout is now in .tscn)
 var panel_mode: bool = false
 
-# Panel content area dimensions (set by DiegeticScreenManager)
-var content_width: int = 310
-var content_height: int = 590
-
-# UI References
-var capacity_label: Label
-var card_container: GridContainer
-var scroll_container: ScrollContainer
+# UI References (now from scene tree)
+@onready var background_panel = $BackgroundPanel
+@onready var capacity_label = $MarginContainer/MainVBox/CapacityLabel
+@onready var card_container = $MarginContainer/MainVBox/ScrollContainer/CardContainer
+@onready var scroll_container = $MarginContainer/MainVBox/ScrollContainer
+@onready var placeholder_card = $MarginContainer/MainVBox/ScrollContainer/CardContainer/PlaceholderCard
 
 # Card scene
 var card_scene = preload("res://scenes/ui/CustomerCard.tscn")
@@ -25,10 +23,9 @@ signal accept_customer(customer_data: Dictionary)
 
 func _ready():
 	"""Initialize queue screen"""
-	if panel_mode:
-		setup_panel_layout()
-	else:
-		setup_fullscreen_layout()
+	# Hide placeholder card (used for editor visualization only)
+	if placeholder_card:
+		placeholder_card.visible = false
 
 	# Connect to capacity changes
 	GameState.capacity_changed.connect(_on_capacity_changed)
@@ -40,59 +37,6 @@ func _ready():
 	await get_tree().process_frame
 	await get_tree().process_frame  # Wait two frames to ensure layout is done
 	initialize()
-
-func set_panel_content_size(width: int, height: int):
-	"""Set content dimensions from panel (called by DiegeticScreenManager)"""
-	content_width = width
-	content_height = height
-
-func setup_panel_layout():
-	"""Create compact layout for panel display using dynamic dimensions"""
-	size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	size_flags_vertical = Control.SIZE_EXPAND_FILL
-	custom_minimum_size = Vector2(content_width, content_height)
-
-	# Margin container for top spacing
-	var margin = MarginContainer.new()
-	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	margin.add_theme_constant_override("margin_top", 35)
-	margin.add_theme_constant_override("margin_left", 8)
-	margin.add_theme_constant_override("margin_right", 8)
-	add_child(margin)
-
-	# Create VBox for capacity + scroll
-	var main_vbox = VBoxContainer.new()
-	main_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	main_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	main_vbox.add_theme_constant_override("separation", 10)
-	margin.add_child(main_vbox)
-
-	# Capacity counter
-	capacity_label = Label.new()
-	capacity_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	capacity_label.add_theme_font_size_override("font_size", 16)
-	main_vbox.add_child(capacity_label)
-
-	# Scroll container for customer cards
-	scroll_container = ScrollContainer.new()
-	scroll_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	scroll_container.custom_minimum_size = Vector2(content_width - 16, content_height - 60)
-	main_vbox.add_child(scroll_container)
-
-	# Grid container for cards (1 column in panel mode)
-	card_container = GridContainer.new()
-	card_container.columns = 1
-	card_container.add_theme_constant_override("h_separation", 6)
-	card_container.add_theme_constant_override("v_separation", 15)
-	card_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll_container.add_child(card_container)
-
-func setup_fullscreen_layout():
-	"""Create full-screen layout (if needed)"""
-	# Use same layout as panel mode
-	setup_panel_layout()
 
 func initialize():
 	"""Called when panel opens - load current game state"""

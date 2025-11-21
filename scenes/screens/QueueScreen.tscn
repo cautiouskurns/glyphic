@@ -1,13 +1,74 @@
-[gd_scene load_steps=2 format=3 uid="uid://c5j7qvx8r5m0h"]
+[gd_scene load_steps=4 format=3 uid="uid://c5j7qvx8r5m0h"]
 
 [ext_resource type="Script" uid="uid://dvc4fe3dgr7ty" path="res://scripts/screens/QueueScreen.gd" id="1_queue"]
+[ext_resource type="PackedScene" uid="uid://ehu172nddrn6" path="res://scenes/ui/CustomerCard.tscn" id="2_card"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
+bg_color = Color(0.95, 0.92, 0.88, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.25, 0.2, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 12
+shadow_offset = Vector2(6, 6)
 
 [node name="QueueScreen" type="Control"]
+custom_minimum_size = Vector2(400, 300)
 layout_mode = 3
+anchors_preset = 0
+offset_right = 400.0
+offset_bottom = 300.0
+script = ExtResource("1_queue")
+
+[node name="BackgroundPanel" type="Panel" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 55.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_queue")
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_background")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="MainVBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CapacityLabel" type="Label" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.533333, 0.533333, 0.533333, 1)
+theme_override_font_sizes/font_size = 14
+text = "Capacity: 0/5"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/MainVBox"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CardContainer" type="GridContainer" parent="MarginContainer/MainVBox/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 10
+
+[node name="PlaceholderCard" parent="MarginContainer/MainVBox/ScrollContainer/CardContainer" instance=ExtResource("2_card")]
+layout_mode = 2

@@ -56,6 +56,12 @@ func setup_panel_style():
 	# CRITICAL: Disable automatic child layout
 	clip_contents = false
 
+	# Skip background panel for screens that provide their own (e.g., queue)
+	# These screens have their background styled in their .tscn file
+	var screens_with_own_background = ["queue"]
+	if panel_type in screens_with_own_background:
+		return  # Don't create background panel
+
 	# Create background panel for styling
 	background_panel = Panel.new()
 	background_panel.position = Vector2(0, 0)
@@ -218,6 +224,11 @@ func setup_content_area():
 	content_container.size = Vector2(content_width, content_height)
 	content_container.position = content_pos
 	content_container.mouse_filter = Control.MOUSE_FILTER_PASS  # Pass clicks to children
+
+	# Remove default ScrollContainer background styling
+	var transparent_style = StyleBoxEmpty.new()
+	content_container.add_theme_stylebox_override("panel", transparent_style)
+
 	add_child(content_container)
 
 	content_area = VBoxContainer.new()
