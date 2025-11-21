@@ -29,6 +29,9 @@ extends Control
 # Pre-existing customer popup
 @onready var customer_popup = $CustomerPopup
 
+# Book pile backlog
+@onready var book_pile = $BookPile
+
 # Preload book scene
 var book_scene = preload("res://scenes/ui/Book.tscn")
 
@@ -173,6 +176,12 @@ func _ready():
 
 	# Connect queue screen signals
 	queue_screen.customer_selected.connect(show_customer_popup)
+
+	# Connect book pile signals
+	book_pile.book_clicked.connect(_on_book_clicked)
+
+	# Connect translation screen signals
+	translation_screen.translation_completed.connect(_on_translation_completed)
 
 	# Hide panel zone markers at runtime
 	hide_panel_zone_markers()
@@ -1186,13 +1195,9 @@ func _on_customer_accepted(customer_data: Dictionary):
 	print("Customer accepted: %s" % customer_data.get("name", "Unknown"))
 	GameState.accept_customer(customer_data)
 
-	# Auto-open examination screen to show the book
-	if not is_focused_mode:
-		enter_focus_mode()
-
-	if examination_screen:
-		examination_screen.refresh()
-		examination_screen.slide_in()
+	# Add book to the pile instead of auto-opening examination
+	if book_pile:
+		book_pile.add_book(customer_data)
 
 	# Refresh the queue screen if visible
 	if queue_screen and queue_screen.visible:
@@ -1206,6 +1211,34 @@ func _on_customer_refused(customer_data: Dictionary):
 	# Refresh the queue screen if visible
 	if queue_screen and queue_screen.visible:
 		queue_screen.refresh()
+
+func _on_book_clicked(customer_data: Dictionary):
+	"""Handle book click from pile - open examination screen"""
+	print("Book clicked from pile: %s" % customer_data.get("name", "Unknown"))
+
+	# Set as current book
+	GameState.current_book = customer_data.duplicate()
+
+	# Enter focus mode if not already
+	if not is_focused_mode:
+		enter_focus_mode()
+
+	# Open examination screen
+	if examination_screen:
+		examination_screen.refresh()
+		examination_screen.slide_in()
+
+func _on_translation_completed(success: bool, payment: int):
+	"""Handle translation completion - remove book from pile"""
+	if not success:
+		return  # Only remove on success
+
+	# Find and remove the completed book from pile
+	# The current book that was translated is in GameState.current_book
+	if GameState.current_book and not GameState.current_book.is_empty():
+		print("Removing completed book from pile: %s" % GameState.current_book.get("name", "Unknown"))
+		if book_pile:
+			book_pile.remove_book(GameState.current_book)
 
 # Public API for DiegeticScreenManager (Feature 3A.4)
 

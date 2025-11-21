@@ -1,10 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://bmulqlda6e6dp"]
+[gd_scene load_steps=14 format=3 uid="uid://bmulqlda6e6dp"]
 
 [ext_resource type="Script" uid="uid://ps14xqgmeo40" path="res://scripts/ShopScene.gd" id="1_shop"]
 [ext_resource type="PackedScene" uid="uid://d1dajjqaswbc5" path="res://scenes/ui/DiaryButton.tscn" id="2_diary"]
 [ext_resource type="PackedScene" uid="uid://dekwi7eu718rh" path="res://scenes/ui/DictionaryButton.tscn" id="3_dictionary"]
 [ext_resource type="PackedScene" uid="uid://c3flqqfogxuvj" path="res://scenes/ui/PapersButton.tscn" id="4_papers"]
-[ext_resource type="PackedScene" path="res://scenes/ui/MagnifyingGlassButton.tscn" id="5_magnifying"]
+[ext_resource type="PackedScene" uid="uid://cxxfsfqxetent" path="res://scenes/ui/MagnifyingGlassButton.tscn" id="5_magnifying"]
 [ext_resource type="PackedScene" uid="uid://3qyykl75d1ax" path="res://scenes/ui/BellButton.tscn" id="6_bell"]
 [ext_resource type="PackedScene" uid="uid://c8vqm8yvwknfb" path="res://scenes/ui/DebugConsole.tscn" id="7_debug"]
 [ext_resource type="PackedScene" uid="uid://c5j7qvx8r5m0h" path="res://scenes/screens/QueueScreen.tscn" id="8_queue"]
@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://dh8nak3x1p4y2" path="res://scenes/screens/TranslationScreen.tscn" id="10_trans"]
 [ext_resource type="PackedScene" uid="uid://b3n7k5w2sax4m" path="res://scenes/screens/DictionaryScreen.tscn" id="11_dict"]
 [ext_resource type="PackedScene" uid="uid://c1vqoa0wmlgfy" path="res://scenes/ui/CustomerPopup.tscn" id="12_popup"]
+[ext_resource type="PackedScene" uid="uid://cbxy6j1ciw3og" path="res://scenes/ui/BookPile.tscn" id="13_bookpile"]
 
 [node name="ShopScene" type="Control"]
 layout_mode = 3
@@ -320,19 +321,18 @@ offset_bottom = 362.0
 
 [node name="PapersButton" parent="Desk" instance=ExtResource("4_papers")]
 layout_mode = 0
-offset_left = 1377.0
-offset_top = 88.00001
-offset_right = 1527.0
-offset_bottom = 208.0
+offset_left = 1375.0
+offset_top = 89.00001
+offset_right = 1525.0
+offset_bottom = 209.0
 scale = Vector2(2.7184825, 2.7184825)
 
 [node name="MagnifyingGlassButton" parent="Desk" instance=ExtResource("5_magnifying")]
 layout_mode = 0
-offset_left = 536.0
-offset_top = 404.0
-offset_right = 606.0
-offset_bottom = 474.0
-scale = Vector2(2.61446, 2.61446)
+offset_left = 598.0
+offset_top = 283.0
+offset_right = 668.0
+offset_bottom = 353.0
 
 [node name="BellButton" parent="Desk" instance=ExtResource("6_bell")]
 layout_mode = 0
@@ -460,6 +460,15 @@ offset_left = 762.0
 offset_top = 683.0
 offset_right = 1362.0
 offset_bottom = 1333.0
+
+[node name="BookPile" parent="." instance=ExtResource("13_bookpile")]
+visible = false
+z_index = 10
+layout_mode = 0
+offset_left = 311.0
+offset_top = 522.0
+offset_right = 511.0
+offset_bottom = 722.0
 
 [node name="TranslationScreen" parent="." instance=ExtResource("10_trans")]
 visible = false
