@@ -6,5 +6,5 @@
 resource_local_to_scene = false
 resource_name = ""
 script = ExtResource("1")
-panel_width = 1000
+panel_width = 309
 panel_height = 684

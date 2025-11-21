@@ -20,6 +20,9 @@ extends Control
 @onready var magnifying_glass_button = $Desk/MagnifyingGlassButton
 @onready var bell_button = $Desk/BellButton
 
+# Pre-existing screens in scene
+@onready var queue_screen = $QueueScreen
+
 # Preload book scene
 var book_scene = preload("res://scenes/ui/Book.tscn")
 
@@ -792,17 +795,17 @@ func setup_archive_access_button():
 	archive_button.z_index = 10  # Above desk surface
 
 func _on_archive_button_pressed():
-	"""Handle archive button click - open queue panel"""
+	"""Handle archive button click - show queue screen"""
 	print("Archive button pressed")
 
 	if not is_focused_mode:
 		enter_focus_mode()
 
-	# Check if queue panel already open
-	if active_panels.has("queue"):
-		bring_panel_to_front("queue")
-	else:
-		open_panel("queue")
+	# Show the pre-existing queue screen
+	if queue_screen:
+		queue_screen.visible = true
+		queue_screen.refresh()
+		update_desk_object_glows()
 
 func _input(event):
 	"""Handle ESC key for focus mode - Feature 3A.2"""
@@ -810,7 +813,11 @@ func _input(event):
 		# Feature 3A.2: ESC to exit focus mode
 		if event.keycode == KEY_ESCAPE:
 			if is_focused_mode:
-				exit_focus_mode()
+				# First hide any visible screens
+				if queue_screen and queue_screen.visible:
+					queue_screen.visible = false
+				else:
+					exit_focus_mode()
 				get_viewport().set_input_as_handled()  # Don't propagate ESC
 				return
 
@@ -868,6 +875,14 @@ func _on_desk_object_clicked(screen_type: String):
 	if not is_focused_mode:
 		enter_focus_mode()
 
+	# Special case: queue uses pre-existing screen instead of panel
+	if screen_type == "queue":
+		if queue_screen:
+			queue_screen.visible = true
+			queue_screen.refresh()
+			update_desk_object_glows()
+		return
+
 	# Check if panel already open
 	if active_panels.has(screen_type):
 		bring_panel_to_front(screen_type)
@@ -918,6 +933,10 @@ func exit_focus_mode():
 		return  # Already in default mode
 
 	is_focused_mode = false
+
+	# Hide queue screen if visible
+	if queue_screen:
+		queue_screen.visible = false
 
 	# Feature 3A.3: Close all panels when exiting focus mode
 	close_all_panels()
@@ -1062,11 +1081,15 @@ func update_desk_object_glows():
 	magnifying_glass_button.set_panel_open(false)
 	bell_button.set_panel_open(false)
 
+	# Queue screen is special - check visibility instead of active_panels
+	if queue_screen and queue_screen.visible:
+		diary_button.set_panel_open(true)
+
 	# Set glows for open panels
 	for panel_type in active_panels.keys():
 		match panel_type:
 			"queue":
-				diary_button.set_panel_open(true)
+				diary_button.set_panel_open(true)  # In case old panel system is used
 			"translation":
 				papers_button.set_panel_open(true)
 			"dictionary":
