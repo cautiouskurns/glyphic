@@ -7,6 +7,7 @@ var panel_mode: bool = false
 var is_notebook_mode: bool = false  # Horizontal notebook layout (wide + short)
 
 # UI References (will be reassigned if notebook mode)
+@onready var background_panel = $BackgroundPanel
 @onready var subtitle_label = $MarginContainer/VBoxContainer/SubtitleLabel
 @onready var glyph_paper = $MarginContainer/VBoxContainer/GlyphPaper
 @onready var glyph_container = $MarginContainer/VBoxContainer/GlyphPaper/GlyphContainer

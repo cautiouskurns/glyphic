@@ -1,6 +1,21 @@
-[gd_scene load_steps=2 format=3 uid="uid://dh8nak3x1p4y2"]
+[gd_scene load_steps=3 format=3 uid="uid://dh8nak3x1p4y2"]
 
 [ext_resource type="Script" uid="uid://clygldn1t3afg" path="res://scripts/screens/TranslationScreen.gd" id="1_trans"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
+bg_color = Color(0.95, 0.92, 0.88, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.25, 0.2, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 12
+shadow_offset = Vector2(6, 6)
 
 [node name="TranslationScreen" type="Control"]
 custom_minimum_size = Vector2(460, 590)
@@ -8,9 +23,21 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = -1460.0
+offset_bottom = -490.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_trans")
+
+[node name="BackgroundPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_background")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1

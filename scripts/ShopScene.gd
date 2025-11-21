@@ -23,6 +23,7 @@ extends Control
 # Pre-existing screens in scene
 @onready var queue_screen = $QueueScreen
 @onready var examination_screen = $ExaminationScreen
+@onready var translation_screen = $TranslationScreen
 
 # Preload book scene
 var book_scene = preload("res://scenes/ui/Book.tscn")
@@ -819,6 +820,8 @@ func _input(event):
 					queue_screen.visible = false
 				elif examination_screen and examination_screen.visible:
 					examination_screen.visible = false
+				elif translation_screen and translation_screen.visible:
+					translation_screen.visible = false
 				else:
 					exit_focus_mode()
 				get_viewport().set_input_as_handled()  # Don't propagate ESC
@@ -894,6 +897,14 @@ func _on_desk_object_clicked(screen_type: String):
 			update_desk_object_glows()
 		return
 
+	# Special case: translation uses pre-existing screen instead of panel
+	if screen_type == "translation":
+		if translation_screen:
+			translation_screen.visible = true
+			translation_screen.refresh()
+			update_desk_object_glows()
+		return
+
 	# Check if panel already open
 	if active_panels.has(screen_type):
 		bring_panel_to_front(screen_type)
@@ -952,6 +963,10 @@ func exit_focus_mode():
 	# Hide examination screen if visible
 	if examination_screen:
 		examination_screen.visible = false
+
+	# Hide translation screen if visible
+	if translation_screen:
+		translation_screen.visible = false
 
 	# Feature 3A.3: Close all panels when exiting focus mode
 	close_all_panels()
@@ -1104,13 +1119,17 @@ func update_desk_object_glows():
 	if examination_screen and examination_screen.visible:
 		magnifying_glass_button.set_panel_open(true)
 
+	# Translation screen is special - check visibility instead of active_panels
+	if translation_screen and translation_screen.visible:
+		papers_button.set_panel_open(true)
+
 	# Set glows for open panels
 	for panel_type in active_panels.keys():
 		match panel_type:
 			"queue":
 				diary_button.set_panel_open(true)  # In case old panel system is used
 			"translation":
-				papers_button.set_panel_open(true)
+				papers_button.set_panel_open(true)  # In case old panel system is used
 			"dictionary":
 				dictionary_button.set_panel_open(true)
 			"examination":
