@@ -56,9 +56,9 @@ func setup_panel_style():
 	# CRITICAL: Disable automatic child layout
 	clip_contents = false
 
-	# Skip background panel for screens that provide their own (e.g., queue, examination, translation)
+	# Skip background panel for screens that provide their own (e.g., queue, examination, translation, dictionary)
 	# These screens have their background styled in their .tscn file
-	var screens_with_own_background = ["queue", "examination", "translation"]
+	var screens_with_own_background = ["queue", "examination", "translation", "dictionary"]
 	if panel_type in screens_with_own_background:
 		return  # Don't create background panel
 

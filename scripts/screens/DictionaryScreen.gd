@@ -11,9 +11,11 @@ var content_width: int = 480
 var content_height: int = 700
 
 # UI References
+@onready var background_panel = $BackgroundPanel
 @onready var subtitle_label = $VBoxContainer/Header/SubtitleLabel
 @onready var search_box = $VBoxContainer/Header/SearchBox
 @onready var dictionary_list = $VBoxContainer/ScrollContainer/VBoxContainer
+@onready var placeholder_entry = $VBoxContainer/ScrollContainer/VBoxContainer/PlaceholderEntry
 @onready var all_button = $VBoxContainer/Header/FilterButtons/AllButton
 @onready var elemental_button = $VBoxContainer/Header/FilterButtons/ElementalButton
 @onready var structural_button = $VBoxContainer/Header/FilterButtons/StructuralButton
@@ -76,9 +78,14 @@ func populate_dictionary():
 	"""Create all dictionary entries from SymbolData"""
 	print("DictionaryScreen: populate_dictionary() called")
 
+	# Hide placeholder card (used for editor visualization only)
+	if placeholder_entry:
+		placeholder_entry.visible = false
+
 	# Clear existing entries
 	for child in dictionary_list.get_children():
-		child.queue_free()
+		if child != placeholder_entry:  # Don't free the placeholder
+			child.queue_free()
 
 	all_entries.clear()
 

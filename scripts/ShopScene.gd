@@ -24,6 +24,7 @@ extends Control
 @onready var queue_screen = $QueueScreen
 @onready var examination_screen = $ExaminationScreen
 @onready var translation_screen = $TranslationScreen
+@onready var dictionary_screen = $DictionaryScreen
 
 # Preload book scene
 var book_scene = preload("res://scenes/ui/Book.tscn")
@@ -822,6 +823,8 @@ func _input(event):
 					examination_screen.visible = false
 				elif translation_screen and translation_screen.visible:
 					translation_screen.visible = false
+				elif dictionary_screen and dictionary_screen.visible:
+					dictionary_screen.visible = false
 				else:
 					exit_focus_mode()
 				get_viewport().set_input_as_handled()  # Don't propagate ESC
@@ -905,6 +908,14 @@ func _on_desk_object_clicked(screen_type: String):
 			update_desk_object_glows()
 		return
 
+	# Special case: dictionary uses pre-existing screen instead of panel
+	if screen_type == "dictionary":
+		if dictionary_screen:
+			dictionary_screen.visible = true
+			dictionary_screen.refresh()
+			update_desk_object_glows()
+		return
+
 	# Check if panel already open
 	if active_panels.has(screen_type):
 		bring_panel_to_front(screen_type)
@@ -967,6 +978,10 @@ func exit_focus_mode():
 	# Hide translation screen if visible
 	if translation_screen:
 		translation_screen.visible = false
+
+	# Hide dictionary screen if visible
+	if dictionary_screen:
+		dictionary_screen.visible = false
 
 	# Feature 3A.3: Close all panels when exiting focus mode
 	close_all_panels()
@@ -1123,6 +1138,10 @@ func update_desk_object_glows():
 	if translation_screen and translation_screen.visible:
 		papers_button.set_panel_open(true)
 
+	# Dictionary screen is special - check visibility instead of active_panels
+	if dictionary_screen and dictionary_screen.visible:
+		dictionary_button.set_panel_open(true)
+
 	# Set glows for open panels
 	for panel_type in active_panels.keys():
 		match panel_type:
@@ -1131,7 +1150,7 @@ func update_desk_object_glows():
 			"translation":
 				papers_button.set_panel_open(true)  # In case old panel system is used
 			"dictionary":
-				dictionary_button.set_panel_open(true)
+				dictionary_button.set_panel_open(true)  # In case old panel system is used
 			"examination":
 				magnifying_glass_button.set_panel_open(true)  # In case old panel system is used
 			"work":
