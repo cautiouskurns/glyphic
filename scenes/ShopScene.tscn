@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bmulqlda6e6dp"]
+[gd_scene load_steps=10 format=3 uid="uid://bmulqlda6e6dp"]
 
 [ext_resource type="Script" uid="uid://ps14xqgmeo40" path="res://scripts/ShopScene.gd" id="1_shop"]
 [ext_resource type="PackedScene" uid="uid://d1dajjqaswbc5" path="res://scenes/ui/DiaryButton.tscn" id="2_diary"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://3qyykl75d1ax" path="res://scenes/ui/BellButton.tscn" id="6_bell"]
 [ext_resource type="PackedScene" uid="uid://c8vqm8yvwknfb" path="res://scenes/ui/DebugConsole.tscn" id="7_debug"]
 [ext_resource type="PackedScene" uid="uid://c5j7qvx8r5m0h" path="res://scenes/screens/QueueScreen.tscn" id="8_queue"]
+[ext_resource type="PackedScene" uid="uid://c8r6m4n2p1x7y" path="res://scenes/screens/ExaminationScreen.tscn" id="9_exam"]
 
 [node name="ShopScene" type="Control"]
 layout_mode = 3
@@ -444,3 +445,12 @@ offset_left = 281.0
 offset_top = 900.0
 offset_right = 681.0
 offset_bottom = 1200.0
+
+[node name="ExaminationScreen" parent="." instance=ExtResource("9_exam")]
+visible = false
+z_index = 10
+layout_mode = 0
+offset_left = 200.0
+offset_top = 728.0
+offset_right = 720.0
+offset_bottom = 1378.0

@@ -3,26 +3,23 @@
 # Shows book cover with zoom tool, optional UV light reveal
 extends Control
 
-# Panel mode flag
+# Panel mode flag (kept for compatibility, but layout is now in .tscn)
 var panel_mode: bool = false
 
-# Panel content area dimensions (set by DiegeticScreenManager)
-var content_width: int = 480
-var content_height: int = 590
-
-# UI References (created programmatically for panel mode)
-var book_cover_panel: PanelContainer
-var book_title_label: Label
-var book_pattern_label: Label
-var uv_overlay_label: Label
-var zoom_panel: PanelContainer
-var zoom_view_rect: ColorRect
-var zoom_content_label: Label
-var crosshair_h: ColorRect
-var crosshair_v: ColorRect
-var begin_button: Button
-var uv_button: Button
-var customer_header: Label
+# UI References (now from scene tree)
+@onready var background_panel = $BackgroundPanel
+@onready var customer_header = $MarginContainer/MainVBox/CustomerHeader
+@onready var book_cover_panel = $MarginContainer/MainVBox/BookCoverPanel
+@onready var book_title_label = $MarginContainer/MainVBox/BookCoverPanel/BookContent/BookTitleLabel
+@onready var book_pattern_label = $MarginContainer/MainVBox/BookCoverPanel/BookContent/BookPatternLabel
+@onready var uv_overlay_label = $MarginContainer/MainVBox/BookCoverPanel/BookContent/UVOverlayLabel
+@onready var crosshair_h = $MarginContainer/MainVBox/BookCoverPanel/BookContent/CrosshairH
+@onready var crosshair_v = $MarginContainer/MainVBox/BookCoverPanel/BookContent/CrosshairV
+@onready var zoom_panel = $MarginContainer/MainVBox/BookCoverPanel/BookContent/ZoomPanel
+@onready var zoom_view_rect = $MarginContainer/MainVBox/BookCoverPanel/BookContent/ZoomPanel/ZoomViewRect
+@onready var zoom_content_label = $MarginContainer/MainVBox/BookCoverPanel/BookContent/ZoomPanel/ZoomViewRect/ZoomContentLabel
+@onready var uv_button = $MarginContainer/MainVBox/ButtonRow/UVButton
+@onready var begin_button = $MarginContainer/MainVBox/ButtonRow/BeginButton
 
 # State
 var current_book_data: Dictionary = {}
@@ -35,189 +32,13 @@ signal begin_translation
 
 func _ready():
 	"""Initialize examination screen"""
-	if panel_mode:
-		setup_panel_layout()
+	# Connect button signals
+	uv_button.pressed.connect(_on_uv_button_pressed)
+	begin_button.pressed.connect(_on_begin_translation_pressed)
 
 	await get_tree().process_frame
 	await get_tree().process_frame
 	initialize()
-
-func set_panel_content_size(width: int, height: int):
-	"""Set content dimensions from panel (called by DiegeticScreenManager)"""
-	content_width = width
-	content_height = height
-
-func setup_panel_layout():
-	"""Create panel-compatible layout using dynamic dimensions"""
-	size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	size_flags_vertical = Control.SIZE_EXPAND_FILL
-	custom_minimum_size = Vector2(content_width, content_height)
-
-	# Main container
-	var margin = MarginContainer.new()
-	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	margin.add_theme_constant_override("margin_left", 15)
-	margin.add_theme_constant_override("margin_top", 35)
-	margin.add_theme_constant_override("margin_right", 15)
-	margin.add_theme_constant_override("margin_bottom", 15)
-	add_child(margin)
-
-	var vbox = VBoxContainer.new()
-	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	vbox.add_theme_constant_override("separation", 10)
-	margin.add_child(vbox)
-
-	# Customer header
-	customer_header = Label.new()
-	customer_header.text = "Examining book..."
-	customer_header.add_theme_font_size_override("font_size", 14)
-	customer_header.add_theme_color_override("font_color", Color(0.3, 0.25, 0.2))
-	customer_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(customer_header)
-
-	# Book cover panel (scale to fit content area)
-	book_cover_panel = PanelContainer.new()
-	var book_width = content_width - 30  # Leave margins
-	var book_height = int(content_height * 0.5)  # Use ~50% of height for book
-	book_cover_panel.custom_minimum_size = Vector2(book_width, book_height)
-	book_cover_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	book_cover_panel.mouse_filter = Control.MOUSE_FILTER_PASS
-
-	var book_style = StyleBoxFlat.new()
-	book_style.bg_color = Color(0.956, 0.909, 0.847)  # Default cream
-	book_style.border_width_left = 3
-	book_style.border_width_top = 3
-	book_style.border_width_right = 3
-	book_style.border_width_bottom = 3
-	book_style.border_color = Color(0.545, 0.266, 0.137)
-	book_style.corner_radius_top_left = 4
-	book_style.corner_radius_top_right = 4
-	book_style.corner_radius_bottom_right = 4
-	book_style.corner_radius_bottom_left = 4
-	book_cover_panel.add_theme_stylebox_override("panel", book_style)
-	vbox.add_child(book_cover_panel)
-
-	# Book content container
-	var book_content = Control.new()
-	book_content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	book_content.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	book_cover_panel.add_child(book_content)
-
-	# Book title (top) - scale with book width
-	book_title_label = Label.new()
-	book_title_label.text = "Ancient Tome"
-	book_title_label.add_theme_font_size_override("font_size", 18)
-	book_title_label.add_theme_color_override("font_color", Color(0.4, 0.35, 0.3))
-	book_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	book_title_label.position = Vector2(15, 15)
-	book_title_label.size = Vector2(book_width - 30, 30)
-	book_content.add_child(book_title_label)
-
-	# Symbol pattern (center) - scale with book dimensions
-	book_pattern_label = Label.new()
-	book_pattern_label.text = "∆ ◊≈ ⊕⊗◈"
-	var pattern_font_size = int(book_height * 0.15)  # Scale font with book height
-	book_pattern_label.add_theme_font_size_override("font_size", max(24, pattern_font_size))
-	book_pattern_label.add_theme_color_override("font_color", Color(0.5, 0.4, 0.35, 0.3))
-	book_pattern_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	book_pattern_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	book_pattern_label.position = Vector2(15, int(book_height * 0.25))
-	book_pattern_label.size = Vector2(book_width - 30, int(book_height * 0.5))
-	book_content.add_child(book_pattern_label)
-
-	# UV overlay (hidden by default) - scale with book dimensions
-	uv_overlay_label = Label.new()
-	uv_overlay_label.text = ""
-	uv_overlay_label.add_theme_font_size_override("font_size", 16)
-	uv_overlay_label.add_theme_color_override("font_color", Color(0.8, 0.4, 1.0))
-	uv_overlay_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	uv_overlay_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	uv_overlay_label.position = Vector2(15, 50)
-	uv_overlay_label.size = Vector2(book_width - 30, book_height - 80)
-	uv_overlay_label.visible = false
-	book_content.add_child(uv_overlay_label)
-
-	# Crosshairs (hidden by default) - scale to book size
-	crosshair_h = ColorRect.new()
-	crosshair_h.color = Color(1.0, 0.843, 0.0, 0.5)  # Gold
-	crosshair_h.size = Vector2(book_width, 2)
-	crosshair_h.position = Vector2(0, book_height / 2)
-	crosshair_h.visible = false
-	book_content.add_child(crosshair_h)
-
-	crosshair_v = ColorRect.new()
-	crosshair_v.color = Color(1.0, 0.843, 0.0, 0.5)  # Gold
-	crosshair_v.size = Vector2(2, book_height)
-	crosshair_v.position = Vector2(book_width / 2, 0)
-	crosshair_v.visible = false
-	book_content.add_child(crosshair_v)
-
-	# Zoom panel (inset) - position at bottom-right of book cover
-	zoom_panel = PanelContainer.new()
-	var zoom_size = min(150, int(book_width * 0.33))  # 1/3 of book width, max 150px
-	zoom_panel.custom_minimum_size = Vector2(zoom_size, zoom_size)
-	zoom_panel.position = Vector2(book_width - zoom_size - 10, book_height - zoom_size - 10)  # Bottom right corner
-
-	var zoom_style = StyleBoxFlat.new()
-	zoom_style.bg_color = Color(0, 0, 0)
-	zoom_style.border_width_left = 3
-	zoom_style.border_width_top = 3
-	zoom_style.border_width_right = 3
-	zoom_style.border_width_bottom = 3
-	zoom_style.border_color = Color(1.0, 0.843, 0.0)  # Gold border
-	zoom_panel.add_theme_stylebox_override("panel", zoom_style)
-	book_content.add_child(zoom_panel)
-
-	# Zoom view
-	zoom_view_rect = ColorRect.new()
-	zoom_view_rect.color = Color(0.956, 0.909, 0.847)
-	zoom_view_rect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	zoom_view_rect.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	zoom_panel.add_child(zoom_view_rect)
-
-	zoom_content_label = Label.new()
-	zoom_content_label.text = "∆"
-	zoom_content_label.add_theme_font_size_override("font_size", 80)
-	zoom_content_label.add_theme_color_override("font_color", Color(0.5, 0.4, 0.35, 0.6))
-	zoom_content_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	zoom_content_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	zoom_content_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	zoom_content_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	zoom_view_rect.add_child(zoom_content_label)
-
-	# Hint label
-	var hint_label = Label.new()
-	hint_label.text = "Hover over the book to examine symbols closely"
-	hint_label.add_theme_font_size_override("font_size", 10)
-	hint_label.add_theme_color_override("font_color", Color(0.5, 0.45, 0.4))
-	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	vbox.add_child(hint_label)
-
-	# Button row
-	var button_row = HBoxContainer.new()
-	button_row.add_theme_constant_override("separation", 8)
-	vbox.add_child(button_row)
-
-	# UV button (optional upgrade)
-	uv_button = Button.new()
-	uv_button.text = "💡 UV LIGHT"
-	uv_button.custom_minimum_size = Vector2(0, 32)
-	uv_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	uv_button.add_theme_font_size_override("font_size", 12)
-	uv_button.visible = false  # Only show if owned
-	uv_button.pressed.connect(_on_uv_button_pressed)
-	button_row.add_child(uv_button)
-
-	# Begin translation button
-	begin_button = Button.new()
-	begin_button.text = "Begin Translation"
-	begin_button.custom_minimum_size = Vector2(0, 32)
-	begin_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	begin_button.add_theme_font_size_override("font_size", 12)
-	begin_button.pressed.connect(_on_begin_translation_pressed)
-	button_row.add_child(begin_button)
 
 func initialize():
 	"""Called when panel opens - load current book from GameState"""
@@ -249,7 +70,21 @@ func load_book(book_data: Dictionary):
 
 	# Update book appearance
 	var book_color = book_data.get("book_cover_color", Color("#F4E8D8"))
-	var style = book_cover_panel.get_theme_stylebox("panel").duplicate()
+	var style = book_cover_panel.get_theme_stylebox("panel")
+	if style == null:
+		# Create default style if none exists
+		style = StyleBoxFlat.new()
+		style.border_width_left = 3
+		style.border_width_top = 3
+		style.border_width_right = 3
+		style.border_width_bottom = 3
+		style.border_color = Color(0.545, 0.266, 0.137)
+		style.corner_radius_top_left = 4
+		style.corner_radius_top_right = 4
+		style.corner_radius_bottom_right = 4
+		style.corner_radius_bottom_left = 4
+	else:
+		style = style.duplicate()
 	style.bg_color = book_color
 	book_cover_panel.add_theme_stylebox_override("panel", style)
 	zoom_view_rect.color = book_color

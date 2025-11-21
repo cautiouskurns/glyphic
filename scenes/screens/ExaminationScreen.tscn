@@ -1,12 +1,167 @@
-[gd_scene load_steps=2 format=3 uid="uid://c8r6m4n2p1x7y"]
+[gd_scene load_steps=3 format=3 uid="uid://c8r6m4n2p1x7y"]
 
-[ext_resource type="Script" path="res://scripts/screens/ExaminationScreen.gd" id="1_exam"]
+[ext_resource type="Script" uid="uid://7i5ujaqlh8jy" path="res://scripts/screens/ExaminationScreen.gd" id="1_exam"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
+bg_color = Color(0.95, 0.92, 0.88, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.25, 0.2, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 12
+shadow_offset = Vector2(6, 6)
 
 [node name="ExaminationScreen" type="Control"]
+custom_minimum_size = Vector2(520, 650)
 layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_exam")
+
+[node name="BackgroundPanel" type="Panel" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_exam")
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_background")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 35
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="MainVBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CustomerHeader" type="Label" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.25, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "Examining book..."
+horizontal_alignment = 1
+
+[node name="BookCoverPanel" type="PanelContainer" parent="MarginContainer/MainVBox"]
+custom_minimum_size = Vector2(490, 325)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 1
+
+[node name="BookContent" type="Control" parent="MarginContainer/MainVBox/BookCoverPanel"]
+layout_mode = 2
+
+[node name="BookTitleLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 15.0
+offset_right = 475.0
+offset_bottom = 45.0
+theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+text = "Ancient Tome"
+horizontal_alignment = 1
+
+[node name="BookPatternLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 80.0
+offset_right = 475.0
+offset_bottom = 243.0
+theme_override_colors/font_color = Color(0.5, 0.4, 0.35, 0.3)
+theme_override_font_sizes/font_size = 32
+text = "∆ ◊≈ ⊕⊗◈"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UVOverlayLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+visible = false
+layout_mode = 0
+offset_left = 15.0
+offset_top = 50.0
+offset_right = 475.0
+offset_bottom = 275.0
+theme_override_colors/font_color = Color(0.8, 0.4, 1, 1)
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CrosshairH" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+visible = false
+layout_mode = 0
+offset_top = 162.0
+offset_right = 490.0
+offset_bottom = 164.0
+color = Color(1, 0.843137, 0, 0.5)
+
+[node name="CrosshairV" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+visible = false
+layout_mode = 0
+offset_left = 244.0
+offset_right = 246.0
+offset_bottom = 325.0
+color = Color(1, 0.843137, 0, 0.5)
+
+[node name="ZoomPanel" type="PanelContainer" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+layout_mode = 0
+offset_left = 330.0
+offset_top = 165.0
+offset_right = 480.0
+offset_bottom = 315.0
+
+[node name="ZoomViewRect" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/ZoomPanel"]
+layout_mode = 2
+color = Color(0.956863, 0.909804, 0.847059, 1)
+
+[node name="ZoomContentLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/ZoomPanel/ZoomViewRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.5, 0.4, 0.35, 0.6)
+theme_override_font_sizes/font_size = 80
+text = "∆"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintLabel" type="Label" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
+theme_override_font_sizes/font_size = 10
+text = "Hover over the book to examine symbols closely"
+horizontal_alignment = 1
+
+[node name="ButtonRow" type="HBoxContainer" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="UVButton" type="Button" parent="MarginContainer/MainVBox/ButtonRow"]
+visible = false
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "💡 UV LIGHT"
+
+[node name="BeginButton" type="Button" parent="MarginContainer/MainVBox/ButtonRow"]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+text = "Begin Translation"
