@@ -1115,6 +1115,16 @@ func _on_customer_accepted(customer_data: Dictionary):
 	"""Handle customer acceptance from popup"""
 	print("Customer accepted: %s" % customer_data.get("name", "Unknown"))
 	GameState.accept_customer(customer_data)
+
+	# Auto-open examination panel to show the book
+	if not is_focused_mode:
+		enter_focus_mode()
+
+	if active_panels.has("examination"):
+		bring_panel_to_front("examination")
+	else:
+		open_panel("examination")
+
 	# Refresh the queue screen
 	if active_panels.has("queue"):
 		var queue_panel = active_panels["queue"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bexamscreen1"]
 
-[ext_resource type="Script" path="res://scripts/ui/ExaminationScreen.gd" id="1_examination"]
+[ext_resource type="Script" uid="uid://bjur2w0fpweff" path="res://scripts/ui/ExaminationScreen.gd" id="1_examination"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
 bg_color = Color(0.227451, 0.145098, 0.0941176, 1)
@@ -31,8 +31,9 @@ border_color = Color(1, 0.843137, 0, 1)
 [node name="ExaminationScreen" type="Control"]
 layout_mode = 3
 anchors_preset = 0
+offset_top = -2.0
 offset_right = 1080.0
-offset_bottom = 690.0
+offset_bottom = 688.0
 script = ExtResource("1_examination")
 
 [node name="Background" type="Panel" parent="."]
@@ -70,7 +71,6 @@ offset_top = 95.0
 offset_right = 840.0
 offset_bottom = 495.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_book")
-mouse_filter = 0
 
 [node name="BookTitleLabel" type="Label" parent="BookCoverRect"]
 layout_mode = 1
@@ -111,6 +111,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="UVOverlayLabel" type="Label" parent="BookCoverRect"]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -130,7 +131,22 @@ Margaret K.
 1924"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="CrosshairH" type="ColorRect" parent="BookCoverRect"]
 visible = false
+layout_mode = 0
+offset_top = 200.0
+offset_right = 600.0
+offset_bottom = 202.0
+color = Color(1, 0.843137, 0, 0.5)
+
+[node name="CrosshairV" type="ColorRect" parent="BookCoverRect"]
+visible = false
+layout_mode = 0
+offset_left = 300.0
+offset_right = 302.0
+offset_bottom = 400.0
+color = Color(1, 0.843137, 0, 0.5)
 
 [node name="ZoomInsetPanel" type="Panel" parent="."]
 layout_mode = 0
@@ -177,24 +193,6 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="CrosshairH" type="ColorRect" parent="BookCoverRect"]
-visible = false
-layout_mode = 0
-offset_left = 0.0
-offset_top = 200.0
-offset_right = 600.0
-offset_bottom = 202.0
-color = Color(1, 0.843137, 0, 0.5)
-
-[node name="CrosshairV" type="ColorRect" parent="BookCoverRect"]
-visible = false
-layout_mode = 0
-offset_left = 300.0
-offset_top = 0.0
-offset_right = 302.0
-offset_bottom = 400.0
-color = Color(1, 0.843137, 0, 0.5)
-
 [node name="Toolbar" type="Panel" parent="."]
 layout_mode = 0
 offset_top = 610.0
@@ -211,6 +209,7 @@ theme_override_font_sizes/font_size = 18
 text = "SKIP EXAMINATION"
 
 [node name="UVButton" type="Button" parent="Toolbar"]
+visible = false
 layout_mode = 0
 offset_left = 580.0
 offset_top = 15.0
@@ -218,7 +217,6 @@ offset_right = 780.0
 offset_bottom = 65.0
 theme_override_font_sizes/font_size = 18
 text = "UV LIGHT"
-visible = false
 
 [connection signal="pressed" from="Toolbar/SkipButton" to="." method="_on_skip_button_pressed"]
 [connection signal="pressed" from="Toolbar/UVButton" to="." method="_on_uv_button_pressed"]

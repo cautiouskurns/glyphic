@@ -332,6 +332,9 @@ func handle_success():
 	GameState.add_cash(payment)
 	SymbolData.update_dictionary(current_text_id)
 
+	# Refresh dictionary panel if open
+	DiegeticScreenManager.refresh_screen("dictionary")
+
 	# Remove book from desk and customer from accepted queue
 	var customer_name = GameState.current_book.get("name", "")
 	GameState.current_book = {}  # Clear book from desk

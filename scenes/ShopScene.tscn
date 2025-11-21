@@ -338,10 +338,11 @@ z_index = 1
 metadata/_edit_lock_ = true
 
 [node name="QueueZone" type="ColorRect" parent="PanelZones"]
-offset_left = 55.0
-offset_top = 442.0
-offset_right = 364.0
-offset_bottom = 925.0
+visible = false
+offset_left = 50.0
+offset_top = 456.0
+offset_right = 359.0
+offset_bottom = 939.0
 color = Color(0.628906, 0.509277, 0.429199, 0.25098)
 
 [node name="Label" type="Label" parent="PanelZones/QueueZone"]
@@ -354,6 +355,7 @@ theme_override_font_sizes/font_size = 18
 text = "Customer Queue (350x650)"
 
 [node name="TranslationZone" type="ColorRect" parent="PanelZones"]
+visible = false
 offset_left = 403.0
 offset_top = 726.0
 offset_right = 854.0
@@ -370,6 +372,7 @@ theme_override_font_sizes/font_size = 18
 text = "Translation Workspace (500x650)"
 
 [node name="DictionaryZone" type="ColorRect" parent="PanelZones"]
+visible = false
 offset_left = 1448.0
 offset_top = 701.0
 offset_right = 1874.0
@@ -386,6 +389,7 @@ theme_override_font_sizes/font_size = 18
 text = "Glyph Dictionary (520x750)"
 
 [node name="ExaminationZone" type="ColorRect" parent="PanelZones"]
+visible = false
 offset_left = 880.0
 offset_top = 708.0
 offset_right = 1400.0
@@ -402,6 +406,7 @@ theme_override_font_sizes/font_size = 18
 text = "Book Examination (520x650)"
 
 [node name="WorkZone" type="ColorRect" parent="PanelZones"]
+visible = false
 offset_left = 1050.0
 offset_top = 700.0
 offset_right = 1400.0
