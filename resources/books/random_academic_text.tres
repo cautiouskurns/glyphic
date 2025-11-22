@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BookResource" load_steps=2 format=3 uid="uid://book_random_academic"]
+
+[ext_resource type="Script" path="res://scripts/resources/BookResource.gd" id="1_1"]
+
+[resource]
+script = ExtResource("1_1")
+book_id = "random_academic_text"
+title = "Ancient Text"
+difficulty = "Medium"
+text_id = 2
+cover_color = Color(0.831373, 0.721569, 0.54902, 1)
+cover_material = "Cloth"
+cover_pattern = "≡"
+spine_text = "THESIS ARCHIVE"
+wear_level = 35
+has_embossing = false
+embossing_symbol = ""
+size = "Medium"
+thickness = 180
+binding_quality = 65
+uv_hidden_text = ""
+faded_inscription = "University Library\nPlease return by [date illegible]"
+marginalia = Array[String](["Citation needed", "Ask professor about this"])
+bookmark_page = 0
+pressed_flower = false
+coffee_stain = true
+water_damage = false
+previous_owner = "University Library"
+publication_year = 1998
+library_stamp = "UNIVERSITY LIBRARY"
+acquisition_note = "Found at used book sale"
+examination_flavor_text = "A tan cloth-bound academic text with coffee stains on the cover. Library markings suggest it was once part of a university collection. The binding is still in decent shape."
+story_relevance = 0

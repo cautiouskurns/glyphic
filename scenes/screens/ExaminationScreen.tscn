@@ -142,6 +142,129 @@ text = "∆"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="SpineTextLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+visible = false
+layout_mode = 0
+offset_left = 5.0
+offset_top = 140.0
+offset_right = 25.0
+offset_bottom = 250.0
+rotation = -1.5708
+theme_override_colors/font_color = Color(0.7, 0.6, 0.5, 1)
+theme_override_font_sizes/font_size = 12
+text = "SPINE TEXT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EmbossingLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+visible = false
+layout_mode = 0
+offset_left = 200.0
+offset_top = 260.0
+offset_right = 290.0
+offset_bottom = 310.0
+theme_override_colors/font_color = Color(0.6, 0.5, 0.4, 0.4)
+theme_override_font_sizes/font_size = 40
+text = "⊗"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WearOverlay" type="Control" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+visible = false
+anchors_preset = 0
+offset_right = 490.0
+offset_bottom = 325.0
+
+[node name="TornCornerTL" type="Polygon2D" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/WearOverlay"]
+visible = false
+color = Color(0.3, 0.25, 0.2, 0.3)
+polygon = PackedVector2Array(0, 0, 30, 0, 0, 30)
+
+[node name="TornCornerTR" type="Polygon2D" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/WearOverlay"]
+visible = false
+color = Color(0.3, 0.25, 0.2, 0.3)
+polygon = PackedVector2Array(460, 0, 490, 0, 490, 30)
+
+[node name="CrackedSpine" type="Line2D" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/WearOverlay"]
+visible = false
+points = PackedVector2Array(245, 0, 245, 325)
+width = 2.0
+default_color = Color(0.2, 0.15, 0.1, 0.5)
+
+[node name="DamageOverlay" type="Control" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+visible = false
+anchors_preset = 0
+offset_right = 490.0
+offset_bottom = 325.0
+
+[node name="WaterStain" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/DamageOverlay"]
+visible = false
+layout_mode = 0
+offset_left = 400.0
+offset_top = 250.0
+offset_right = 480.0
+offset_bottom = 315.0
+color = Color(0.5, 0.6, 0.7, 0.2)
+
+[node name="CoffeeStain" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/DamageOverlay"]
+visible = false
+layout_mode = 0
+offset_left = 350.0
+offset_top = 30.0
+offset_right = 400.0
+offset_bottom = 80.0
+color = Color(0.4, 0.3, 0.2, 0.25)
+
+[node name="BookmarkRibbon" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+visible = false
+layout_mode = 0
+offset_left = 470.0
+offset_top = 100.0
+offset_right = 485.0
+offset_bottom = 200.0
+color = Color(0.8, 0.2, 0.2, 1)
+
+[node name="ExaminationInfoPanel" type="VBoxContainer" parent="MarginContainer/MainVBox"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="FlavorTextLabel" type="Label" parent="MarginContainer/MainVBox/ExaminationInfoPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
+theme_override_font_sizes/font_size = 11
+text = "A worn book with secrets to discover..."
+autowrap_mode = 3
+max_lines_visible = 2
+
+[node name="PhysicalPropsLabel" type="Label" parent="MarginContainer/MainVBox/ExaminationInfoPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
+theme_override_font_sizes/font_size = 10
+text = "Material: Leather • Size: Medium • Condition: Good"
+
+[node name="ProvenanceLabel" type="Label" parent="MarginContainer/MainVBox/ExaminationInfoPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
+theme_override_font_sizes/font_size = 10
+text = "Previous owner: Unknown"
+
+[node name="SecretsPanel" type="VBoxContainer" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="SecretsHeaderButton" type="Button" parent="MarginContainer/MainVBox/SecretsPanel"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "▼ Discoverable Secrets (0)"
+flat = true
+
+[node name="SecretsListVBox" type="VBoxContainer" parent="MarginContainer/MainVBox/SecretsPanel"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 2
+
 [node name="HintLabel" type="Label" parent="MarginContainer/MainVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)

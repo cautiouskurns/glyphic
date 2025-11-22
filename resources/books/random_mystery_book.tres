@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BookResource" load_steps=2 format=3 uid="uid://book_random_mystery"]
+
+[ext_resource type="Script" path="res://scripts/resources/BookResource.gd" id="1_1"]
+
+[resource]
+script = ExtResource("1_1")
+book_id = "random_mystery_book"
+title = "Mystery Book"
+difficulty = "Easy"
+text_id = 1
+cover_color = Color(0.752941, 0.6, 0.4, 1)
+cover_material = "Cloth"
+cover_pattern = "?"
+spine_text = "[Title worn off]"
+wear_level = 60
+has_embossing = false
+embossing_symbol = ""
+size = "Medium"
+thickness = 120
+binding_quality = 50
+uv_hidden_text = ""
+faded_inscription = "Property of [name illegible]\n19[??]"
+marginalia = Array[String]([])
+bookmark_page = 0
+pressed_flower = false
+coffee_stain = true
+water_damage = false
+previous_owner = "[Unknown]"
+publication_year = 0
+library_stamp = ""
+acquisition_note = "Got it at an estate sale for $2"
+examination_flavor_text = "A well-worn cloth-bound book of uncertain age. The spine's title has worn completely off, and a coffee ring stains the front cover. A faded inscription hints at a previous owner, but the name is illegible. Clearly a used book sale find."
+story_relevance = 0

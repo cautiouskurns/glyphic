@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BookResource" load_steps=2 format=3 uid="uid://book_random_estate"]
+
+[ext_resource type="Script" path="res://scripts/resources/BookResource.gd" id="1_1"]
+
+[resource]
+script = ExtResource("1_1")
+book_id = "random_estate_find"
+title = "Estate Find"
+difficulty = "Hard"
+text_id = 4
+cover_color = Color(0.419608, 0.266667, 0.137255, 1)
+cover_material = "Leather"
+cover_pattern = "◊"
+spine_text = "[Ornate gilding, partially worn]"
+wear_level = 75
+has_embossing = true
+embossing_symbol = "◊"
+size = "Large"
+thickness = 350
+binding_quality = 45
+uv_hidden_text = "Estate of Lord Blackwood\n1856"
+faded_inscription = "Private Collection\nNot for public circulation"
+marginalia = Array[String](["Verify authenticity", "Rare! Only 3 known copies"])
+bookmark_page = 231
+pressed_flower = true
+coffee_stain = false
+water_damage = true
+previous_owner = "Lord Blackwood Estate"
+publication_year = 1856
+library_stamp = "PRIVATE COLLECTION"
+acquisition_note = "Estate auction, Lot #47"
+examination_flavor_text = "A large leather-bound volume with significant wear and water damage. Ornate diamond embossing decorates the weathered cover. The pages smell of must and age. A dried flower marks page 231. This was clearly part of a wealthy private collection."
+story_relevance = 1

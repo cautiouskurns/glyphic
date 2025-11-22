@@ -121,11 +121,13 @@ func accept_customer(customer_data: Dictionary):
 	# Place the customer's book on desk for examination/translation
 	current_book = customer_data.duplicate()
 
-	# Assign text ID based on difficulty
-	var difficulty = customer_data.get("difficulty", "easy")
-	current_book["text_id"] = get_text_id_for_difficulty(difficulty)
+	# Book properties are now loaded from BookResource in CustomerData
+	# Backwards compatibility: if text_id not present, assign based on difficulty
+	if not current_book.has("text_id"):
+		var difficulty = customer_data.get("difficulty", "easy")
+		current_book["text_id"] = get_text_id_for_difficulty(difficulty)
 
-	# Add book appearance data if not present
+	# Backwards compatibility: add default book appearance if not present
 	if not current_book.has("book_cover_color"):
 		current_book["book_cover_color"] = Color("#F4E8D8")  # Default cream
 	if not current_book.has("uv_hidden_text"):

@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BookResource" load_steps=2 format=3 uid="uid://book_stranger_tome"]
+
+[ext_resource type="Script" path="res://scripts/resources/BookResource.gd" id="1_1"]
+
+[resource]
+script = ExtResource("1_1")
+book_id = "stranger_ancient_tome"
+title = "Ancient Tome"
+difficulty = "Hard"
+text_id = 5
+cover_color = Color(0.101961, 0.101961, 0.101961, 1)
+cover_material = "Leather"
+cover_pattern = "⊗⊕⊗"
+spine_text = "[Unreadable ancient script]"
+wear_level = 90
+has_embossing = true
+embossing_symbol = "⊗"
+size = "Tome"
+thickness = 500
+binding_quality = 30
+uv_hidden_text = "PROPERTY OF\nTHE ORDER\n⊗\nReturn before the awakening"
+faded_inscription = "[Text in unknown language]\n...they are returning...\n[Seal broken 1847]"
+marginalia = Array[String](["The seal weakens", "Do not trust the light", "Three days remain"])
+bookmark_page = 666
+pressed_flower = false
+coffee_stain = false
+water_damage = false
+previous_owner = "The Order"
+publication_year = 0
+library_stamp = "⊗ THE ORDER ⊗\nNON REDDERE"
+acquisition_note = "[The Stranger does not elaborate]"
+examination_flavor_text = "An massive, ancient tome bound in black leather that seems to absorb light. The cover is heavily worn and cracked, barely held together. An ominous symbol is embossed deeply into the cover. The pages feel unnaturally cold to the touch. A bookmark rests at page 666."
+story_relevance = 5

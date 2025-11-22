@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BookResource" load_steps=2 format=3 uid="uid://book_random_homework"]
+
+[ext_resource type="Script" path="res://scripts/resources/BookResource.gd" id="1_1"]
+
+[resource]
+script = ExtResource("1_1")
+book_id = "random_homework_help"
+title = "Homework Help"
+difficulty = "Easy"
+text_id = 1
+cover_color = Color(0.847059, 0.74902, 0.647059, 1)
+cover_material = "Paper"
+cover_pattern = "📚"
+spine_text = "INTRO TO LINGUISTICS"
+wear_level = 15
+has_embossing = false
+embossing_symbol = ""
+size = "Small"
+thickness = 80
+binding_quality = 70
+uv_hidden_text = ""
+faded_inscription = ""
+marginalia = Array[String](["Due Friday!", "Chapter 3 is on the test"])
+bookmark_page = 12
+pressed_flower = false
+coffee_stain = false
+water_damage = false
+previous_owner = ""
+publication_year = 2023
+library_stamp = ""
+acquisition_note = "Bought for class, need help with assignment"
+examination_flavor_text = "A small paperback textbook in good condition. Sticky notes and highlighter marks show recent use. A bookmark sits at page 12, likely where the homework assignment begins."
+story_relevance = 0

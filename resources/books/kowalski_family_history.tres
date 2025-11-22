@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BookResource" load_steps=2 format=3 uid="uid://book_kowalski_family"]
+
+[ext_resource type="Script" path="res://scripts/resources/BookResource.gd" id="1_1"]
+
+[resource]
+script = ExtResource("1_1")
+book_id = "kowalski_family_history"
+title = "Family History"
+difficulty = "Easy"
+text_id = 1
+cover_color = Color(0.956863, 0.909804, 0.847059, 1)
+cover_material = "Cloth"
+cover_pattern = "✿"
+spine_text = "Kowalski"
+wear_level = 55
+has_embossing = false
+embossing_symbol = "⊗"
+size = "Medium"
+thickness = 150
+binding_quality = 40
+uv_hidden_text = "Previous owner:\nMargaret K.\n1924"
+faded_inscription = "To my dearest daughter,\nMay you remember the old ways.\n- Grandmother, 1924"
+marginalia = Array[String](["Check family tree", "Ask mother about this"])
+bookmark_page = 42
+pressed_flower = true
+coffee_stain = false
+water_damage = true
+previous_owner = "Margaret Kowalski"
+publication_year = 1924
+library_stamp = ""
+acquisition_note = "Found in grandmother's attic"
+examination_flavor_text = "A worn cloth-bound family journal. The pages are yellowed with age, and you can see water damage along the edges. A pressed flower marks page 42. The cover has a delicate floral pattern embossed on it."
+story_relevance = 2
