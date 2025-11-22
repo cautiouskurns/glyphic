@@ -6,6 +6,7 @@
 script = ExtResource("1_1")
 book_id = "random_homework_help"
 title = "Homework Help"
+author = "Prof. Sarah Williams"
 difficulty = "Easy"
 text_id = 1
 cover_color = Color(0.847059, 0.74902, 0.647059, 1)

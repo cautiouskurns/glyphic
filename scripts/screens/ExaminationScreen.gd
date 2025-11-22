@@ -6,39 +6,53 @@ extends Control
 # Panel mode flag (kept for compatibility, but layout is now in .tscn)
 var panel_mode: bool = false
 
-# UI References (now from scene tree)
-@onready var background_panel = $BackgroundPanel
-@onready var customer_header = $MarginContainer/MainVBox/CustomerHeader
-@onready var book_cover_panel = $MarginContainer/MainVBox/BookCoverPanel
-@onready var book_title_label = $MarginContainer/MainVBox/BookCoverPanel/BookContent/BookTitleLabel
-@onready var book_pattern_label = $MarginContainer/MainVBox/BookCoverPanel/BookContent/BookPatternLabel
-@onready var uv_overlay_label = $MarginContainer/MainVBox/BookCoverPanel/BookContent/UVOverlayLabel
-@onready var crosshair_h = $MarginContainer/MainVBox/BookCoverPanel/BookContent/CrosshairH
-@onready var crosshair_v = $MarginContainer/MainVBox/BookCoverPanel/BookContent/CrosshairV
-@onready var zoom_panel = $MarginContainer/MainVBox/BookCoverPanel/BookContent/ZoomPanel
-@onready var zoom_view_rect = $MarginContainer/MainVBox/BookCoverPanel/BookContent/ZoomPanel/ZoomViewRect
-@onready var zoom_content_label = $MarginContainer/MainVBox/BookCoverPanel/BookContent/ZoomPanel/ZoomViewRect/ZoomContentLabel
-@onready var uv_button = $MarginContainer/MainVBox/ButtonRow/UVButton
-@onready var begin_button = $MarginContainer/MainVBox/ButtonRow/BeginButton
+# View References
+@onready var cover_view = $CoverView
+@onready var examination_view = $ExaminationView
 
-# New UI elements for enhanced examination
-@onready var spine_text_label = $MarginContainer/MainVBox/BookCoverPanel/BookContent/SpineTextLabel
-@onready var embossing_label = $MarginContainer/MainVBox/BookCoverPanel/BookContent/EmbossingLabel
-@onready var wear_overlay = $MarginContainer/MainVBox/BookCoverPanel/BookContent/WearOverlay
-@onready var torn_corner_tl = $MarginContainer/MainVBox/BookCoverPanel/BookContent/WearOverlay/TornCornerTL
-@onready var torn_corner_tr = $MarginContainer/MainVBox/BookCoverPanel/BookContent/WearOverlay/TornCornerTR
-@onready var cracked_spine = $MarginContainer/MainVBox/BookCoverPanel/BookContent/WearOverlay/CrackedSpine
-@onready var damage_overlay = $MarginContainer/MainVBox/BookCoverPanel/BookContent/DamageOverlay
-@onready var water_stain = $MarginContainer/MainVBox/BookCoverPanel/BookContent/DamageOverlay/WaterStain
-@onready var coffee_stain = $MarginContainer/MainVBox/BookCoverPanel/BookContent/DamageOverlay/CoffeeStain
-@onready var bookmark_ribbon = $MarginContainer/MainVBox/BookCoverPanel/BookContent/BookmarkRibbon
-@onready var flavor_text_label = $MarginContainer/MainVBox/ExaminationInfoPanel/FlavorTextLabel
-@onready var physical_props_label = $MarginContainer/MainVBox/ExaminationInfoPanel/PhysicalPropsLabel
-@onready var provenance_label = $MarginContainer/MainVBox/ExaminationInfoPanel/ProvenanceLabel
-@onready var secrets_header_button = $MarginContainer/MainVBox/SecretsPanel/SecretsHeaderButton
-@onready var secrets_list_vbox = $MarginContainer/MainVBox/SecretsPanel/SecretsListVBox
+# CoverView UI References
+@onready var book_cover_display = $CoverView/CenterContainer/ContentVBox/BookCoverDisplay
+@onready var cover_title_label = $CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/BookContentVBox/CoverTitleLabel
+@onready var cover_author_label = $CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/BookContentVBox/CoverAuthorLabel
+@onready var cover_pattern_label = $CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/BookContentVBox/CoverPatternLabel
+@onready var open_book_button = $CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/OpenBookButton
+@onready var cover_wear_overlay = $CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/CoverWearOverlay
+@onready var cover_damage_overlay = $CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/CoverDamageOverlay
+
+# ExaminationView UI References (updated paths)
+@onready var background_panel = $BackgroundPanel
+@onready var customer_header = $ExaminationView/MainVBox/CustomerHeader
+@onready var book_cover_panel = $ExaminationView/MainVBox/BookCoverPanel
+@onready var book_title_label = $ExaminationView/MainVBox/BookCoverPanel/BookContent/BookTitleLabel
+@onready var book_pattern_label = $ExaminationView/MainVBox/BookCoverPanel/BookContent/BookPatternLabel
+@onready var uv_overlay_label = $ExaminationView/MainVBox/BookCoverPanel/BookContent/UVOverlayLabel
+@onready var crosshair_h = $ExaminationView/MainVBox/BookCoverPanel/BookContent/CrosshairH
+@onready var crosshair_v = $ExaminationView/MainVBox/BookCoverPanel/BookContent/CrosshairV
+@onready var zoom_panel = $ExaminationView/MainVBox/BookCoverPanel/BookContent/ZoomPanel
+@onready var zoom_view_rect = $ExaminationView/MainVBox/BookCoverPanel/BookContent/ZoomPanel/ZoomViewRect
+@onready var zoom_content_label = $ExaminationView/MainVBox/BookCoverPanel/BookContent/ZoomPanel/ZoomViewRect/ZoomContentLabel
+@onready var uv_button = $ExaminationView/MainVBox/ButtonRow/UVButton
+@onready var begin_button = $ExaminationView/MainVBox/ButtonRow/BeginButton
+
+# New UI elements for enhanced examination (updated paths)
+@onready var spine_text_label = $ExaminationView/MainVBox/BookCoverPanel/BookContent/SpineTextLabel
+@onready var embossing_label = $ExaminationView/MainVBox/BookCoverPanel/BookContent/EmbossingLabel
+@onready var wear_overlay = $ExaminationView/MainVBox/BookCoverPanel/BookContent/WearOverlay
+@onready var torn_corner_tl = $ExaminationView/MainVBox/BookCoverPanel/BookContent/WearOverlay/TornCornerTL
+@onready var torn_corner_tr = $ExaminationView/MainVBox/BookCoverPanel/BookContent/WearOverlay/TornCornerTR
+@onready var cracked_spine = $ExaminationView/MainVBox/BookCoverPanel/BookContent/WearOverlay/CrackedSpine
+@onready var damage_overlay = $ExaminationView/MainVBox/BookCoverPanel/BookContent/DamageOverlay
+@onready var water_stain = $ExaminationView/MainVBox/BookCoverPanel/BookContent/DamageOverlay/WaterStain
+@onready var coffee_stain = $ExaminationView/MainVBox/BookCoverPanel/BookContent/DamageOverlay/CoffeeStain
+@onready var bookmark_ribbon = $ExaminationView/MainVBox/BookCoverPanel/BookContent/BookmarkRibbon
+@onready var flavor_text_label = $ExaminationView/MainVBox/ExaminationInfoPanel/FlavorTextLabel
+@onready var physical_props_label = $ExaminationView/MainVBox/ExaminationInfoPanel/PhysicalPropsLabel
+@onready var provenance_label = $ExaminationView/MainVBox/ExaminationInfoPanel/ProvenanceLabel
+@onready var secrets_header_button = $ExaminationView/MainVBox/SecretsPanel/SecretsHeaderButton
+@onready var secrets_list_vbox = $ExaminationView/MainVBox/SecretsPanel/SecretsListVBox
 
 # State
+var view_mode: String = "cover"  # "cover" or "examination"
 var current_book_data: Dictionary = {}
 var current_text_id: int = 0
 var is_uv_active: bool = false
@@ -62,6 +76,7 @@ func _ready():
 	position.x = OFF_SCREEN_X
 
 	# Connect button signals
+	open_book_button.pressed.connect(_on_open_book_pressed)
 	uv_button.pressed.connect(_on_uv_button_pressed)
 	begin_button.pressed.connect(_on_begin_translation_pressed)
 	secrets_header_button.pressed.connect(_on_secrets_header_pressed)
@@ -86,20 +101,30 @@ func show_no_book_message():
 		begin_button.disabled = true
 
 func load_book(book_data: Dictionary):
-	"""Load book examination data"""
+	"""Load book examination data - shows cover view first"""
 	current_book_data = book_data
 	current_text_id = book_data.get("text_id", 1)
 	is_uv_active = false
+	view_mode = "cover"
 
+	# Show cover view, hide examination view
+	cover_view.visible = true
+	examination_view.visible = false
+
+	# Load BookResource if available
+	var book_resource: BookResource = book_data.get("book_resource", null)
+
+	# Populate cover view
+	if book_resource:
+		populate_cover_view(book_resource)
+
+	# Also prepare examination view in background
 	# Get text data for symbols
 	var text_data = SymbolData.get_text(current_text_id)
 
 	# Update customer header
 	var customer_name = book_data.get("name", "Unknown")
 	customer_header.text = "Examining %s's book" % customer_name
-
-	# Load BookResource if available (new system)
-	var book_resource: BookResource = book_data.get("book_resource", null)
 
 	# Update book appearance
 	var book_color = book_data.get("book_cover_color", Color("#F4E8D8"))
@@ -231,6 +256,76 @@ func update_zoom(local_mouse: Vector2, book_size: Vector2):
 	else:
 		zoom_content_label.text = "~"
 		zoom_content_label.add_theme_font_size_override("font_size", 100)
+
+func populate_cover_view(book: BookResource):
+	"""Populate the cover view with book data"""
+	# Set title and author
+	cover_title_label.text = book.title
+	if book.author != "":
+		cover_author_label.text = book.author
+	else:
+		cover_author_label.text = "[Author Unknown]"
+
+	# Set cover pattern/decoration
+	if book.has_embossing:
+		cover_pattern_label.text = book.embossing_symbol
+	elif book.cover_pattern != "":
+		cover_pattern_label.text = book.cover_pattern
+	else:
+		cover_pattern_label.text = "~"
+
+	# Set book size based on size property
+	var size_multiplier = book.get_size_multiplier()
+	var base_width = 320.0
+	var base_height = 450.0
+	book_cover_display.custom_minimum_size = Vector2(
+		base_width * size_multiplier,
+		base_height * size_multiplier
+	)
+
+	# Apply cover color and material-based border
+	var cover_style = StyleBoxFlat.new()
+	cover_style.bg_color = book.cover_color
+
+	# Border thickness based on material
+	var border_width = 3
+	match book.cover_material:
+		"Leather":
+			border_width = 4  # Thick borders for leather
+		"Cloth":
+			border_width = 3  # Medium borders for cloth
+		"Paper":
+			border_width = 2  # Thin borders for paper
+		"Wood":
+			border_width = 5  # Very thick borders for wood
+
+	cover_style.border_width_left = border_width
+	cover_style.border_width_top = border_width
+	cover_style.border_width_right = border_width
+	cover_style.border_width_bottom = border_width
+	cover_style.border_color = book.cover_color.darkened(0.4)
+
+	# Rounded corners based on material
+	var corner_radius = 4
+	if book.cover_material == "Wood":
+		corner_radius = 2  # Less rounded for wood
+	elif book.cover_material == "Paper":
+		corner_radius = 6  # More rounded for paper
+
+	cover_style.corner_radius_top_left = corner_radius
+	cover_style.corner_radius_top_right = corner_radius
+	cover_style.corner_radius_bottom_right = corner_radius
+	cover_style.corner_radius_bottom_left = corner_radius
+
+	# Apply shadow for depth
+	cover_style.shadow_color = Color(0, 0, 0, 0.3)
+	cover_style.shadow_size = 8
+	cover_style.shadow_offset = Vector2(4, 4)
+
+	book_cover_display.add_theme_stylebox_override("panel", cover_style)
+
+	# TODO: Add wear/damage overlays to cover if needed
+	# For now, we'll skip cover overlays as they're complex to position dynamically
 
 func populate_examination_details(book: BookResource):
 	"""Fill all examination UI elements with book resource data"""
@@ -371,6 +466,25 @@ func _on_secrets_header_pressed():
 	"""Toggle secrets panel expansion"""
 	secrets_expanded = not secrets_expanded
 	update_secrets_display()
+
+func _on_open_book_pressed():
+	"""Transition from cover view to examination view"""
+	view_mode = "examination"
+
+	# Fade out cover view
+	var fade_out_tween = create_tween()
+	fade_out_tween.tween_property(cover_view, "modulate:a", 0.0, 0.3)
+	await fade_out_tween.finished
+
+	# Hide cover, show examination
+	cover_view.visible = false
+	cover_view.modulate.a = 1.0  # Reset for next time
+	examination_view.visible = true
+	examination_view.modulate.a = 0.0
+
+	# Fade in examination view
+	var fade_in_tween = create_tween()
+	fade_in_tween.tween_property(examination_view, "modulate:a", 1.0, 0.3)
 
 func _on_uv_button_pressed():
 	"""Toggle UV light mode"""

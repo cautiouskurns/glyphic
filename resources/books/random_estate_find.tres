@@ -6,6 +6,7 @@
 script = ExtResource("1_1")
 book_id = "random_estate_find"
 title = "Estate Find"
+author = "Lord Blackwood"
 difficulty = "Hard"
 text_id = 4
 cover_color = Color(0.419608, 0.266667, 0.137255, 1)

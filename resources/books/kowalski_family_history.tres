@@ -6,6 +6,7 @@
 script = ExtResource("1_1")
 book_id = "kowalski_family_history"
 title = "Family History"
+author = "Margaret Kowalski"
 difficulty = "Easy"
 text_id = 1
 cover_color = Color(0.956863, 0.909804, 0.847059, 1)

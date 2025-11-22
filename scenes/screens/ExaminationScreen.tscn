@@ -35,7 +35,117 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_background")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="CoverView" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="CoverView"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ContentVBox" type="VBoxContainer" parent="CoverView/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="BookCoverDisplay" type="PanelContainer" parent="CoverView/CenterContainer/ContentVBox"]
+custom_minimum_size = Vector2(320, 450)
+layout_mode = 2
+
+[node name="CoverContent" type="Control" parent="CoverView/CenterContainer/ContentVBox/BookCoverDisplay"]
+layout_mode = 2
+
+[node name="OpenBookButton" type="Button" parent="CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+flat = true
+
+[node name="BookContentVBox" type="VBoxContainer" parent="CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+
+[node name="TopSpacer" type="Control" parent="CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/BookContentVBox"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+
+[node name="CoverTitleLabel" type="Label" parent="CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/BookContentVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_font_sizes/font_size = 28
+text = "Ancient Tome"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="CoverAuthorLabel" type="Label" parent="CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/BookContentVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.25, 0.2, 1)
+theme_override_font_sizes/font_size = 16
+text = "Unknown Author"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="MiddleSpacer" type="Control" parent="CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/BookContentVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CoverPatternLabel" type="Label" parent="CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/BookContentVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 0.4)
+theme_override_font_sizes/font_size = 48
+text = "~"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BottomSpacer" type="Control" parent="CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent/BookContentVBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="CoverWearOverlay" type="Control" parent="CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CoverDamageOverlay" type="Control" parent="CoverView/CenterContainer/ContentVBox/BookCoverDisplay/CoverContent"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="InstructionLabel" type="Label" parent="CoverView/CenterContainer/ContentVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
+theme_override_font_sizes/font_size = 12
+text = "Click on the book to open and examine"
+horizontal_alignment = 1
+
+[node name="ExaminationView" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -47,27 +157,27 @@ theme_override_constants/margin_top = 35
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
 
-[node name="MainVBox" type="VBoxContainer" parent="MarginContainer"]
+[node name="MainVBox" type="VBoxContainer" parent="ExaminationView"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="CustomerHeader" type="Label" parent="MarginContainer/MainVBox"]
+[node name="CustomerHeader" type="Label" parent="ExaminationView/MainVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.25, 0.2, 1)
 theme_override_font_sizes/font_size = 14
 text = "Examining book..."
 horizontal_alignment = 1
 
-[node name="BookCoverPanel" type="PanelContainer" parent="MarginContainer/MainVBox"]
+[node name="BookCoverPanel" type="PanelContainer" parent="ExaminationView/MainVBox"]
 custom_minimum_size = Vector2(490, 325)
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 1
 
-[node name="BookContent" type="Control" parent="MarginContainer/MainVBox/BookCoverPanel"]
+[node name="BookContent" type="Control" parent="ExaminationView/MainVBox/BookCoverPanel"]
 layout_mode = 2
 
-[node name="BookTitleLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+[node name="BookTitleLabel" type="Label" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent"]
 layout_mode = 0
 offset_left = 15.0
 offset_top = 15.0
@@ -78,7 +188,7 @@ theme_override_font_sizes/font_size = 18
 text = "Ancient Tome"
 horizontal_alignment = 1
 
-[node name="BookPatternLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+[node name="BookPatternLabel" type="Label" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent"]
 layout_mode = 0
 offset_left = 15.0
 offset_top = 80.0
@@ -90,7 +200,7 @@ text = "∆ ◊≈ ⊕⊗◈"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="UVOverlayLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+[node name="UVOverlayLabel" type="Label" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent"]
 visible = false
 layout_mode = 0
 offset_left = 15.0
@@ -102,7 +212,7 @@ theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CrosshairH" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+[node name="CrosshairH" type="ColorRect" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent"]
 visible = false
 layout_mode = 0
 offset_top = 162.0
@@ -110,7 +220,7 @@ offset_right = 490.0
 offset_bottom = 164.0
 color = Color(1, 0.843137, 0, 0.5)
 
-[node name="CrosshairV" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+[node name="CrosshairV" type="ColorRect" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent"]
 visible = false
 layout_mode = 0
 offset_left = 244.0
@@ -118,18 +228,18 @@ offset_right = 246.0
 offset_bottom = 325.0
 color = Color(1, 0.843137, 0, 0.5)
 
-[node name="ZoomPanel" type="PanelContainer" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+[node name="ZoomPanel" type="PanelContainer" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent"]
 layout_mode = 0
 offset_left = 330.0
 offset_top = 165.0
 offset_right = 480.0
 offset_bottom = 315.0
 
-[node name="ZoomViewRect" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/ZoomPanel"]
+[node name="ZoomViewRect" type="ColorRect" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent/ZoomPanel"]
 layout_mode = 2
 color = Color(0.956863, 0.909804, 0.847059, 1)
 
-[node name="ZoomContentLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/ZoomPanel/ZoomViewRect"]
+[node name="ZoomContentLabel" type="Label" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent/ZoomPanel/ZoomViewRect"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -142,7 +252,7 @@ text = "∆"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SpineTextLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+[node name="SpineTextLabel" type="Label" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent"]
 visible = false
 layout_mode = 0
 offset_left = 5.0
@@ -156,7 +266,7 @@ text = "SPINE TEXT"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="EmbossingLabel" type="Label" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+[node name="EmbossingLabel" type="Label" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent"]
 visible = false
 layout_mode = 0
 offset_left = 200.0
@@ -169,35 +279,35 @@ text = "⊗"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="WearOverlay" type="Control" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+[node name="WearOverlay" type="Control" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent"]
 visible = false
 anchors_preset = 0
 offset_right = 490.0
 offset_bottom = 325.0
 
-[node name="TornCornerTL" type="Polygon2D" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/WearOverlay"]
+[node name="TornCornerTL" type="Polygon2D" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent/WearOverlay"]
 visible = false
 color = Color(0.3, 0.25, 0.2, 0.3)
 polygon = PackedVector2Array(0, 0, 30, 0, 0, 30)
 
-[node name="TornCornerTR" type="Polygon2D" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/WearOverlay"]
+[node name="TornCornerTR" type="Polygon2D" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent/WearOverlay"]
 visible = false
 color = Color(0.3, 0.25, 0.2, 0.3)
 polygon = PackedVector2Array(460, 0, 490, 0, 490, 30)
 
-[node name="CrackedSpine" type="Line2D" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/WearOverlay"]
+[node name="CrackedSpine" type="Line2D" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent/WearOverlay"]
 visible = false
 points = PackedVector2Array(245, 0, 245, 325)
 width = 2.0
 default_color = Color(0.2, 0.15, 0.1, 0.5)
 
-[node name="DamageOverlay" type="Control" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+[node name="DamageOverlay" type="Control" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent"]
 visible = false
 anchors_preset = 0
 offset_right = 490.0
 offset_bottom = 325.0
 
-[node name="WaterStain" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/DamageOverlay"]
+[node name="WaterStain" type="ColorRect" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent/DamageOverlay"]
 visible = false
 layout_mode = 0
 offset_left = 400.0
@@ -206,7 +316,7 @@ offset_right = 480.0
 offset_bottom = 315.0
 color = Color(0.5, 0.6, 0.7, 0.2)
 
-[node name="CoffeeStain" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent/DamageOverlay"]
+[node name="CoffeeStain" type="ColorRect" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent/DamageOverlay"]
 visible = false
 layout_mode = 0
 offset_left = 350.0
@@ -215,7 +325,7 @@ offset_right = 400.0
 offset_bottom = 80.0
 color = Color(0.4, 0.3, 0.2, 0.25)
 
-[node name="BookmarkRibbon" type="ColorRect" parent="MarginContainer/MainVBox/BookCoverPanel/BookContent"]
+[node name="BookmarkRibbon" type="ColorRect" parent="ExaminationView/MainVBox/BookCoverPanel/BookContent"]
 visible = false
 layout_mode = 0
 offset_left = 470.0
@@ -224,12 +334,12 @@ offset_right = 485.0
 offset_bottom = 200.0
 color = Color(0.8, 0.2, 0.2, 1)
 
-[node name="ExaminationInfoPanel" type="VBoxContainer" parent="MarginContainer/MainVBox"]
+[node name="ExaminationInfoPanel" type="VBoxContainer" parent="ExaminationView/MainVBox"]
 custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="FlavorTextLabel" type="Label" parent="MarginContainer/MainVBox/ExaminationInfoPanel"]
+[node name="FlavorTextLabel" type="Label" parent="ExaminationView/MainVBox/ExaminationInfoPanel"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.35, 0.3, 1)
 theme_override_font_sizes/font_size = 11
@@ -237,46 +347,46 @@ text = "A worn book with secrets to discover..."
 autowrap_mode = 3
 max_lines_visible = 2
 
-[node name="PhysicalPropsLabel" type="Label" parent="MarginContainer/MainVBox/ExaminationInfoPanel"]
+[node name="PhysicalPropsLabel" type="Label" parent="ExaminationView/MainVBox/ExaminationInfoPanel"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
 theme_override_font_sizes/font_size = 10
 text = "Material: Leather • Size: Medium • Condition: Good"
 
-[node name="ProvenanceLabel" type="Label" parent="MarginContainer/MainVBox/ExaminationInfoPanel"]
+[node name="ProvenanceLabel" type="Label" parent="ExaminationView/MainVBox/ExaminationInfoPanel"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
 theme_override_font_sizes/font_size = 10
 text = "Previous owner: Unknown"
 
-[node name="SecretsPanel" type="VBoxContainer" parent="MarginContainer/MainVBox"]
+[node name="SecretsPanel" type="VBoxContainer" parent="ExaminationView/MainVBox"]
 layout_mode = 2
 theme_override_constants/separation = 3
 
-[node name="SecretsHeaderButton" type="Button" parent="MarginContainer/MainVBox/SecretsPanel"]
+[node name="SecretsHeaderButton" type="Button" parent="ExaminationView/MainVBox/SecretsPanel"]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 theme_override_font_sizes/font_size = 11
 text = "▼ Discoverable Secrets (0)"
 flat = true
 
-[node name="SecretsListVBox" type="VBoxContainer" parent="MarginContainer/MainVBox/SecretsPanel"]
+[node name="SecretsListVBox" type="VBoxContainer" parent="ExaminationView/MainVBox/SecretsPanel"]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="HintLabel" type="Label" parent="MarginContainer/MainVBox"]
+[node name="HintLabel" type="Label" parent="ExaminationView/MainVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.45, 0.4, 1)
 theme_override_font_sizes/font_size = 10
 text = "Hover over the book to examine symbols closely"
 horizontal_alignment = 1
 
-[node name="ButtonRow" type="HBoxContainer" parent="MarginContainer/MainVBox"]
+[node name="ButtonRow" type="HBoxContainer" parent="ExaminationView/MainVBox"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="UVButton" type="Button" parent="MarginContainer/MainVBox/ButtonRow"]
+[node name="UVButton" type="Button" parent="ExaminationView/MainVBox/ButtonRow"]
 visible = false
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
@@ -284,7 +394,7 @@ size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 12
 text = "💡 UV LIGHT"
 
-[node name="BeginButton" type="Button" parent="MarginContainer/MainVBox/ButtonRow"]
+[node name="BeginButton" type="Button" parent="ExaminationView/MainVBox/ButtonRow"]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 size_flags_horizontal = 3

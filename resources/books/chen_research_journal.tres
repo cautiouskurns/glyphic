@@ -1,15 +1,15 @@
-[gd_resource type="Resource" script_class="BookResource" load_steps=2 format=3 uid="uid://book_chen_research"]
+[gd_resource type="Resource" script_class="BookResource" load_steps=2 format=3 uid="uid://b2aa8871gcv5"]
 
-[ext_resource type="Script" path="res://scripts/resources/BookResource.gd" id="1_1"]
+[ext_resource type="Script" uid="uid://cotnv6filwp8o" path="res://scripts/resources/BookResource.gd" id="1_1"]
 
 [resource]
 script = ExtResource("1_1")
 book_id = "chen_research_journal"
 title = "Research Journal"
+author = "Dr. Elizabeth Chen"
 difficulty = "Medium"
 text_id = 2
 cover_color = Color(0.545098, 0.270588, 0.0745098, 1)
-cover_material = "Leather"
 cover_pattern = "∴"
 spine_text = "RESEARCH - CLASSIFIED"
 wear_level = 25
@@ -18,16 +18,17 @@ embossing_symbol = "⚠"
 size = "Large"
 thickness = 300
 binding_quality = 85
-uv_hidden_text = "⚠ FORBIDDEN SEAL\nDo not open after dark\n[Ancient symbol: ⊗]"
-faded_inscription = "Property of the University Archive\nSection 7 - Restricted Access"
+uv_hidden_text = "⚠ FORBIDDEN SEAL
+Do not open after dark
+[Ancient symbol: ⊗]"
+faded_inscription = "Property of the University Archive
+Section 7 - Restricted Access"
 marginalia = Array[String](["This can't be real...", "Confirmed: seismic readings match", "They knew all along"])
 bookmark_page = 127
-pressed_flower = false
 coffee_stain = true
-water_damage = false
 previous_owner = "University Archive - Section 7"
-publication_year = 0
-library_stamp = "FORBIDDEN SECTION\nUNIVERSITY ARCHIVE"
+library_stamp = "FORBIDDEN SECTION
+UNIVERSITY ARCHIVE"
 acquisition_note = "Acquired through... unofficial channels"
 examination_flavor_text = "A heavy leather-bound research journal with a warning symbol embossed on the cover. The spine reads 'RESEARCH - CLASSIFIED' in gold lettering. Coffee stains suggest long nights of study. Multiple handwritten notes fill the margins."
 story_relevance = 4

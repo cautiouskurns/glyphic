@@ -6,6 +6,7 @@ extends Resource
 # Basic Info
 @export var book_id: String = ""
 @export var title: String = "Ancient Tome"
+@export var author: String = ""  # Author name displayed on cover
 @export_enum("Easy", "Medium", "Hard") var difficulty: String = "Easy"
 @export var text_id: int = 1
 
